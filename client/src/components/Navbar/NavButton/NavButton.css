@@ -1,0 +1,18 @@
+.nav-btn {
+    padding: 5px;
+    background: none;
+    cursor: pointer;
+    border: var(--border-button);
+    border-radius: var(--radius-button);
+    transition: .2s;
+}
+
+.nav-btn:hover {
+    background-color: var(--bg-button-hover);
+    border-color: var(--border-button-hover);
+}
+
+.nav-btn:active {
+    background:none;
+    border: var(--border-button);
+}

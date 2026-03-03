@@ -1,0 +1,21 @@
+.s-btn {
+    padding: 15px;
+    background: none;
+    cursor: pointer;
+    border: var(--border-button);
+    border-radius: var(--radius-button);
+    transition: .2s;
+    color: var(--overlay-color);
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.s-btn:hover {
+    background-color: var(--bg-button-hover);
+    border-color: var(--border-button-hover);
+}
+
+.s-btn:active {
+    background:none;
+    border: var(--border-button);
+}
