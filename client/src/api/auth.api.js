@@ -1,6 +1,7 @@
-const API_URL = 'http://localhost:3000/auth';
+import { BASE_URL } from "./base_url";
+const API_URL = `${BASE_URL}/auth`;
 
-export const user_url = `${API_URL}/user`;
-export const login_url = `${API_URL}/login`;
-export const register_url = `${API_URL}/register`;
-export const logout_url = `${API_URL}/logout`;
+export const userUrl = `${API_URL}/user`;
+export const loginUrl = `${API_URL}/login`;
+export const registerUrl = `${API_URL}/register`;
+export const logoutUrl = `${API_URL}/logout`;

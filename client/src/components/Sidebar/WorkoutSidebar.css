@@ -1,4 +1,4 @@
-.workout-overlay-backdrop {
+.workout-sidebar-backdrop {
     opacity: 0;
     position: fixed;
     inset: 0;
@@ -10,13 +10,13 @@
     transition: 0.2s;
 }
 
-.workout-overlay-backdrop.show {
+.workout-sidebar-backdrop.show {
     opacity: 1;
     pointer-events: auto;
 }
 
 /* Modal container */
-.workout-overlay-panel {
+.workout-sidebar-panel {
     display: flex;
     flex-direction: column;
     background: var(--bg-main);
@@ -29,7 +29,7 @@
     transition: transform 0.25s ease;
 }
 
-.workout-overlay-panel.open {
+.workout-sidebar-panel.open {
     transform: translateX(0);
 }
 .add-workout {

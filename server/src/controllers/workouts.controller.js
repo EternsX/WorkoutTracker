@@ -8,16 +8,16 @@ export const getWorkouts = asyncHandler(async (req, res) => {
 });
 
 export const createWorkout = asyncHandler(async (req, res) => {
-    const { workoutName } = req.body;
+    const { name } = req.body;
 
-    if (!workoutName) {
+    if (!name) {
         const err = new Error("Workout name is required");
         err.statusCode = 400;
         throw err;
     }
 
     const workout = await workoutService.createWorkout(
-        workoutName,
+        name,
         req.user.id
     );
 
@@ -37,16 +37,16 @@ export const deleteWorkout = asyncHandler(async (req, res) => {
 
 export const updateWorkout = asyncHandler(async (req, res) => {
     const { workoutId } = req.params;
-    const { workoutName } = req.body;
+    const { name } = req.body;
 
-    if (!workoutName) {
+    if (!name) {
         const err = new Error("Missing workout name");
         err.statusCode = 400;
         throw err;
     }
 
     const workout = await workoutService.updateWorkout(
-        workoutName,
+        name,
         workoutId,
         req.user.id
     );

@@ -19,7 +19,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/workouts", workoutRoutes);
-app.use("/workouts/:workoutId", exerciseRoutes);
+app.use("/workouts/:workoutId/exercises", exerciseRoutes);
+app.use("/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
 app.use(errorMiddleware);
 
 export default app;

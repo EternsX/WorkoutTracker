@@ -58,6 +58,7 @@ export const updateWorkout = async (name, workoutId, userId) => {
         throw err;
     }
 
+
     const res = await query(
         "UPDATE workouts SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING id, name",
         [name, workoutId, userId]

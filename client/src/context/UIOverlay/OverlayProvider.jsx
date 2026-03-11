@@ -2,29 +2,30 @@ import { useState } from "react";
 import OverlayContext from "./OverlayContext";
 
 export default function OverlayProvider({ children }) {
-    const [settingsIsOpen, setSettingsIsOpen] = useState(false)
-    const [workoutPanelIsOpen, setWorkoutPanelIsOpen] = useState(false)
-    const [loginIsOpen, setLoginIsOpen] = useState(false)
-    const [registerIsOpen, setRegisterIsOpen] = useState(false)
-    const [createWorkoutModalIsOpen, setCreateWorkoutModalIsOpen] = useState(false)
+  const [overlays, setOverlays] = useState([]);
+
+  const openOverlay = (overlayConfig) => {
+    setOverlays((prev) => [...prev, overlayConfig]);
+    console.log(overlays)
+  };
+
+  const closeOverlay = (type = null) => {
+    setOverlays((prev) => {
+      if (type) {
+        // remove a specific overlay by type
+        return prev.filter((o) => o.type !== type);
+      }
+      // default: remove the last overlay
+      return prev.slice(0, -1);
+    });
+  };
+
   return (
     <OverlayContext.Provider
       value={{
-        settingsIsOpen,
-        loginIsOpen,
-        registerIsOpen,
-        workoutPanelIsOpen,
-        createWorkoutModalIsOpen,
-        openSettings: () => setSettingsIsOpen(true),
-        closeSettings: () => setSettingsIsOpen(false),
-        openLogin: () => setLoginIsOpen(true),
-        closeLogin: () => setLoginIsOpen(false),
-        openRegister: () => setRegisterIsOpen(true),
-        closeRegister: () => setRegisterIsOpen(false),
-        openWorkoutPanel: () => setWorkoutPanelIsOpen(true),
-        closeWorkoutPanel: () => setWorkoutPanelIsOpen(false),
-        openCreateWorkoutModal: () => setCreateWorkoutModalIsOpen(true),
-        closeCreateWorkoutModal: () => setCreateWorkoutModalIsOpen(false),
+        overlays,
+        openOverlay,
+        closeOverlay,
       }}
     >
       {children}

@@ -1,30 +1,35 @@
-import './Register.css'
-import useOverlay from '../../../context/UIOverlay/useOverlay'
-import { useEffect, useState, useRef } from 'react';
-import useAuth from '../../../context/Auth/useAuth';
+import "./Register.css";
+import { useEffect, useState, useRef } from "react";
+import useOverlay from "../../../context/UIOverlay/useOverlay";
+import useAuth from "../../../context/Auth/useAuth";
+import { MODAL_TYPES } from "../../../constants/modalTypes"; // adjust path if you move it to constants
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-    const { registerIsOpen, closeRegister } = useOverlay();
+    const { overlays, closeOverlay } = useOverlay();
+    const { register } = useAuth();
+    const navigate = useNavigate();
+
+    const registerIsOpen = overlays.some((o) => o.type === MODAL_TYPES.REGISTER);
+    
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const usernameRef = useRef(null);
-    const { register } = useAuth();
-
 
     useEffect(() => {
         if (registerIsOpen) {
-            usernameRef.current.focus();
-            setPassword("")
-            setUsername("")
-            setError("")
+            usernameRef.current?.focus();
+            setPassword("");
+            setUsername("");
+            setError("");
         }
     }, [registerIsOpen]);
 
     const handleChange = (e, setValue) => {
-        setValue(e.target.value)
-    }
+        setValue(e.target.value);
+    };
 
     const handleRegister = async () => {
         setError("");
@@ -44,40 +49,67 @@ export default function Register() {
                 return;
             }
 
-            closeRegister();
+            closeOverlay(MODAL_TYPES.REGISTER)
+            navigate("/", { replace: true });
         } catch (err) {
             setError("Server error");
-            console.log(err)
+            console.log(err);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-
+    if (!registerIsOpen) return null; // optional optimization
 
     return (
-        <div className={`r-overlay-backdrop ${registerIsOpen ? "show" : ""}`} onClick={closeRegister} >
-            <div className={`r-overlay-panel ${registerIsOpen ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
-                <h2 className='r-title'>Register</h2>
-                <form className='r-form' action="" onSubmit={(e) => {
-                    e.preventDefault();
-                    handleRegister();
-                }}>
+        <div
+            className={`r-overlay-backdrop ${registerIsOpen ? "show" : ""}`}
+            onClick={() => closeOverlay(MODAL_TYPES.REGISTER)}
+        >
+            <div
+                className={`r-overlay-panel ${registerIsOpen ? "open" : ""}`}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <h2 className="r-title">Register</h2>
+                <form
+                    className="r-form"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleRegister();
+                    }}
+                >
                     <div className="r-input-block">
-                        <input ref={usernameRef} onChange={(e) => handleChange(e, setUsername)} value={username} id="username" autoComplete='username' type="text" placeholder=" " />
+                        <input
+                            ref={usernameRef}
+                            onChange={(e) => handleChange(e, setUsername)}
+                            value={username}
+                            id="username"
+                            autoComplete="username"
+                            type="text"
+                            placeholder=" "
+                        />
                         <label htmlFor="username">Username</label>
                     </div>
 
                     <div className="r-input-block">
-                        <input onChange={(e) => handleChange(e, setPassword)} value={password} id="password" autoComplete='current-password' type="password" placeholder=" " />
+                        <input
+                            onChange={(e) => handleChange(e, setPassword)}
+                            value={password}
+                            id="password"
+                            autoComplete="current-password"
+                            type="password"
+                            placeholder=" "
+                        />
                         <label htmlFor="password">Password</label>
                     </div>
-                    {error && <div className='r-error'>{error}</div>}
-                    <button type='submit' disabled={loading} className='r-button'>
-                        {loading ? <span className='r-spinner'></span> : "Register"}
+
+                    {error && <div className="r-error">{error}</div>}
+
+                    <button type="submit" disabled={loading} className="r-button">
+                        {loading ? <span className="r-spinner"></span> : "Register"}
                     </button>
                 </form>
             </div>
         </div>
-    )
+    );
 }

@@ -9,9 +9,9 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router({ mergeParams: true }); // mergeParams needed if nested
 
-router.get('/exercises', authMiddleware, getExercises);
-router.post('/exercises', authMiddleware, createExercise);
-router.put('/exercises/:exerciseId', authMiddleware, updateExercise);
-router.delete('/exercises/:exerciseId', authMiddleware, deleteExercise);
+router.get('/', authMiddleware, getExercises);
+router.post('/', authMiddleware, createExercise);
+router.put('/:exerciseId', authMiddleware, updateExercise);
+router.delete('/:exerciseId', authMiddleware, deleteExercise);
 
 export default router;

@@ -1,0 +1,149 @@
+.workout-details {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 10px;
+  background: #242424;
+  border-radius: 8px;
+  color: #f0f0f0;
+}
+
+.exercise-create-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.exercise-create-form input {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #222;
+  color: #f0f0f0;
+}
+
+.exercise-create-form button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.exercise-create-form button:hover {
+  background: #388e3c;
+}
+
+.exercises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exercise-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #333;
+  border-radius: 6px;
+}
+
+.exercise-actions button {
+  margin-left: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.exercise-actions button:first-of-type {
+  background: #4caf50;
+  color: white;
+}
+
+.exercise-actions button:first-of-type:hover {
+  background: #388e3c;
+}
+
+.exercise-actions button:last-of-type {
+  background: #f44336;
+  color: white;
+}
+
+.exercise-actions button:last-of-type:hover {
+  background: #c62828;
+}
+
+.exercise-editing {
+  display: flex;
+  gap: 8px;
+}
+
+.exercise-editing input {
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #222;
+  color: #f0f0f0;
+}
+
+.exercise-editing button {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.floating-add-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  padding: 14px 20px;
+  border-radius: 50px;
+  border: none;
+
+  background: #4caf50;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.floating-add-btn:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+
+.workout-title {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.exercise-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.exercise-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.exercise-stats {
+  font-size: 0.85rem;
+  color: #bbb;
+}
+
+.empty-message {
+  text-align: center;
+  color: #aaa;
+  padding: 20px 0;
+}

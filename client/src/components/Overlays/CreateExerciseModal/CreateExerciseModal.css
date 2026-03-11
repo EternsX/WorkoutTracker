@@ -1,0 +1,50 @@
+/* Modal backdrop */
+.exercise-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+/* Modal panel */
+.exercise-modal-panel {
+  background: #242424;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 320px;
+  color: #f0f0f0;
+}
+
+.exercise-modal-panel h2 {
+  margin-bottom: 12px;
+}
+
+.exercise-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exercise-form input {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #222;
+  color: #f0f0f0;
+}
+
+.exercise-form button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.exercise-form button:hover {
+  background: #388e3c;
+}

@@ -8,18 +8,15 @@ export const getExercises = asyncHandler(async (req, res) => {
 });
 
 export const createExercise = asyncHandler(async (req, res) => {
-    const { exerciseName, sets, reps } = req.body;
-
-    if (!exerciseName || sets == null || reps == null) {
+    const { name } = req.body;
+    if (!name ) {
         const err = new Error("Missing Fields");
         err.statusCode = 400;
         throw err;
     }
 
     const exercise = await exerciseService.createExercise(
-        exerciseName,
-        sets, 
-        reps,
+        name,
         req.params.workoutId,
         req.user.id
     );
@@ -38,18 +35,16 @@ export const deleteExercise = asyncHandler(async (req, res) => {
 });
 
 export const updateExercise = asyncHandler(async (req, res) => {
-    const { exerciseName, sets, reps } = req.body;
-
-    if (!exerciseName || sets == null || reps == null) {
+    const { name } = req.body;
+    if (!name) {
         const err = new Error("Missing Fields");
         err.statusCode = 400;
         throw err;
     }
 
+
     const exercise = await exerciseService.updateExercise(
-        exerciseName,
-        sets,
-        reps,
+        name,
         req.params.exerciseId,
         req.params.workoutId,
         req.user.id

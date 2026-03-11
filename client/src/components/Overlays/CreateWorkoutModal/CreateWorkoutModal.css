@@ -85,7 +85,7 @@
     top: -8px;
     font-size: 12px;
     height: 9px;
-    background: rgb(31, 30, 30);
+    background: linear-gradient(180deg, rgba(31, 30, 30, 0.116), rgb(26, 25, 25));
 }
 
 .create_workout-button {
