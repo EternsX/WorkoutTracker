@@ -6,7 +6,6 @@ export default function OverlayProvider({ children }) {
 
   const openOverlay = (overlayConfig) => {
     setOverlays((prev) => [...prev, overlayConfig]);
-    console.log(overlays)
   };
 
   const closeOverlay = (type = null) => {

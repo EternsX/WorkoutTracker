@@ -1,4 +1,4 @@
-import { request } from "../../api/request";
+import { request } from "../../utils/apiHelpers";
 import { createExerciseUrl, delExerciseUrl, updateExerciseUrl, getExercisesUrl } from "../../api/exercises.api";
 
 export const getExercisesApi = (workoutId) => request(getExercisesUrl(workoutId));

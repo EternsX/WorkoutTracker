@@ -21,12 +21,9 @@ export default function WorkoutDetails() {
     getExercises(workoutId);
   }, [getExercises, workoutId]); // remove 'exercises' from deps
 
-  const workoutExercises = exercises.filter(
-    (e) => e.workout_id === workoutId
-  );
 
   const handleDelete = async (id) => {
-    await delExercise(id, workoutId);
+    await delExercise(workoutId, id);
   };
 
   const handleAddExercise = () => {
@@ -36,12 +33,7 @@ export default function WorkoutDetails() {
     });
   };
 
-  const handleEditExercise = (exercise) => {
-    openOverlay({
-      type: MODAL_TYPES.EDIT_EXERCISE,
-      payload: { exercise }
-    });
-  };
+
 
   return (
     <div className="workout-details">
@@ -50,13 +42,13 @@ export default function WorkoutDetails() {
 
       <div className="exercises-list">
 
-        {workoutExercises.length === 0 && (
+        {exercises.length === 0 && (
           <p className="empty-message">
             No exercises yet
           </p>
         )}
 
-        {workoutExercises.map((ex) => (
+        {exercises.map((ex) => (
 
           <div key={ex.id} className="exercise-item">
 
@@ -65,16 +57,11 @@ export default function WorkoutDetails() {
                 {ex.name}
               </div>
 
-              <div className="exercise-stats">
-                {ex.sets} sets × {ex.reps} reps {(Number(ex.weight) > 0) && `× ${ex.weight} kg`}
-              </div>
             </div>
 
             <div className="exercise-actions">
 
-              <button
-                onClick={() => handleEditExercise(ex)}
-              >
+              <button>
                 Edit
               </button>
 

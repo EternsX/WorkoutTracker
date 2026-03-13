@@ -1,53 +1,75 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import AuthContext from "./AuthContext";
 import { fetchUserApi, loginApi, registerApi, logoutApi } from "./authApi";
-import { withLoadingAndError } from ".../../utils/apiHelpers";
+import { withLoadingAndError } from "../../utils/apiHelpers";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUser = withLoadingAndError(setLoading, setError, async () => {
-    const { data, error } = await fetchUserApi();
-    if (error) {
-      setUser(null);
-      return { error };
-    }
-    setUser(data.user);
-    return { success: true };
-  });
+  const fetchUser = useCallback(async () => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const data = await fetchUserApi();
+      
+      if (data?.error) {
+        setUser(null);
+        return  data.error ;
+      }
+      setUser(data.user);
+      return { success: true };
+    })();
+  }, []);
 
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
-  const login = withLoadingAndError(setLoading, setError, async (username, password) => {
-    const { error } = await loginApi(username, password);
-    if (error) return { error };
+  const login = useCallback(async (username, password) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const { error } = await loginApi(username, password);
+      if (error) return { error };
 
-    await fetchUser();
-    return { success: true };
-  });
+      await fetchUser();
+      return { success: true };
+    })();
+  }, [fetchUser]);
 
-  const register = withLoadingAndError(setLoading, setError, async (username, password) => {
-    const { error } = await registerApi(username, password);
-    if (error) return { error };
+  const register = useCallback(async (username, password) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const { error } = await registerApi(username, password);
+      if (error) return { error };
 
-    const loginRes = await login(username, password);
-    if (!loginRes?.success) return { error: loginRes?.error || "Login after register failed" };
+      const loginRes = await login(username, password);
 
-    return { success: true };
-  });
+      if (!loginRes?.success) {
+        return { error: loginRes?.error || "Login after register failed" };
+      }
 
-  const logout = withLoadingAndError(setLoading, setError, async () => {
-    await logoutApi();
-    setUser(null);
-    return { success: true };
-  });
+      return { success: true };
+    })();
+  }, [login]);
+
+  const logout = useCallback(async () => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      await logoutApi();
+      setUser(null);
+      return { success: true };
+    })();
+  }, []);
+
+  const value = useMemo(() => ({
+    user,
+    loading,
+    error,
+    fetchUser,
+    login,
+    register,
+    logout
+  }), [user, loading, error, fetchUser, login, register, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, fetchUser, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

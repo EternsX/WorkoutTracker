@@ -1,5 +1,5 @@
 // workoutsApi.js
-import { request } from "../../api/request";
+import { request } from "../../utils/apiHelpers";
 import { createWorkoutUrl, delWorkoutUrl, updateWorkoutUrl, getWorkoutsUrl } from "../../api/workouts.api";
 
 export const getWorkoutsApi = () => request(getWorkoutsUrl);

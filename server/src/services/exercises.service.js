@@ -22,7 +22,6 @@ export const getExercises = async (workoutId, userId) => {
     if (!workoutId || !userId) throw { statusCode: 400, message: "Missing workout" };
 
     if (!(await validateUser(userId, workoutId))) throw { statusCode: 403, message: "Access denied" };
-
     const res = await query(`
         SELECT 
             e.id,

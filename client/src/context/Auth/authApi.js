@@ -1,6 +1,6 @@
 // authApi.js
 import { userUrl, loginUrl, registerUrl, logoutUrl } from "../../api/auth.api";
-import { request } from "../../api/request";
+import { request } from "../../utils/apiHelpers";
 
 export const fetchUserApi = () => request(userUrl);
 

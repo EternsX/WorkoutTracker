@@ -1,4 +1,4 @@
-import * as setService from '../services/sets.service.js';
+import * as setService from '../services/sets.services.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 
 export const getSets = asyncHandler(async (req, res) => {

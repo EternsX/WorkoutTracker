@@ -1,44 +1,82 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
+import SetContext from "./SetContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
-import { apiGetSets, apiCreateSet, apiUpdateSet, apiDeleteSet } from "./setsApi";
+import {
+  apiGetSets,
+  apiCreateSet,
+  apiUpdateSet,
+  apiDeleteSet
+} from "./setsApi";
 
 export default function SetProvider({ children }) {
   const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const getSets = withLoadingAndError(setLoading, setError, async (workoutId, exerciseId) => {
-    const result = await apiGetSets(workoutId, exerciseId);
-    if (result.error) {
-      setSets([]);
+  const getSets = useCallback(async (workoutId, exerciseId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await apiGetSets(workoutId, exerciseId);
+
+      if (result.error) {
+        setSets([]);
+        return result;
+      }
+
+      setSets(result.sets || []);
+      return result.sets || [];
+    })();
+  }, []);
+
+  const createSet = useCallback(async (reps, weight, workoutId, exerciseId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await apiCreateSet(reps, weight, workoutId, exerciseId);
+
+      if (!result.error) {
+        setSets(prev => [...prev, result.set]);
+      }
+
       return result;
-    }
-    setSets(result.sets || []);
-    return result.sets || [];
-  });
+    })();
+  }, []);
 
-  const createSet = withLoadingAndError(setLoading, setError, async (reps, weight, workoutId, exerciseId) => {
-    const result = await apiCreateSet(reps, weight, workoutId, exerciseId);
-    if (!result.error) setSets(prev => [...prev, result.set]);
-    return result;
-  });
+  const updateSet = useCallback(async (setId, reps, weight, workoutId, exerciseId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await apiUpdateSet(setId, reps, weight, workoutId, exerciseId);
 
-  const updateSet = withLoadingAndError(setLoading, setError, async (setId, reps, weight, workoutId, exerciseId) => {
-    const result = await apiUpdateSet(setId, reps, weight, workoutId, exerciseId);
-    if (!result.error) {
-      setSets(prev => prev.map(s => s.id === setId ? result.set : s));
-    }
-    return result;
-  });
+      if (!result.error) {
+        setSets(prev =>
+          prev.map(s => (s.id === setId ? result.set : s))
+        );
+      }
 
-  const deleteSet = withLoadingAndError(setLoading, setError, async (setId, workoutId, exerciseId) => {
-    const result = await apiDeleteSet(setId, workoutId, exerciseId);
-    if (!result.error) setSets(prev => prev.filter(s => s.id !== setId));
-    return result;
-  });
+      return result;
+    })();
+  }, []);
+
+  const deleteSet = useCallback(async (setId, workoutId, exerciseId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await apiDeleteSet(setId, workoutId, exerciseId);
+
+      if (!result.error) {
+        setSets(prev => prev.filter(s => s.id !== setId));
+      }
+
+      return result;
+    })();
+  }, []);
+
+  const value = useMemo(() => ({
+    sets,
+    loading,
+    error,
+    getSets,
+    createSet,
+    updateSet,
+    deleteSet
+  }), [sets, loading, error, getSets, createSet, updateSet, deleteSet]);
 
   return (
-    <SetContext.Provider value={{ sets, loading, error, getSets, createSet, updateSet, deleteSet }}>
+    <SetContext.Provider value={value}>
       {children}
     </SetContext.Provider>
   );

@@ -13,7 +13,7 @@ export const register = asyncHandler(async (req, res) => {
         sameSite: "lax"
     });
 
-    res.status(201).json({ user, token });
+    res.status(201).json({ user });
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -47,6 +47,5 @@ export const user = asyncHandler(async (req, res) => {
         err.statusCode = 401;
         throw err;
     }
-
     res.json({ user: { id: decoded.id } });
 });

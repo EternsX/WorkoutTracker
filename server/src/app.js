@@ -5,6 +5,7 @@ import './config/db.js'; // Ensure DB is initialized
 import authRoutes from "./routes/auth.routes.js";
 import workoutRoutes from './routes/workouts.routes.js'
 import exerciseRoutes from './routes/exercises.routes.js'
+import setsRoutes from './routes/set.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 

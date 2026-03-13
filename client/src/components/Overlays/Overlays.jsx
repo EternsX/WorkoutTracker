@@ -3,7 +3,6 @@ import Login from './LoginModal/Login'
 import Register from './RegisterModal/Register'
 import CreateWorkoutModal from './CreateWorkoutModal/CreateWorkoutModal'
 import CreateExerciseModal from './CreateExerciseModal/CreateExerciseModal'
-import EditExerciseModal from './EditExerciseModal/EditExerciseModal'
 
 export default function Overlays() {
     return (
@@ -13,7 +12,6 @@ export default function Overlays() {
             <Register />
             <CreateWorkoutModal />
             <CreateExerciseModal />
-            <EditExerciseModal />
         </>
     )
 }
