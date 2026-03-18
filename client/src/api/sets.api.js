@@ -1,7 +1,7 @@
 import { BASE_URL } from "./base_url";
 
 const workoutSetsUrl = (workoutId, exerciseId) =>
-  `${BASE_URL}/workouts/${workoutId}/${exerciseId}/sets`;
+  `${BASE_URL}/workouts/${workoutId}/exercises/${exerciseId}/sets`;
 
 export const createSetUrl = (workoutId, exerciseId) =>
   workoutSetsUrl(workoutId, exerciseId);

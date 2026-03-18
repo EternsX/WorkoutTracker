@@ -1,6 +1,6 @@
 // src/api/setsApi.js
-import { request } from "./request"; // your generic fetch wrapper
-import { createSetUrl, delSetUrl, updateSetUrl, getSetsUrl } from "./Sets.api";
+import { request } from "../../utils/apiHelpers"; // your generic fetch wrapper
+import { createSetUrl, delSetUrl, updateSetUrl, getSetsUrl } from "../../api/sets.api";
 
 export const apiGetSets = async (workoutId, exerciseId) => {
   const result = await request(getSetsUrl(workoutId, exerciseId));

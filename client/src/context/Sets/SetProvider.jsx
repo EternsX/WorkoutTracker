@@ -9,7 +9,7 @@ import {
 } from "./setsApi";
 
 export default function SetProvider({ children }) {
-  const [sets, setSets] = useState([]);
+  const [sets, setSets] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -18,11 +18,18 @@ export default function SetProvider({ children }) {
       const result = await apiGetSets(workoutId, exerciseId);
 
       if (result.error) {
-        setSets([]);
+        setSets((prev) => ({
+          ...prev,
+          [exerciseId]: []
+        }));
         return result;
       }
 
-      setSets(result.sets || []);
+      setSets((prev) => ({
+        ...prev,
+        [exerciseId]: result.sets || []
+      }));
+
       return result.sets || [];
     })();
   }, []);
@@ -32,7 +39,10 @@ export default function SetProvider({ children }) {
       const result = await apiCreateSet(reps, weight, workoutId, exerciseId);
 
       if (!result.error) {
-        setSets(prev => [...prev, result.set]);
+        setSets(prev => ({
+          ...prev,
+          [exerciseId]: [...(prev[exerciseId] || []), result.set]
+        }));
       }
 
       return result;
@@ -44,9 +54,12 @@ export default function SetProvider({ children }) {
       const result = await apiUpdateSet(setId, reps, weight, workoutId, exerciseId);
 
       if (!result.error) {
-        setSets(prev =>
-          prev.map(s => (s.id === setId ? result.set : s))
-        );
+        setSets(prev => ({
+          ...prev,
+          [exerciseId]: prev[exerciseId].map(s =>
+            s.id === setId ? result.set : s
+          )
+        }));
       }
 
       return result;
@@ -58,7 +71,10 @@ export default function SetProvider({ children }) {
       const result = await apiDeleteSet(setId, workoutId, exerciseId);
 
       if (!result.error) {
-        setSets(prev => prev.filter(s => s.id !== setId));
+        setSets(prev => ({
+          ...prev,
+          [exerciseId]: prev[exerciseId].filter(s => s.id !== setId)
+        }));
       }
 
       return result;

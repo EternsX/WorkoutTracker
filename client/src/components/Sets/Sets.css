@@ -1,0 +1,114 @@
+.sets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  padding: 10px 14px;
+
+  background: #3a3a3a;
+  border-radius: 8px;
+
+  transition: background 0.2s ease, transform 0.1s ease;
+
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.sets-header:hover {
+  background: #505050;
+}
+
+/* left section */
+.sets-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* set count */
+.sets-count {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* reps preview */
+.sets-reps {
+  font-size: 0.85rem;
+  color: #bdbdbd;
+  letter-spacing: 0.5px;
+}
+
+.sets-toggle {
+  position: relative;
+  top: 3px;
+  margin-left: auto;
+  /* push arrow right */
+  font-size: 18px;
+  line-height: 1;
+  user-select: none;
+}
+
+.sets-toggle.active {
+  transform: rotate(180deg);
+  top: -3px;
+}
+
+.sets-expanded {
+  overflow: hidden;
+  /* required for smooth height */
+  max-height: 0;
+  /* start collapsed */
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 12px;
+  /* horizontal padding only, vertical will be animated */
+}
+
+.sets-expanded.open {
+  overflow: visible;
+  max-height: 500px;
+  /* large enough to fit all content */
+  padding: 10px 12px;
+  /* restore padding */
+  position: relative;
+  /* ensure its children (set-rows) are above header */
+  z-index: 2;
+
+}
+
+.sets-container {
+  background: #2b2b2b;
+  padding: 10px 16px;
+  border-radius: 0 0 8px 8px;
+  overflow: visible;
+}
+
+.set-row {
+  display: flex;
+  padding: 4px 0;
+  font-size: 0.9rem;
+}
+
+.set-add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.set-add-row input {
+  width: 60px;
+  padding: 4px 6px;
+  background: #222;
+  border: 1px solid #555;
+  color: white;
+  border-radius: 4px;
+}
+
+.set-add-row button {
+  padding: 4px 8px;
+  background: #4caf50;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}

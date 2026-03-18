@@ -7,7 +7,7 @@ import OverlayProvider from './context/UIOverlay/OverlayProvider.jsx'
 import AuthProvider from './context/Auth/AuthProvider.jsx'
 import WorkoutProvider from './context/Workouts/WorkoutProvider.jsx'
 import ExerciseProvider from './context/Exercises/ExerciseProvider.jsx'
-
+import SetProvider from './context/Sets/SetProvider.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -16,9 +16,11 @@ createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <WorkoutProvider>
           <ExerciseProvider>
-            <OverlayProvider>
-              <App />
-            </OverlayProvider>
+            <SetProvider>
+              <OverlayProvider>
+                <App />
+              </OverlayProvider>
+            </SetProvider>
           </ExerciseProvider>
         </WorkoutProvider>
       </AuthProvider>

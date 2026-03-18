@@ -33,10 +33,10 @@ export default function CreateExerciseModal() {
   if (!overlayData) return null; // modal not open
 
   return (
-    <div className="exercise-modal-backdrop" onClick={handleClose}>
-      <div className="exercise-modal-panel" onClick={(e) => e.stopPropagation()}>
+    <div className="create_exercise-modal-backdrop" onClick={handleClose}>
+      <div className="create_exercise-modal-panel" onClick={(e) => e.stopPropagation()}>
         <h2>Create Exercise</h2>
-        <form onSubmit={handleSubmit} className="exercise-form">
+        <form onSubmit={handleSubmit} className="create_exercise-form">
           <input
             ref={nameRef}
             type="text"

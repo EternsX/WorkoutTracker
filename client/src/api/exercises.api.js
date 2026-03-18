@@ -14,3 +14,6 @@ export const delExerciseUrl = (workoutId, exerciseId) =>
 
 export const updateExerciseUrl = (workoutId, exerciseId) =>
   `${workoutExercisesUrl(workoutId)}/${exerciseId}`;
+
+export const updateRestTimesUrl = (workoutId, exerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${exerciseId}/rest`;

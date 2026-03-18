@@ -1,0 +1,82 @@
+/* Modal backdrop */
+.workout-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+/* Modal panel */
+.workout-modal-panel {
+  background: #242424;
+  padding: 20px;
+  border-radius: 12px;
+
+  min-width: 360px;
+  max-width: 500px;
+  width: 90%;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+  overflow-x: hidden; /* ✅ prevents horizontal scroll */
+
+  color: #f0f0f0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  position: relative;
+
+  box-sizing: border-box; /* ✅ important */
+}
+
+.workout-modal-panel h2 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* close button */
+.workout-modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: #333;
+  color: #fff;
+
+  font-size: 1.2rem;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+/* hover effect */
+.workout-modal-close-btn:hover {
+  background: #ff5252;
+  transform: scale(1.05);
+}
+
+/* click feedback */
+.workout-modal-close-btn:active {
+  transform: scale(0.95);
+}

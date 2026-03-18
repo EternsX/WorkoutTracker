@@ -53,3 +53,14 @@ export const updateWorkout = asyncHandler(async (req, res) => {
 
     res.status(200).json({ workout });
 });
+
+export const completeWorkout = asyncHandler(async (req, res) => {
+    const { workoutId } = req.params;
+
+    const workout = await workoutService.completeWorkout(
+        workoutId,
+        req.user.id
+    );
+
+    res.status(200).json({ workout });
+});

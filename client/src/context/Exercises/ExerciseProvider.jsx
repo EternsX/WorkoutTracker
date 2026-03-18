@@ -5,7 +5,8 @@ import {
   getExercisesApi,
   createExerciseApi,
   updateExerciseApi,
-  deleteExerciseApi
+  deleteExerciseApi,
+  updateRestTimersApi
 } from "./exercisesApi";
 
 export default function ExerciseProvider({ children }) {
@@ -65,6 +66,24 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
+  const getExercise = useCallback((exerciseId) => {
+    return exercises.find(e => e.id === exerciseId) || null;
+  }, [exercises])
+
+  const updateRestTimers = useCallback((restFields, workoutId, exerciseId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await updateRestTimersApi(restFields, workoutId, exerciseId);
+
+      if (!result.error) {
+        setExercises(prev =>
+          prev.map(e => (e.id !== exerciseId ? e : { ...e, ...restFields }))
+        );
+      }
+
+      return result;
+    })();
+  }, [])
+
   const value = useMemo(() => ({
     exercises,
     loading,
@@ -72,8 +91,10 @@ export default function ExerciseProvider({ children }) {
     getExercises,
     createExercise,
     updateExercise,
-    delExercise
-  }), [exercises, loading, error, getExercises, createExercise, updateExercise, delExercise]);
+    updateRestTimers,
+    delExercise,
+    getExercise
+  }), [exercises, loading, error, getExercises, createExercise, updateExercise, updateRestTimers, delExercise, getExercise]);
 
   return (
     <ExerciseContext.Provider value={value}>

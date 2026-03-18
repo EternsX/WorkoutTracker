@@ -9,7 +9,7 @@ export const getExercises = asyncHandler(async (req, res) => {
 
 export const createExercise = asyncHandler(async (req, res) => {
     const { name } = req.body;
-    if (!name ) {
+    if (!name) {
         const err = new Error("Missing Fields");
         err.statusCode = 400;
         throw err;
@@ -51,4 +51,25 @@ export const updateExercise = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({ exercise });
+});
+
+export const updateRestTimes = asyncHandler(async (req, res) => {
+    const { rest_between_sets, rest_after_exercise } = req.body;
+    const { exerciseId, workoutId } = req.params;
+
+    // At least one field must be provided
+    if (rest_between_sets == null && rest_after_exercise == null) {
+        const err = new Error("Missing Fields");
+        err.statusCode = 400;
+        throw err;
+    }
+
+    const result = await exerciseService.updateWorkoutExercise(
+        workoutId,
+        exerciseId,
+        { rest_between_sets, rest_after_exercise },
+        req.user.id
+    );
+
+    res.status(200).json({ workoutExercise: result });
 });

@@ -1,0 +1,41 @@
+/* Set.css */
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative; /* ← added */
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.set-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.set-action-button {
+  background: #3a3a3a;
+  color: #ffffff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.set-action-button:hover {
+  background: #4a4a4a;
+}
+
+.set-input {
+  min-width: 40px;
+  max-width: 60px;
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #2b2b2b;
+  color: #fff;
+  text-align: center;
+  
+}

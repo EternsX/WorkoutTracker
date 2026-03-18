@@ -1,5 +1,5 @@
 /* Modal backdrop */
-.exercise-modal-backdrop {
+.create_exercise-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
@@ -10,7 +10,7 @@
 }
 
 /* Modal panel */
-.exercise-modal-panel {
+.create_exercise-modal-panel {
   background: #242424;
   padding: 20px;
   border-radius: 8px;
@@ -18,11 +18,11 @@
   color: #f0f0f0;
 }
 
-.exercise-modal-panel h2 {
+.create_exercise-modal-panel h2 {
   margin-bottom: 12px;
 }
 
-.exercise-form {
+.create_exercise-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -36,7 +36,7 @@
   color: #f0f0f0;
 }
 
-.exercise-form button {
+.create_exercise-form button {
   padding: 6px 12px;
   border-radius: 4px;
   border: none;
@@ -45,6 +45,6 @@
   cursor: pointer;
 }
 
-.exercise-form button:hover {
+.create_exercise-form button:hover {
   background: #388e3c;
 }

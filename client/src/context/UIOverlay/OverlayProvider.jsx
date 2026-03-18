@@ -14,8 +14,6 @@ export default function OverlayProvider({ children }) {
         // remove a specific overlay by type
         return prev.filter((o) => o.type !== type);
       }
-      // default: remove the last overlay
-      return prev.slice(0, -1);
     });
   };
 

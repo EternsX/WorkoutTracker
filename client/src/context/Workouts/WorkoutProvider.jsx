@@ -65,6 +65,11 @@ export default function WorkoutProvider({ children }) {
     })();
   }, []);
 
+  const getWorkout = useCallback((workoutId) => {
+    const workout = workouts.find(w => w.id === workoutId); 
+    return workout
+  }, [workouts])
+
   useEffect(() => {
     if (!user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -82,8 +87,9 @@ export default function WorkoutProvider({ children }) {
     getWorkouts,
     createWorkout,
     updateWorkout,
-    delWorkout
-  }), [workouts, loading, error, getWorkouts, createWorkout, updateWorkout, delWorkout]);
+    delWorkout, 
+    getWorkout
+  }), [workouts, loading, error, getWorkouts, createWorkout, updateWorkout, delWorkout, getWorkout]);
 
   return (
     <WorkoutContext.Provider value={value}>

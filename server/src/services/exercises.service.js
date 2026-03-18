@@ -1,21 +1,7 @@
 import { query } from "../config/db.js";
+import { validateUser } from "../config/validations.js";
+import { validateWorkoutExercise } from '../config/validations.js'
 
-// --- Validation helpers ---
-async function validateUser(userId, workoutId) {
-    const res = await query(
-        'SELECT 1 FROM workouts WHERE id = $1 AND user_id = $2',
-        [workoutId, userId]
-    );
-    return res.rows.length > 0;
-}
-
-async function validateWorkoutExercise(workoutId, exerciseId) {
-    const res = await query(
-        'SELECT 1 FROM workout_exercises WHERE workout_id = $1 AND exercise_id = $2',
-        [workoutId, exerciseId]
-    );
-    return res.rows.length > 0;
-}
 
 // --- Get exercises for a workout ---
 export const getExercises = async (workoutId, userId) => {
@@ -26,6 +12,8 @@ export const getExercises = async (workoutId, userId) => {
         SELECT 
             e.id,
             e.name,
+            we.rest_after_exercise,
+            we.rest_between_sets,
             we.exercise_order,
             we.created_at
         FROM exercises e
@@ -121,4 +109,40 @@ export const deleteExercise = async (exerciseId, workoutId, userId) => {
         await query("ROLLBACK");
         throw err;
     }
+};
+
+export const updateWorkoutExercise = async (workoutId, exerciseId, fields, userId) => {
+    if (!workoutId || !exerciseId || !userId)
+        throw { statusCode: 400, message: "Missing fields" };
+
+    if (!(await validateUser(userId, workoutId)))
+        throw { statusCode: 403, message: "Access denied" };
+
+    const setClauses = [];
+    const values = [];
+    let i = 1;
+
+    for (const key in fields) {
+        if (fields[key] != null) {
+            setClauses.push(`${key} = $${i}`);
+            values.push(fields[key]);
+            i++;
+        }
+    }
+
+    if (setClauses.length === 0) return null;
+
+    values.push(workoutId, exerciseId);
+
+    const queryText = `
+        UPDATE workout_exercises
+        SET ${setClauses.join(', ')}
+        WHERE workout_id = $${i} AND exercise_id = $${i + 1}
+        RETURNING *;
+    `;
+
+    const { rows } = await query(queryText, values);
+    if (rows.length === 0) throw { statusCode: 404, message: "Workout exercise not found" };
+
+    return rows[0];
 };

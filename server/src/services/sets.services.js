@@ -1,26 +1,7 @@
 import { query } from "../config/db.js";
+import { validateUser } from "../config/validations.js";
+import { validateSet } from "../config/validations.js";
 
-// --- Validation helpers ---
-async function validateUser(userId, workoutId) {
-    const res = await query(
-        'SELECT 1 FROM workouts WHERE id = $1 AND user_id = $2',
-        [workoutId, userId]
-    );
-    return res.rows.length > 0;
-}
-
-async function validateSet(setId, workoutId, exerciseId) {
-    const res = await query(`
-        SELECT 1
-        FROM sets s
-        JOIN workout_exercises we ON s.workout_exercise_id = we.id
-        WHERE s.id = $1
-        AND we.exercise_id = $2
-        AND we.workout_id = $3
-    `, [setId, exerciseId, workoutId]);
-
-    return res.rows.length > 0;
-}
 
 // --- Get exercises for a workout ---
 export const getSets = async (exerciseId, workoutId, userId) => {
