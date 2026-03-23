@@ -1,23 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useWorkout from '../../context/Workouts/useWorkout';
 import './Workouts.css';
 
 export default function Workouts() {
   const { workouts, delWorkout, updateWorkout } = useWorkout();
-
+  const navigate = useNavigate();
+  const { workoutId: currentWorkoutId } = useParams(); // current workout from URL
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
-  const [activeMenuId, setActiveMenuId] = useState(null); // for the dots menu
+  const [activeMenuId, setActiveMenuId] = useState(null);
+
   const menuRef = useRef(null);
   const inputRef = useRef(null);
 
-
-
   useEffect(() => {
-    if (editingId && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (editingId && inputRef.current) inputRef.current.focus();
 
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -26,16 +24,13 @@ export default function Workouts() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [editingId]);
 
   const startEditing = (workout) => {
     setEditingId(workout.id);
     setEditedName(workout.name);
-    setActiveMenuId(null); // close menu
+    setActiveMenuId(null);
   };
 
   const cancelEditing = () => {
@@ -55,8 +50,12 @@ export default function Workouts() {
   };
 
   const handleDelete = (id) => {
+    console.log(currentWorkoutId, id)
     delWorkout(id);
     setActiveMenuId(null);
+    if (currentWorkoutId === String(id)) {
+      navigate('/'); // only navigate if the deleted workout is currently open
+    }
   };
 
   return (
@@ -85,7 +84,8 @@ export default function Workouts() {
                 {activeMenuId === w.id && (
                   <div className="dots-menu">
                     <button onClick={() => startEditing(w)}>Edit</button>
-                    <button onClick={() => handleDelete(w.id)}>Delete</button>                  </div>
+                    <button onClick={() => handleDelete(w.id)}>Delete</button>
+                  </div>
                 )}
               </div>
             </div>

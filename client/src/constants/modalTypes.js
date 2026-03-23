@@ -4,5 +4,7 @@ export const MODAL_TYPES = {
   SETTINGS: "settings",
   CREATE_WORKOUT: "createWorkout",
   CREATE_EXERCISE: "createExercise",
-  EXERCISE: "exercise"
+  START_WORKOUT: "start_workout",
+  COMPLETE_WORKOUT: "complete_workout",
+  CONFLICT_WORKOUT: "conflict_workout",
 };

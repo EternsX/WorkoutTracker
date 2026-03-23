@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes.js";
 import workoutRoutes from './routes/workouts.routes.js'
 import exerciseRoutes from './routes/exercises.routes.js'
 import setsRoutes from './routes/set.routes.js'
+import sessionRoutes from './routes/session.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 
@@ -16,10 +17,12 @@ app.use(cors({
   credentials: true // cookies
 }));
 
+
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/workouts", workoutRoutes);
+app.use("/session", sessionRoutes);
 app.use("/workouts/:workoutId/exercises", exerciseRoutes);
 app.use("/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
 app.use(errorMiddleware);

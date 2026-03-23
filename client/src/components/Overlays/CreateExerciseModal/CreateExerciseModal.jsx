@@ -3,6 +3,7 @@ import useExercise from "../../../context/Exercises/useExercise";
 import useOverlay from "../../../context/UIOverlay/useOverlay";
 import { MODAL_TYPES } from "../../../constants/modalTypes";
 import "./CreateExerciseModal.css";
+import Modal from "../Modal/Modal";
 
 export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
@@ -33,21 +34,32 @@ export default function CreateExerciseModal() {
   if (!overlayData) return null; // modal not open
 
   return (
-    <div className="create_exercise-modal-backdrop" onClick={handleClose}>
-      <div className="create_exercise-modal-panel" onClick={(e) => e.stopPropagation()}>
-        <h2>Create Exercise</h2>
-        <form onSubmit={handleSubmit} className="create_exercise-form">
+    <Modal type={MODAL_TYPES.CREATE_EXERCISE}>
+      <h2 className="title">Create Your Exercise</h2>
+      <form
+        className="form"
+        onSubmit={handleSubmit}
+      >
+        <div className="input-group">
           <input
             ref={nameRef}
-            type="text"
-            placeholder="Exercise Name"
-            value={name}
             onChange={(e) => setName(e.target.value)}
-            required
+            value={name}
+            id="name"
+            type="text"
+            placeholder=" "
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit(e);
+              }
+            }}
           />
-          <button type="submit">Create</button>
-        </form>
-      </div>
-    </div>
+          <label htmlFor="name">Exercise Name</label>
+        </div>
+        <button type="submit" className="button">
+          Create
+        </button>
+      </form>
+    </Modal>
   );
 }

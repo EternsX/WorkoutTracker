@@ -5,7 +5,8 @@ import {
   getWorkoutsApi,
   createWorkoutApi,
   updateWorkoutApi,
-  deleteWorkoutApi
+  deleteWorkoutApi,
+  completeWorkoutApi,
 } from "./workoutsApi";
 import useAuth from "../Auth/useAuth";
 
@@ -65,8 +66,16 @@ export default function WorkoutProvider({ children }) {
     })();
   }, []);
 
+  const completeWorkout = useCallback(async (workoutId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await completeWorkoutApi(workoutId);
+
+      return result;
+    })();
+  }, []);
+
   const getWorkout = useCallback((workoutId) => {
-    const workout = workouts.find(w => w.id === workoutId); 
+    const workout = workouts.find(w => w.id === workoutId);
     return workout
   }, [workouts])
 
@@ -87,9 +96,10 @@ export default function WorkoutProvider({ children }) {
     getWorkouts,
     createWorkout,
     updateWorkout,
-    delWorkout, 
-    getWorkout
-  }), [workouts, loading, error, getWorkouts, createWorkout, updateWorkout, delWorkout, getWorkout]);
+    delWorkout,
+    getWorkout,
+    completeWorkout,
+  }), [workouts, loading, error, getWorkouts, createWorkout, updateWorkout, completeWorkout, delWorkout, getWorkout]);
 
   return (
     <WorkoutContext.Provider value={value}>

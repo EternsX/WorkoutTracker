@@ -1,70 +1,45 @@
-import { useState, useRef, useEffect } from "react";
+// src/components/Exercise/Exercise.jsx
+import { useState, useEffect } from "react";
 import useExercise from "../../../context/Exercises/useExercise";
-import './Exercise.css'
-import Sets from '../../Sets/Sets'
+import useExerciseItem from "./useExerciseItem";
+import ExerciseActions from "./ExerciseActions";
+import Sets from "../../Sets/Sets";
+import './Exercise.css';
 
 export default function Exercise({ exercise, workoutId }) {
   const { updateExercise, delExercise, updateRestTimers } = useExercise();
 
-  const [editedName, setEditedName] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [openMenuId, setOpenMenuId] = useState(null);
+  const {
+    editingId,
+    editedName,
+    openMenuId,
+    menuRef,
+    toggleMenu,
+    startEditing,
+    cancelEditing,
+    handleUpdate,
+    handleDelete,
+    setEditedName
+  } = useExerciseItem(exercise, updateExercise, delExercise);
+
   const [restAfterExercise, setRestAfterExercise] = useState(exercise.rest_after_exercise || 180);
 
-  const menuRef = useRef(null);
-
-
-  const toggleMenu = (id) => {
-    setOpenMenuId((prev) => (prev === id ? null : id));
-  };
-
-  const startEditing = (exercise) => {
-    setEditingId(exercise.id);
-    setEditedName(exercise.name);
-    setOpenMenuId(null);
-  };
-
-  const cancelEditing = () => {
-    setEditingId(null);
-    setEditedName("");
-  };
-
-  const handleUpdate = async (id) => {
-    if (!editedName.trim()) return;
-
-    await updateExercise(editedName.trim(), workoutId, id);
-
-    setEditingId(null);
-    setEditedName("");
-  };
-
-  const handleDelete = async (id) => {
-    await delExercise(workoutId, id);
-    setOpenMenuId(null);
-  };
-
-
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenuId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
+  // Keep rest timer in sync
   useEffect(() => {
     if (exercise?.rest_after_exercise) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRestAfterExercise(exercise.rest_after_exercise || 180);
+      setRestAfterExercise(exercise.rest_after_exercise);
     }
-  }, [exercise?.rest_after_exercise])
+  }, [exercise?.rest_after_exercise]);
+
+  const handleRestChange = (value) => {
+    setRestAfterExercise(value);
+    updateRestTimers(
+      { rest_after_exercise: value },
+      workoutId,
+      exercise.workout_exercise_id
+    );
+  };
 
   return (
     <div className="exercise-item-wrapper">
@@ -76,11 +51,10 @@ export default function Exercise({ exercise, workoutId }) {
               value={editedName}
               onChange={(e) => setEditedName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleUpdate(exercise.id);
+                if (e.key === "Enter") handleUpdate();
               }}
             />
-
-            <button onClick={() => handleUpdate(exercise.id)}>Save</button>
+            <button onClick={handleUpdate}>Save</button>
             <button onClick={cancelEditing}>Cancel</button>
           </div>
         ) : (
@@ -88,55 +62,34 @@ export default function Exercise({ exercise, workoutId }) {
             <div className="exercise-info">
               <div className="exercise-name">{exercise.name}</div>
               <div className="exercise-timer-wrapper">
+                <span>⏱</span>
                 <select
                   className="exercise-timer-select"
                   value={restAfterExercise}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-
-                    setRestAfterExercise(value);
-
-                    updateRestTimers(
-                      { rest_after_exercise: value },
-                      workoutId,
-                      exercise.id
-                    );
-                  }}
+                  onChange={(e) => handleRestChange(Number(e.target.value))}
                 >
                   {[15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map((sec) => (
-                    <option key={sec} value={sec}>
-                      ⏱ {sec}s
-                    </option>
+                    <option key={sec} value={sec}>{sec}s</option>
                   ))}
                 </select>
               </div>
             </div>
 
             <div className="exercise-actions">
-              <button
-                className="menu-btn"
-                onClick={() => toggleMenu(exercise.id)}
-              >
-                ⋮
-              </button>
-
-              {openMenuId === exercise.id && (
-                <div className="menu-dropdown" ref={menuRef}>
-                  <button onClick={() => startEditing(exercise)}>
-                    Edit
-                  </button>
-
-                  <button onClick={() => handleDelete(exercise.id)}>
-                    Delete
-                  </button>
-                </div>
-              )}
+              <ExerciseActions
+                openMenuId={openMenuId}
+                exercise={exercise}
+                menuRef={menuRef}
+                toggleMenu={toggleMenu}
+                startEditing={startEditing}
+                handleDelete={handleDelete}
+              />
             </div>
           </>
         )}
       </div>
 
-      <Sets workoutId={workoutId} exerciseId={exercise.id} />
+      <Sets workoutId={workoutId} workoutExerciseId={exercise.workout_exercise_id} />
     </div>
   );
 }

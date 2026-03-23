@@ -4,6 +4,7 @@ import Register from './RegisterModal/Register'
 import CreateWorkoutModal from './CreateWorkoutModal/CreateWorkoutModal'
 import CreateExerciseModal from './CreateExerciseModal/CreateExerciseModal'
 import WorkoutModal from './WorkoutModal/WorkoutModal'
+import ConflictWorkoutModal from './ConflictWorkoutModal/ConflictWorkoutModal'
 
 export default function Overlays() {
     return (
@@ -14,6 +15,7 @@ export default function Overlays() {
             <CreateWorkoutModal />
             <CreateExerciseModal />
             <WorkoutModal />
+            <ConflictWorkoutModal />
         </>
     )
 }

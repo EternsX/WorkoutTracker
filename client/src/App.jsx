@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 
-import Dashboard from "./pages/DashBoard/Dashboard";
+import Dashboard from "./components/DashBoard/DashBoard";
 import Exercises from "./components/Exercises/Exercises";
 
 function App() {

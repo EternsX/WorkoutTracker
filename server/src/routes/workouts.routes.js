@@ -4,7 +4,7 @@ import {
     updateWorkout,
     deleteWorkout,
     createWorkout,
-    completeWorkout
+    completeWorkout,
 } from '../controllers/workouts.controller.js'
 import authMiddleware from '../middleware/authMiddleware.js';
 

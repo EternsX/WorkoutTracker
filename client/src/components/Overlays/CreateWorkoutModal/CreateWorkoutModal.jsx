@@ -3,14 +3,16 @@ import { useEffect, useState, useRef } from "react";
 import useOverlay from "../../../context/UIOverlay/useOverlay";
 import useWorkout from "../../../context/Workouts/useWorkout";
 import { MODAL_TYPES } from "../../../constants/modalTypes";
+import { useNavigate } from "react-router-dom";
+import Modal from "../Modal/Modal";
 
 export default function CreateWorkoutModal() {
   const { overlays, closeOverlay } = useOverlay();
   const { createWorkout } = useWorkout();
   const [workout, setWorkout] = useState("");
   const workoutRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Find this modal in the overlay stack
   const overlayData = overlays.find(
     (o) => o.type === MODAL_TYPES.CREATE_WORKOUT
   );
@@ -25,35 +27,33 @@ export default function CreateWorkoutModal() {
     }
   }, [overlayData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!workout.trim()) return;
 
-    createWorkout(workout.trim());
-    handleClose();
+    // 1️⃣ create workout via context
+    const result = await createWorkout(workout.trim());
+
+    if (!result.error) {
+      // 2️⃣ close modal
+      handleClose();
+
+      // 3️⃣ navigate to the newly created workout
+      navigate(`/workouts/${result.workout.id}`);
+    }
   };
 
-  if (!overlayData) return null; // modal not open
+  if (!overlayData) return null;
 
   return (
-    <div
-      className={`create_workout-overlay-backdrop ${
-        overlayData ? "show" : ""
-      }`}
-      onClick={handleClose}
-    >
-      <div
-        className={`create_workout-overlay-panel ${
-          overlayData ? "open" : ""
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="create_workout-title">Create Your Workout</h2>
+        <Modal type={MODAL_TYPES.CREATE_WORKOUT}> 
+
+        <h2 className="title">Create Your Workout</h2>
         <form
-          className="create_workout-form"
+          className="form"
           onSubmit={handleSubmit}
         >
-          <div className="create_workout-input-block">
+          <div className="input-group">
             <input
               ref={workoutRef}
               onChange={(e) => setWorkout(e.target.value)}
@@ -64,11 +64,10 @@ export default function CreateWorkoutModal() {
             />
             <label htmlFor="workout">Workout</label>
           </div>
-          <button type="submit" className="create_workout-button">
+          <button type="submit" className="button">
             Create
           </button>
         </form>
-      </div>
-    </div>
+      </Modal>
   );
 }

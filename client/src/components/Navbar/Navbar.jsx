@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Settings, Dumbbell } from "lucide-react";
 import "./Navbar.css";
 import NavButton from "./NavButton/NavButton";
@@ -6,9 +7,14 @@ import { MODAL_TYPES } from "../../constants/modalTypes";
 
 export default function Navbar({ openWorkoutSidebar }) {
   const { openOverlay } = useOverlay();
+  const navigate = useNavigate();
 
   const handleOpenSettings = () => {
     openOverlay({ type: MODAL_TYPES.SETTINGS });
+  };
+
+  const handleGoHome = () => {
+    navigate("/"); // Navigate to the dashboard/home
   };
 
   return (
@@ -20,7 +26,10 @@ export default function Navbar({ openWorkoutSidebar }) {
         />
       </div>
 
-      <span className="title">Workout Tracker</span>
+      {/* ✅ Make the title clickable */}
+      <span className="title" onClick={handleGoHome} style={{ cursor: "pointer" }}>
+        Workout Tracker
+      </span>
 
       <div className="settings">
         <NavButton

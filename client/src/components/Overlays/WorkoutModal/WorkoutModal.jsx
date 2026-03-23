@@ -6,37 +6,59 @@ import Main from './Main/Main';
 import Secondary from './Secondary/Secondary';
 import { useState } from 'react';
 import useSet from '../../../context/Sets/useSet'
+import useSession from '../../../context/Session/useSession';
+import useExercise from '../../../context/Exercises/useExercise';
 
-export default function ExerciseModal() {
-    const [workoutInProgress, setWorkoutInProgress] = useState(false); 
+export default function WorkoutModal() {
+    const [workoutInProgress, setWorkoutInProgress] = useState(false);
+
     const { sets } = useSet();
+    const { session, startSession, endSession } = useSession();
     const { overlays, closeOverlay } = useOverlay();
-    const { getWorkout } = useWorkout();
-    
+    const { getWorkout, completeWorkout } = useWorkout();
+    const { exercises } = useExercise();
 
-    const overlayData = overlays.find((o) => o.type === MODAL_TYPES.EXERCISE);
+    const overlayData = overlays.find(
+        (o) => o.type === MODAL_TYPES.START_WORKOUT
+    );
+
     const workoutId = overlayData?.payload?.workoutId;
 
+    const workoutSets = workoutId ? sets[workoutId] || {} : {};
+
+    const id = session?.progress?.workout_exercise_id || null;
+    const ex_idx = exercises?.findIndex(e => e.workout_exercise_id === id) || 0;
+    const set_idx = session?.progress?.setNumber || 0;
+
     const handleBeginWorkout = () => {
-        setWorkoutInProgress(true)
-    }
+        setWorkoutInProgress(true);
+        if (session?.workout_id !== workoutId) {
+            startSession(workoutId);
+        }
+    };
 
     const handleClose = () => {
-        setWorkoutInProgress(false)
-
-        closeOverlay(MODAL_TYPES.EXERCISE)
+        setWorkoutInProgress(false);
+        closeOverlay(MODAL_TYPES.START_WORKOUT);
     };
 
     const handleFinishWorkout = () => {
-        setWorkoutInProgress(false)
+        completeWorkout(workoutId);
+        setWorkoutInProgress(false);
+        endSession();
     };
 
     if (!overlayData) return null;
 
     return (
-        <div className="workout-modal-backdrop" onClick={!workoutInProgress ? handleClose : null}>
-            <div className="workout-modal-panel" onClick={(e) => e.stopPropagation()}>
-
+        <div
+            className="workout-modal-backdrop"
+            onClick={!workoutInProgress ? handleClose : null}
+        >
+            <div
+                className="workout-modal-panel"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <button
                     className="workout-modal-close-btn"
                     onClick={handleClose}
@@ -46,13 +68,21 @@ export default function ExerciseModal() {
 
                 <h2>{getWorkout(workoutId)?.name}</h2>
 
-                {workoutInProgress ?
-                    <Secondary sets={sets} handleFinishWorkout={handleFinishWorkout} />
-                    :
-                    <Main sets={sets} handleBeginWorkout={handleBeginWorkout} />
-                }
-
+                {workoutInProgress ? (
+                    <Secondary
+                        ex_idx={ex_idx}
+                        set_idx={set_idx}
+                        sets={workoutSets}
+                        handleFinishWorkout={handleFinishWorkout}
+                    />
+                ) : (
+                    <Main
+                        session={session}
+                        sets={workoutSets}
+                        handleBeginWorkout={handleBeginWorkout}
+                    />
+                )}
             </div>
         </div>
-    )
+    );
 }

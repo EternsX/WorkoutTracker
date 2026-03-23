@@ -3,11 +3,10 @@ import useSet from "../../../context/Sets/useSet";
 import './Set.css'
 import TooltipButton from "../../UI/TooltipButton";
 
-export default function Set({ set, i, workoutId, exerciseId }) {
+export default function Set({ set, i, workoutId, workoutExerciseId }) {
     const { updateSet, deleteSet } = useSet();
 
     const [editing, setEditing] = useState(false);
-    const [active, setActive] = useState(false);
 
     const [form, setForm] = useState({
         reps: set.reps,
@@ -38,11 +37,10 @@ export default function Set({ set, i, workoutId, exerciseId }) {
             Number(form.reps),
             Number(form.weight),
             workoutId,
-            exerciseId
+            workoutExerciseId // ✅ FIX
         );
 
         setEditing(false);
-        setActive(false);
     };
 
     const handleCancel = (e) => {
@@ -58,17 +56,16 @@ export default function Set({ set, i, workoutId, exerciseId }) {
 
     const handleDelete = async (e) => {
         e.stopPropagation();
-        await deleteSet(set.id, workoutId, exerciseId);
-    };
 
-    const toggleActive = () => {
-        if (!editing) {
-            setActive((prev) => !prev);
-        }
+        await deleteSet(
+            set.id,
+            workoutId,
+            workoutExerciseId // ✅ FIX
+        );
     };
 
     return (
-        <div className="set-row" onClick={toggleActive}>
+        <div className="set-row">
             {editing ? (
                 <>
                     <span>Set {i + 1}</span>
@@ -79,6 +76,7 @@ export default function Set({ set, i, workoutId, exerciseId }) {
                         value={form.reps}
                         onChange={handleChange("reps")}
                     />
+
                     <input
                         type="number"
                         className="set-input"
@@ -95,12 +93,26 @@ export default function Set({ set, i, workoutId, exerciseId }) {
                     <span>{set.reps} reps</span>
                     <span>{set.weight} kg</span>
 
-                    {active && (
-                        <div className="set-actions" onClick={(e) => e.stopPropagation()}>
-                            <TooltipButton className="set-action-button" label="Edit" onClick={startEditing}>✏️</TooltipButton>
-                            <TooltipButton className="set-action-button" label="Delete" onClick={handleDelete}>🗑️</TooltipButton>
-                        </div>
-                    )}
+                    <div
+                        className="set-actions"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <TooltipButton
+                            className="set-action-button"
+                            label="Edit"
+                            onClick={startEditing}
+                        >
+                            ✏️
+                        </TooltipButton>
+
+                        <TooltipButton
+                            className="set-action-button"
+                            label="Delete"
+                            onClick={handleDelete}
+                        >
+                            🗑️
+                        </TooltipButton>
+                    </div>
                 </>
             )}
         </div>

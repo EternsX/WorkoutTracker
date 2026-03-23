@@ -14,6 +14,7 @@ export default function ExerciseProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // ✅ GET EXERCISES (these are workout_exercises now)
   const getExercises = useCallback(async (workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await getExercisesApi(workoutId);
@@ -28,6 +29,7 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
+  // ✅ CREATE EXERCISE (creates workout_exercise)
   const createExercise = useCallback(async (name, workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await createExerciseApi(name, workoutId);
@@ -40,13 +42,17 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
-  const updateExercise = useCallback(async (name, workoutId, exerciseId) => {
+  // ✅ UPDATE EXERCISE (use workout_exercise_id)
+  const updateExercise = useCallback(async (name, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateExerciseApi(name, workoutId, exerciseId);
-
+      const result = await updateExerciseApi(name, workoutId, workout_exercise_id);
       if (!result.error) {
         setExercises(prev =>
-          prev.map(e => (e.id === exerciseId ? result.exercise : e))
+          prev.map(e =>
+            e.workout_exercise_id === workout_exercise_id
+              ? result.exercise
+              : e
+          )
         );
       }
 
@@ -54,35 +60,44 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
-  const delExercise = useCallback(async (workoutId, exerciseId) => {
+  // ✅ DELETE EXERCISE (use workout_exercise_id)
+  const delExercise = useCallback(async (workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await deleteExerciseApi(workoutId, exerciseId);
+      const result = await deleteExerciseApi(workoutId, workout_exercise_id);
 
       if (!result.error) {
-        setExercises(prev => prev.filter(e => e.id !== exerciseId));
+        setExercises(prev =>
+          prev.filter(e => e.workout_exercise_id !== workout_exercise_id)
+        );
       }
 
       return result;
     })();
   }, []);
 
-  const getExercise = useCallback((exerciseId) => {
-    return exercises.find(e => e.id === exerciseId) || null;
-  }, [exercises])
+  // ✅ GET SINGLE EXERCISE
+  const getExercise = useCallback((workout_exercise_id) => {
+    return exercises.find(e => e.workout_exercise_id === workout_exercise_id) || null;
+  }, [exercises]);
 
-  const updateRestTimers = useCallback((restFields, workoutId, exerciseId) => {
+  // ✅ UPDATE REST TIMERS
+  const updateRestTimers = useCallback((restFields, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateRestTimersApi(restFields, workoutId, exerciseId);
+      const result = await updateRestTimersApi(restFields, workoutId, workout_exercise_id);
 
       if (!result.error) {
         setExercises(prev =>
-          prev.map(e => (e.id !== exerciseId ? e : { ...e, ...restFields }))
+          prev.map(e =>
+            e.workout_exercise_id !== workout_exercise_id
+              ? e
+              : { ...e, ...restFields }
+          )
         );
       }
 
       return result;
     })();
-  }, [])
+  }, []);
 
   const value = useMemo(() => ({
     exercises,
@@ -94,7 +109,17 @@ export default function ExerciseProvider({ children }) {
     updateRestTimers,
     delExercise,
     getExercise
-  }), [exercises, loading, error, getExercises, createExercise, updateExercise, updateRestTimers, delExercise, getExercise]);
+  }), [
+    exercises,
+    loading,
+    error,
+    getExercises,
+    createExercise,
+    updateExercise,
+    updateRestTimers,
+    delExercise,
+    getExercise
+  ]);
 
   return (
     <ExerciseContext.Provider value={value}>

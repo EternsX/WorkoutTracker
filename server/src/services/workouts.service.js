@@ -23,7 +23,7 @@ export const getWorkoutById = async (userId, workoutId) => {
         throw err;
     }
 
-    if (!(await validateUser(userId, workoutId))) 
+    if (!(await validateUser(userId, workoutId)))
         throw { statusCode: 403, message: "Access denied" };
 
     const res = await query(
@@ -63,7 +63,7 @@ export const updateWorkout = async (name, workoutId, userId) => {
         throw err;
     }
 
-    if (!(await validateUser(userId, workoutId))) 
+    if (!(await validateUser(userId, workoutId)))
         throw { statusCode: 403, message: "Access denied" };
 
 
@@ -88,7 +88,7 @@ export const deleteWorkout = async (workoutId, userId) => {
         throw err;
     }
 
-    if (!(await validateUser(userId, workoutId))) 
+    if (!(await validateUser(userId, workoutId)))
         throw { statusCode: 403, message: "Access denied" };
 
     const res = await query(
@@ -112,11 +112,17 @@ export const completeWorkout = async (workoutId, userId) => {
         throw err;
     }
 
-    if (!(await validateUser(userId, workoutId))) 
-        throw { statusCode: 403, message: "Access denied" };
+    // Authorization
+    if (!(await validateUser(userId, workoutId))) {
+        const err = new Error("Access denied");
+        err.statusCode = 403;
+        throw err;
+    }
 
     const res = await query(
-        "INSERT INTO workouts user_id, workout_id VALUES ($1, $2) RETURNING id, name",
+        `INSERT INTO completed_workouts (user_id, workout_id)
+         VALUES ($1, $2)
+         RETURNING id, user_id, workout_id, session_date`,
         [userId, workoutId]
     );
 
@@ -128,3 +134,4 @@ export const completeWorkout = async (workoutId, userId) => {
 
     return res.rows[0];
 };
+

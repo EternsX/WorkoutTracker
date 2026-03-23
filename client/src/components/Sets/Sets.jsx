@@ -4,29 +4,36 @@ import "./Sets.css";
 import Set from "./Set/Set";
 import useExercise from "../../context/Exercises/useExercise";
 
-export default function Sets({ workoutId, exerciseId }) {
+export default function Sets({ workoutId, workoutExerciseId }) {
   const { getExercise, updateRestTimers } = useExercise();
   const { sets, getSets, createSet } = useSet();
 
-  const exercise = getExercise(exerciseId);
+  // ✅ This is now clearly a workout_exercise
+  const workoutExercise = getExercise(workoutExerciseId);
 
   const [newWeight, setNewWeight] = useState("");
   const [newReps, setNewReps] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [restBetweenSets, setRestBetweenSets] = useState(60);
 
-  // ✅ fetch sets
-  useEffect(() => {
-    getSets(workoutId, exerciseId);
-  }, [workoutId, exerciseId, getSets]);
+  // ✅ Get sets for this workout_exercise
+  const curSets = sets[workoutId]?.[workoutExerciseId];
+  const curSetsSafe = curSets || [];
 
-  // ✅ sync rest timer with backend data
+  // ✅ Fetch sets only if not loaded yet
   useEffect(() => {
-    if (exercise?.rest_between_sets) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRestBetweenSets(exercise.rest_between_sets);
+    if (workoutId && workoutExerciseId && !curSets) {
+      getSets(workoutId, workoutExerciseId);
     }
-  }, [exercise?.rest_between_sets]);
+  }, [workoutId, workoutExerciseId, getSets, curSets]);
+
+  // ✅ Sync rest timer correctly (fix: != null)
+  useEffect(() => {
+    if (workoutExercise?.rest_between_sets != null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRestBetweenSets(workoutExercise.rest_between_sets);
+    }
+  }, [workoutExercise?.rest_between_sets]);
 
   const handleAddSet = async () => {
     if (!newReps) return;
@@ -35,14 +42,12 @@ export default function Sets({ workoutId, exerciseId }) {
       Number(newReps),
       Number(newWeight),
       workoutId,
-      exerciseId
+      workoutExerciseId
     );
 
     setNewReps("");
     setNewWeight("");
   };
-
-  const curSets = sets[exerciseId] || [];
 
   return (
     <div className="sets-container">
@@ -51,20 +56,23 @@ export default function Sets({ workoutId, exerciseId }) {
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <div className="sets-info">
-          <span className="sets-count">{curSets.length} sets</span>
+          <span className="sets-count">{curSetsSafe.length} sets</span>
+
           <span className="sets-reps">
-            {curSets.length > 0 &&
-              ` • ${curSets.map((s) => s.reps).join("-")} reps`}
+            {curSetsSafe.length > 0 &&
+              ` • ${curSetsSafe.map((s) => s.reps).join("-")} reps`}
           </span>
         </div>
 
-        {/* ✅ REST TIMER DROPDOWN */}
+        {/* ✅ REST TIMER */}
         <div
-          className="exercise-timer-wrapper"
-          onClick={(e) => e.stopPropagation()}   // 🔥 prevents toggle
+          className="set-timer-wrapper"
+          onClick={(e) => e.stopPropagation()}
         >
+          <span>⏱</span>
+
           <select
-            className="exercise-timer-select"
+            className="set-timer-select"
             value={restBetweenSets}
             onChange={(e) => {
               const value = Number(e.target.value);
@@ -72,9 +80,9 @@ export default function Sets({ workoutId, exerciseId }) {
               setRestBetweenSets(value);
 
               updateRestTimers(
-                { rest_between_sets: value }, // ✅ correct field
+                { rest_between_sets: value },
                 workoutId,
-                exerciseId                  // ✅ safe
+                workoutExerciseId
               );
             }}
           >
@@ -92,13 +100,13 @@ export default function Sets({ workoutId, exerciseId }) {
       </div>
 
       <div className={`sets-expanded ${isOpen ? "open" : ""}`}>
-        {curSets.map((s, index) => (
+        {curSetsSafe.map((s, index) => (
           <Set
             key={s.id}
             set={s}
             i={index}
             workoutId={workoutId}
-            exerciseId={exerciseId}
+            workoutExerciseId={workoutExerciseId} // ✅ FIX
           />
         ))}
 

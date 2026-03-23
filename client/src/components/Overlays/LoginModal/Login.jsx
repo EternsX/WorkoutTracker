@@ -2,11 +2,12 @@ import "./Login.css";
 import { useState, useRef, useEffect } from "react";
 import useOverlay from "../../../context/UIOverlay/useOverlay";
 import useAuth from "../../../context/Auth/useAuth";
-import { MODAL_TYPES } from "../../../constants/modalTypes"; // adjust path if needed
+import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
+import Modal from "../Modal/Modal";
 
 export default function Login() {
-    const { overlays, closeOverlay } = useOverlay();
+    const { overlays, closeOverlay, openOverlay } = useOverlay();
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -56,55 +57,61 @@ export default function Login() {
         }
     };
 
-    if (!loginIsOpen) return null; // optional optimization
+    // 🔥 NEW: switch to register modal
+    const handleOpenRegister = () => {
+        closeOverlay(MODAL_TYPES.LOGIN);
+        openOverlay({ type: MODAL_TYPES.REGISTER });
+    };
+
+    if (!loginIsOpen) return null;
 
     return (
-        <div
-            className={`l-overlay-backdrop ${loginIsOpen ? "show" : ""}`}
-            onClick={() => closeOverlay(MODAL_TYPES.LOGIN)}
-        >
-            <div
-                className={`l-overlay-panel ${loginIsOpen ? "open" : ""}`}
-                onClick={(e) => e.stopPropagation()}
+        <Modal type={MODAL_TYPES.LOGIN}>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleLogin();
+                }}
+                className="form"
             >
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleLogin();
-                    }}
-                    className="l-form"
-                >
-                    <h2 className="l-title">Login</h2>
+                <h2 className="title">Login</h2>
 
-                    <div className="l-input-group">
-                        <input
-                            ref={usernameRef}
-                            autoComplete="username"
-                            placeholder=" "
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <label>Username</label>
-                    </div>
+                <div className="input-group">
+                    <input
+                        ref={usernameRef}
+                        autoComplete="username"
+                        placeholder=" "
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <label>Username</label>
+                </div>
 
-                    <div className="l-input-group">
-                        <input
-                            placeholder=" "
-                            type="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <label>Password</label>
-                    </div>
+                <div className="input-group">
+                    <input
+                        placeholder=" "
+                        type="password"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <label>Password</label>
+                </div>
 
-                    {error && <div className="l-error">{error}</div>}
+                {error && <div className="error">{error}</div>}
 
-                    <button className="l-button" disabled={loading} type="submit">
-                        {loading ? <span className="spinner"></span> : "Login"}
-                    </button>
-                </form>
-            </div>
-        </div>
+                <button className="button" disabled={loading} type="submit">
+                    {loading ? <span className="spinner"></span> : "Login"}
+                </button>
+
+                {/* 🔥 NEW: switch to register */}
+                <p className="switch-text">
+                    Don't have an account?{" "}
+                    <span className="switch-link" onClick={handleOpenRegister}>
+                        Register
+                    </span>
+                </p>
+            </form>
+        </Modal>
     );
 }

@@ -17,12 +17,11 @@
   justify-content: space-between;
   align-items: center;
 
-  cursor: pointer;
-
-  transition: 
+  transition:
     background 0.25s ease,
     transform 0.15s ease,
     box-shadow 0.2s ease;
+  cursor: default;
 }
 
 /* hover */
@@ -30,19 +29,6 @@
   background: #353535;
   transform: translateY(-1px);
 }
-
-/* selected exercise */
-.workout-modal-exercise.active {
-  background: #3a3a3a;
-  box-shadow: 0 0 0 2px #4caf50 inset;
-  transform: scale(1.01);
-}
-
-/* click feedback */
-.workout-modal-exercise:active {
-  transform: scale(0.98);
-}
-
 
 /* Begin Workout button */
 .workout-modal-begin-btn {
@@ -70,7 +56,7 @@
 .workout-modal-begin-btn:hover {
   background: #43a047;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
 }
 
 /* click */
