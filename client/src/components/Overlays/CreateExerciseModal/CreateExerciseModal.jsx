@@ -7,11 +7,16 @@ import Modal from "../Modal/Modal";
 
 export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
-  const { createExercise } = useExercise();
+  const { createExercise, loading, error } = useExercise();
+
   const [name, setName] = useState("");
   const nameRef = useRef(null);
+
   // Find this modal in the overlay stack
-  const overlayData = overlays.find((o) => o.type === MODAL_TYPES.CREATE_EXERCISE);
+  const overlayData = overlays.find(
+    (o) => o.type === MODAL_TYPES.CREATE_EXERCISE
+  );
+
   const workoutId = overlayData?.payload?.workoutId;
 
   // Close only this modal
@@ -27,19 +32,23 @@ export default function CreateExerciseModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!name.trim()) return;
-    await createExercise(name.trim(), workoutId);
-    handleClose();
+
+    const res = await createExercise(name.trim(), workoutId);
+
+    if (res?.error) return; // ❌ stay open if error
+
+    handleClose(); // ✅ close only on success
   };
-  if (!overlayData) return null; // modal not open
+
+  if (!overlayData) return null;
 
   return (
     <Modal type={MODAL_TYPES.CREATE_EXERCISE}>
       <h2 className="title">Create Your Exercise</h2>
-      <form
-        className="form"
-        onSubmit={handleSubmit}
-      >
+
+      <form className="form" onSubmit={handleSubmit}>
         <div className="input-group">
           <input
             ref={nameRef}
@@ -48,16 +57,14 @@ export default function CreateExerciseModal() {
             id="name"
             type="text"
             placeholder=" "
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit(e);
-              }
-            }}
           />
           <label htmlFor="name">Exercise Name</label>
         </div>
-        <button type="submit" className="button">
-          Create
+
+        {error && <div className="error">{error}</div>}
+
+        <button className="button" disabled={loading} type="submit">
+          {loading ? <span className="spinner"></span> : "Create"}
         </button>
       </form>
     </Modal>

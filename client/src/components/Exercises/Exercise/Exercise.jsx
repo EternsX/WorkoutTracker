@@ -20,7 +20,7 @@ export default function Exercise({ exercise, workoutId }) {
     handleUpdate,
     handleDelete,
     setEditedName
-  } = useExerciseItem(exercise, updateExercise, delExercise);
+  } = useExerciseItem(exercise, workoutId, updateExercise, delExercise);
 
   const [restAfterExercise, setRestAfterExercise] = useState(exercise.rest_after_exercise || 180);
 

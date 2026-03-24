@@ -140,6 +140,7 @@ export const deleteExercise = async (workoutId, workoutExerciseId, userId) => {
     if (!workoutExerciseId || !workoutId || !userId)
         throw { statusCode: 400, message: "Missing fields" };
 
+    console.log("Deleting exercise with workoutId:", workoutId, "workoutExerciseId:", workoutExerciseId, "userId:", userId);
     if (!(await validateUser(userId, workoutId)))
         throw { statusCode: 403, message: "Access denied" };
 

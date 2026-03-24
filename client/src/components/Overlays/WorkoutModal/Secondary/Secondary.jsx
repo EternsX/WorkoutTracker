@@ -60,13 +60,6 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
         // 🔹 Determine correct workout_exercise_id for progress update
         const nextExerciseId = exercises[nextExIdx]?.workout_exercise_id || curExercise?.workout_exercise_id;
 
-        console.log({
-            exIdx, setIdx,
-            nextExIdx, nextSetIdx,
-            nextExerciseId,
-            curSet
-        });
-
         // 🔹 Update session progress
         await updateProgress(
             session.id,

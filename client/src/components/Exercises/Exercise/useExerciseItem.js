@@ -1,7 +1,7 @@
 // src/components/Exercise/useExerciseItem.js
 import { useState, useRef, useEffect } from "react";
 
-export default function useExerciseItem(exercise, updateExercise, delExercise) {
+export default function useExerciseItem(exercise, workoutId, updateExercise, delExercise) {
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -22,12 +22,12 @@ export default function useExerciseItem(exercise, updateExercise, delExercise) {
 
   const handleUpdate = async () => {
     if (!editedName.trim()) return;
-    await updateExercise(editedName.trim(), exercise.workout_exercise_id);
+    await updateExercise(editedName.trim(), workoutId, exercise.workout_exercise_id);
     cancelEditing();
   };
 
   const handleDelete = async () => {
-    await delExercise(exercise.workout_exercise_id);
+    await delExercise(workoutId, exercise.workout_exercise_id);
     setOpenMenuId(null);
   };
 

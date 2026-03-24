@@ -63,6 +63,7 @@ export default function ExerciseProvider({ children }) {
   // ✅ DELETE EXERCISE (use workout_exercise_id)
   const delExercise = useCallback(async (workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      console.log(workout_exercise_id)
       const result = await deleteExerciseApi(workoutId, workout_exercise_id);
 
       if (!result.error) {

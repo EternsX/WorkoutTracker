@@ -26,9 +26,12 @@ export default function WorkoutModal() {
 
     const workoutSets = workoutId ? sets[workoutId] || {} : {};
 
+
     const id = session?.progress?.workout_exercise_id || null;
-    const ex_idx = exercises?.findIndex(e => e.workout_exercise_id === id) || 0;
+    const ex_idx = exercises?.findIndex(e => e.workout_exercise_id === id);
+    const safe_idx = ex_idx === -1 ? 0 : ex_idx;
     const set_idx = session?.progress?.setNumber || 0;
+
 
     const handleBeginWorkout = () => {
         setWorkoutInProgress(true);
@@ -70,7 +73,7 @@ export default function WorkoutModal() {
 
                 {workoutInProgress ? (
                     <Secondary
-                        ex_idx={ex_idx}
+                        ex_idx={safe_idx}
                         set_idx={set_idx}
                         sets={workoutSets}
                         handleFinishWorkout={handleFinishWorkout}

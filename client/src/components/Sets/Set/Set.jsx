@@ -43,6 +43,12 @@ export default function Set({ set, i, workoutId, workoutExerciseId }) {
         setEditing(false);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSave(e);
+        }
+    };
+
     const handleCancel = (e) => {
         e.stopPropagation();
 
@@ -75,6 +81,7 @@ export default function Set({ set, i, workoutId, workoutExerciseId }) {
                         className="set-input"
                         value={form.reps}
                         onChange={handleChange("reps")}
+                        onKeyDown={handleKeyDown}
                     />
 
                     <input
@@ -82,6 +89,7 @@ export default function Set({ set, i, workoutId, workoutExerciseId }) {
                         className="set-input"
                         value={form.weight}
                         onChange={handleChange("weight")}
+                        onKeyDown={handleKeyDown}
                     />
 
                     <button onClick={handleSave}>Save</button>

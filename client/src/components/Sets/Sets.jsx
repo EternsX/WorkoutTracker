@@ -35,6 +35,12 @@ export default function Sets({ workoutId, workoutExerciseId }) {
     }
   }, [workoutExercise?.rest_between_sets]);
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleAddSet();
+    }
+  };
+
   const handleAddSet = async () => {
     if (!newReps) return;
 
@@ -115,11 +121,13 @@ export default function Sets({ workoutId, workoutExerciseId }) {
             placeholder="Reps"
             value={newReps}
             onChange={(e) => setNewReps(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <input
             placeholder="Weight"
             value={newWeight}
             onChange={(e) => setNewWeight(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button onClick={handleAddSet}>Add</button>
         </div>

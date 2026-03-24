@@ -8,7 +8,7 @@ import Modal from "../Modal/Modal";
 
 export default function CreateWorkoutModal() {
   const { overlays, closeOverlay } = useOverlay();
-  const { createWorkout } = useWorkout();
+  const { createWorkout, loading, error } = useWorkout(); // ✅ added
   const [workout, setWorkout] = useState("");
   const workoutRef = useRef(null);
   const navigate = useNavigate();
@@ -31,43 +31,40 @@ export default function CreateWorkoutModal() {
     e.preventDefault();
     if (!workout.trim()) return;
 
-    // 1️⃣ create workout via context
     const result = await createWorkout(workout.trim());
 
-    if (!result.error) {
-      // 2️⃣ close modal
-      handleClose();
+    if (result?.error) return; // ❌ stay open on error
 
-      // 3️⃣ navigate to the newly created workout
-      navigate(`/workouts/${result.workout.id}`);
-    }
+    handleClose(); // ✅ close only on success
+    navigate(`/workouts/${result.workout.id}`);
   };
 
   if (!overlayData) return null;
 
   return (
-        <Modal type={MODAL_TYPES.CREATE_WORKOUT}> 
+    <Modal type={MODAL_TYPES.CREATE_WORKOUT}>
+      <h2 className="title">Create Your Workout</h2>
 
-        <h2 className="title">Create Your Workout</h2>
-        <form
-          className="form"
-          onSubmit={handleSubmit}
-        >
-          <div className="input-group">
-            <input
-              ref={workoutRef}
-              onChange={(e) => setWorkout(e.target.value)}
-              value={workout}
-              id="workout"
-              type="text"
-              placeholder=" "
-            />
-            <label htmlFor="workout">Workout</label>
-          </div>
-          <button type="submit" className="button">
-            Create
-          </button>
-        </form>
-      </Modal>
+      <form className="form" onSubmit={handleSubmit}>
+        <div className="input-group">
+          <input
+            ref={workoutRef}
+            onChange={(e) => setWorkout(e.target.value)}
+            value={workout}
+            id="workout"
+            type="text"
+            placeholder=" "
+          />
+          <label htmlFor="workout">Workout</label>
+        </div>
+
+        {/* ✅ error display */}
+        {error && <div className="error">{error}</div>}
+
+        <button className="button" disabled={loading} type="submit">
+          {loading ? <span className="spinner"></span> : "Create"}
+        </button>
+      </form>
+    </Modal>
   );
 }

@@ -27,7 +27,6 @@ export default function Dashboard() {
       getSession(user.workout_id);
     }
   }, [user, getSession]);
-  console.log(session)
 
   return (
     <div className="dashboard-container">
