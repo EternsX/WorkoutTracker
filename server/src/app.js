@@ -12,7 +12,7 @@ import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 const app = express();
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://192.168.178.31:5173'],
+  origin: ['http://localhost:5173', 'http://192.168.178.31:5173', 'https://eternsx.github.io/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true // cookies
 }));
