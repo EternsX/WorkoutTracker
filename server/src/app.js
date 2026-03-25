@@ -9,6 +9,7 @@ import sessionRoutes from './routes/session.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 
+const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://192.168.178.31:5173',
@@ -16,7 +17,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: function(origin, callback) {
     // allow requests with no origin (like Postman)
     if (!origin) return callback(null, true);
 
@@ -26,7 +27,7 @@ app.use(cors({
       callback(new Error(`CORS blocked for origin ${origin}`));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+  methods: ['GET','POST','PUT','DELETE','PATCH']
 }));
 
 
