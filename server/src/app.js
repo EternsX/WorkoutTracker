@@ -9,16 +9,24 @@ import sessionRoutes from './routes/session.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 
-const app = express();
 const allowedOrigins = [
-  'http://localhost:5173', // dev
-  'https://workouttracker-qguj.onrender.com', // prod frontend
-  'http://192.168.178.31:5173/'
+  'http://localhost:5173',
+  'http://192.168.178.31:5173',
+  'https://workouttracker-qguj.onrender.com'
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET','POST','PUT','DELETE','PATCH'],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked for origin ${origin}`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
 
 
