@@ -12,7 +12,8 @@ import { errorMiddleware } from './middleware/errorMiddleware.js'
 const app = express();
 const allowedOrigins = [
   'http://localhost:5173', // dev
-  'https://workouttracker-qguj.onrender.com' // prod frontend
+  'https://workouttracker-qguj.onrender.com', // prod frontend
+  'http://192.168.178.31:5173/'
 ];
 
 app.use(cors({
