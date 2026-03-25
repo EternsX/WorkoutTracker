@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser'
 import './config/db.js'; // Ensure DB is initialized
 import authRoutes from "./routes/auth.routes.js";
 import workoutRoutes from './routes/workouts.routes.js'
@@ -27,12 +26,10 @@ app.use(cors({
     return callback(null, true);
   },
   methods: ['GET','POST','PUT','DELETE','PATCH'],
-  credentials: true
 }));
 
 
 app.use(express.json());
-app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/workouts", workoutRoutes);
 app.use("/api/session", sessionRoutes);

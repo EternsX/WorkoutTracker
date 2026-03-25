@@ -11,7 +11,7 @@ export const loginApi = async (username, password) => {
   });
 
   if (data?.token) {
-    localStorage.setItem("token", data.token); // ✅ SAVE TOKEN
+    localStorage.setItem("token", data.token); // ✅ store token
   }
 
   return data;
