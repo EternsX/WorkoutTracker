@@ -33,11 +33,11 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/auth", authRoutes);
-app.use("/workouts", workoutRoutes);
-app.use("/session", sessionRoutes);
-app.use("/workouts/:workoutId/exercises", exerciseRoutes);
-app.use("/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/workouts", workoutRoutes);
+app.use("/api/session", sessionRoutes);
+app.use("/api/workouts/:workoutId/exercises", exerciseRoutes);
+app.use("/api/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
 app.use(errorMiddleware);
 
 export default app;
