@@ -13,29 +13,19 @@ export function withLoadingAndError(setLoading, setError, asyncFn) {
   };
 }
 
-export async function request(url, options = {}) {
-    try {
-        const res = await fetch(url, {
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            ...options
-        });
+export const request = async (url, options = {}) => {
+  const token = localStorage.getItem("token");
 
-        let data = {};
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(options.headers || {})
+    },
+  });
 
-        const contentType = res.headers.get("content-type");
-
-        if (contentType && contentType.includes("application/json")) {
-            data = await res.json();
-        }
-
-        if (!res.ok) {
-            return { error: data.error || "Request failed" };
-        }
-
-        return data;
-
-    } catch (err) {
-        return { error: err.message || "Network error" };
-    }
-}
+  const data = await res.json();
+  if (!res.ok) return { error: data.message || "Request failed", status: res.status };
+  return data;
+};

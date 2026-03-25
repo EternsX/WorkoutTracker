@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import AuthContext from "./AuthContext";
-import { fetchUserApi, loginApi, registerApi, logoutApi } from "./authApi";
+import { fetchUserApi, loginApi, registerApi } from "./authApi";
 import { withLoadingAndError } from "../../utils/apiHelpers";
 
 export default function AuthProvider({ children }) {
@@ -11,11 +11,13 @@ export default function AuthProvider({ children }) {
   const fetchUser = useCallback(async () => {
     return withLoadingAndError(setLoading, setError, async () => {
       const data = await fetchUserApi();
-      
+
       if (data?.error) {
+        localStorage.removeItem("token"); // ✅ REMOVE BAD TOKEN
         setUser(null);
-        return  data.error ;
+        return data.error;
       }
+
       setUser(data.user);
       return { success: true };
     })();
@@ -51,10 +53,9 @@ export default function AuthProvider({ children }) {
   }, [login]);
 
   const logout = useCallback(async () => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      await logoutApi();
+    return withLoadingAndError(setLoading, setError, () => {
+      localStorage.removeItem("token");
       setUser(null);
-      return { success: true };
     })();
   }, []);
 
