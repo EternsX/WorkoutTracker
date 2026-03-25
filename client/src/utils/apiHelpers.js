@@ -22,12 +22,10 @@ export const request = async (url, options = {}) => {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
       ...(options.headers || {})
-    }
+    },
   });
 
   const data = await res.json();
-  if (!res.ok) {
-    return { error: data.message || "Request failed", status: res.status };
-  }
+  if (!res.ok) return { error: data.message || "Request failed", status: res.status };
   return data;
 };
