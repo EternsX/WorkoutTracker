@@ -1,20 +1,25 @@
 import jwt from 'jsonwebtoken';
 
 export default function authMiddleware(req, res, next) {
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
-        return res.status(401).json({ error: 'Not logged in' });
+    if (!authHeader) {
+        return res.status(401).json({ error: 'No token provided' });
     }
 
-    // verify token
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            console.error('JWT verification error:', err); // log for debugging
-            return res.status(401).json({ error: 'Invalid token' });
-        }
+    // Format: "Bearer TOKEN"
+    const token = authHeader.split(" ")[1];
 
-        req.user = decoded; // attach user info to request
+    if (!token) {
+        return res.status(401).json({ error: 'Invalid token format' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded; // attach user info
         next();
-    });
+    } catch (err) {
+        console.error('JWT verification error:', err);
+        return res.status(401).json({ error: 'Invalid token' });
+    }
 }
