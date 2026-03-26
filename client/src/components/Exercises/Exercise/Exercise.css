@@ -34,6 +34,8 @@
   border: 1px solid #555;
   background: #222;
   color: #f0f0f0;
+  flex: 1;
+  min-width: 80px;
 }
 
 .exercise-editing button {
@@ -54,6 +56,8 @@
   display: flex;
   gap: 10px;
   flex-direction: row;
+  flex-wrap: wrap; /* ✅ wrap on small screens */
+  align-items: center;
 }
 
 .exercise-name {
@@ -160,6 +164,13 @@
   align-items: center;
 }
 
+.exercise-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* spacing between exercise card and sets */
+  margin-bottom: 12px;
+}
+
 .exercise-timer-wrapper {
   position: relative;
   display: flex;
@@ -204,4 +215,21 @@
   font-size: 0.7rem;
   color: #888;
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .exercise-timer-select {
+    padding: 6px 12px 6px 4px;
+    font-size: 0.95rem;
+  }
+
+  .exercise-timer-wrapper {
+    gap: 8px;
+  }
+
+  .exercise-actions {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
 }

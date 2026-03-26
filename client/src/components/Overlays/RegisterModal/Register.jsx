@@ -5,11 +5,13 @@ import useAuth from "../../../context/Auth/useAuth";
 import { MODAL_TYPES } from "../../../constants/modalTypes"; // adjust path if you move it to constants
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
+import { useIsMobile } from "../../../utils/isMobile";
 
 export default function Register() {
     const { overlays, closeOverlay } = useOverlay();
     const { register } = useAuth();
     const navigate = useNavigate();
+    const isMobile = useIsMobile();
 
     const registerIsOpen = overlays.some((o) => o.type === MODAL_TYPES.REGISTER);
 
@@ -20,13 +22,13 @@ export default function Register() {
     const usernameRef = useRef(null);
 
     useEffect(() => {
-        if (registerIsOpen) {
+        if (registerIsOpen && !isMobile) {
             usernameRef.current?.focus();
-            setPassword("");
-            setUsername("");
-            setError("");
         }
-    }, [registerIsOpen]);
+        setPassword("");
+        setUsername("");
+        setError("");
+    }, [registerIsOpen, isMobile]);
 
     const handleChange = (e, setValue) => {
         setValue(e.target.value);

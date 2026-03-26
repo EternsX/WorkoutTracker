@@ -18,6 +18,7 @@ export default function SessionProvider({ children }) {
             const result = await getSessionApi();
 
             setSession(result.error ? null : (result.session || null));
+            console.log(result)
 
             return result.session || null;
         })();

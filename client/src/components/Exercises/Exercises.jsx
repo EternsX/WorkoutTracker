@@ -11,7 +11,7 @@ import useSession from "../../context/Session/useSession";
 export default function Exercises() {
   const { workoutId } = useParams();
   const { getWorkout } = useWorkout();
-  const { session } = useSession();
+  const { session, getSession } = useSession();
   const [expandedExerciseId, setExpandedExerciseId] = useState(null);
 
   const { exercises, getExercises } = useExercise();
@@ -19,7 +19,10 @@ export default function Exercises() {
 
   useEffect(() => {
     getExercises(workoutId)
-  }, [getExercises, workoutId]);
+    if (!session) {
+      getSession();
+    }
+  }, [getExercises, workoutId, getSession, session]);
 
   const handleAddExercise = () => {
     openOverlay({ type: MODAL_TYPES.CREATE_EXERCISE, payload: { workoutId } });

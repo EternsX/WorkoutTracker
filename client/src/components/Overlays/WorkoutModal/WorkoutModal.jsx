@@ -45,10 +45,11 @@ export default function WorkoutModal() {
         closeOverlay(MODAL_TYPES.START_WORKOUT);
     };
 
-    const handleFinishWorkout = () => {
+
+    const handleFinishWorkout = async (status = "DISCARDED", sessionId) => {
         completeWorkout(workoutId);
         setWorkoutInProgress(false);
-        endSession();
+        await endSession(status, sessionId);
     };
 
     if (!overlayData) return null;
@@ -83,6 +84,7 @@ export default function WorkoutModal() {
                         session={session}
                         sets={workoutSets}
                         handleBeginWorkout={handleBeginWorkout}
+                        handleFinishWorkout={handleFinishWorkout}
                     />
                 )}
             </div>

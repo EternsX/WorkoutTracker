@@ -1,13 +1,10 @@
 import useExercise from '../../../../context/Exercises/useExercise';
-import useSession from '../../../../context/Session/useSession';
 import { useState } from 'react'; // ✅ add
 import './Main.css';
 
-export default function Main({ session, sets, handleBeginWorkout }) {
+export default function Main({ session, sets, handleBeginWorkout, handleFinishWorkout }) {
     const { getExercise } = useExercise();
-    const { endSession } = useSession();
-
-    const [isDeleting, setIsDeleting] = useState(false); // ✅ add
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const exerciseIds = Object.keys(sets);
 
@@ -17,11 +14,7 @@ export default function Main({ session, sets, handleBeginWorkout }) {
         setIsDeleting(true);
 
         try {
-            const result = await endSession("discarded", session.id);
-
-            if (result?.error) return;
-
-            // optional: refresh / close modal / redirect if needed
+            await handleFinishWorkout("DISCARDED", session.id);
         } finally {
             setIsDeleting(false);
         }
@@ -42,32 +35,30 @@ export default function Main({ session, sets, handleBeginWorkout }) {
                 return (
                     <div className="workout-modal-exercise" key={exerciseId}>
                         <span>{exercise.name}</span>
-                        <span>
-                            {numSets} set{numSets !== 1 ? 's' : ''}
-                        </span>
+                        <span>{numSets} set{numSets !== 1 ? 's' : ''}</span>
                     </div>
                 );
             })}
 
-            {/* ✅ Primary button */}
-            <button
-                className="workout-modal-begin-btn"
-                onClick={handleBeginWorkout}
-                disabled={isDeleting} // optional safety
-            >
-                {session ? "Resume Workout" : "Begin Workout"}
-            </button>
-
-            {/* ✅ Discard button with loading */}
-            {session && (
+            <div className="workout-modal-buttons">
                 <button
-                    className="workout-modal-discard-btn"
-                    onClick={handleDiscard}
+                    className="workout-modal-begin-btn"
+                    onClick={handleBeginWorkout}
                     disabled={isDeleting}
                 >
-                    {isDeleting ? "Deleting..." : "Discard Workout"}
+                    {session ? "Resume Workout" : "Begin Workout"}
                 </button>
-            )}
+
+                {session && (
+                    <button
+                        className="workout-modal-discard-btn"
+                        onClick={handleDiscard}
+                        disabled={isDeleting}
+                    >
+                        {isDeleting ? "Deleting..." : "Discard Workout"}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }

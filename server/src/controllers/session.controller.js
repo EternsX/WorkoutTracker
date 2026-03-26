@@ -36,8 +36,8 @@ export const updateProgress = asyncHandler(async (req, res) => {
 
 export const endSession = asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
-    const { status } = req.body; // "finished" or "discarded"
-    if (!status || !["finished", "discarded"].includes(status)) {
+    const { status } = req.body; 
+    if (!status || !["FINISHED", "DISCARDED"].includes(status)) {
         const err = new Error("Invalid status");
         err.statusCode = 400;
         throw err;

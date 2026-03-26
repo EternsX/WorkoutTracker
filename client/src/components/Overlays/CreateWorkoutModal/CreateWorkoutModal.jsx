@@ -5,6 +5,7 @@ import useWorkout from "../../../context/Workouts/useWorkout";
 import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
+import { useIsMobile } from "../../../utils/isMobile";
 
 export default function CreateWorkoutModal() {
   const { overlays, closeOverlay } = useOverlay();
@@ -12,6 +13,7 @@ export default function CreateWorkoutModal() {
   const [workout, setWorkout] = useState("");
   const workoutRef = useRef(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const overlayData = overlays.find(
     (o) => o.type === MODAL_TYPES.CREATE_WORKOUT
@@ -20,12 +22,12 @@ export default function CreateWorkoutModal() {
   const handleClose = () => closeOverlay(MODAL_TYPES.CREATE_WORKOUT);
 
   useEffect(() => {
-    if (overlayData) {
+    if (overlayData && !isMobile) {
       workoutRef.current?.focus();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWorkout("");
     }
-  }, [overlayData]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setWorkout("");
+  }, [overlayData, isMobile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

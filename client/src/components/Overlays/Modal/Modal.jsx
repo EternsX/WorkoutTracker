@@ -6,7 +6,9 @@ export default function Modal({ type, children }) {
 
   const isOpen = overlays.some((o) => o.type === type);
 
+  
   if (!isOpen) return null;
+
 
   return (
     <div

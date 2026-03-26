@@ -1,22 +1,51 @@
 .navbar {
     display: flex;
     align-items: center;
-    padding: 10px;
+    justify-content: space-between;
+
+    padding: 10px 12px;
     border-bottom: 1px solid rgb(56, 51, 51);
+
+    position: sticky;   /* 🔥 key */
+    top: 0;             /* stick to top */
+    z-index: 1000;      /* stay above everything */
+    
+    background-color: #0f0f0f; /* ⚠️ IMPORTANT (prevents transparency issues) */
 }
 
 .options,
 .settings {
     display: flex;
     flex: 1;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .title {
     text-align: center;
-    font-size: 23px;
+    font-size: clamp(16px, 4vw, 22px);
     color: rgb(154, 193, 224);
+    flex: 2;
+    /* gives it more space */
 }
 
 .settings button {
     margin-left: auto;
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 8px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .options,
+    .settings {
+        flex: 1;
+    }
 }

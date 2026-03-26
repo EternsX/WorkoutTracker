@@ -48,7 +48,6 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
         const restBetweenSets = curSet?.rest_between_sets ?? curExercise?.rest_between_sets ?? 60;
         const restAfterExercise = curExercise?.rest_after_exercise ?? 120;
 
-        // 🔹 Determine next set/exercise
         let nextSetIdx = setIdx + 1;
         let nextExIdx = exIdx;
 
@@ -57,33 +56,29 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
             nextExIdx = exIdx + 1;
         }
 
-        // 🔹 Determine correct workout_exercise_id for progress update
         const nextExerciseId = exercises[nextExIdx]?.workout_exercise_id || curExercise?.workout_exercise_id;
 
-        // 🔹 Update session progress
         await updateProgress(
             session.id,
             nextExerciseId,
-            nextSetIdx,  // 0-based, increment if your backend uses 1-based
+            nextSetIdx,
             curSet?.reps,
             curSet?.weight || 0
         );
 
-        // 🔹 Move to next set/exercise or finish
         if (setIdx + 1 < totalSets) {
             startRest(restBetweenSets);
-            setTimeout(() => setSetIdx(i => i + 1), restBetweenSets * 1000);
+            setTimeout(() => setSetIdx(nextSetIdx), restBetweenSets * 1000);
         } else if (exIdx + 1 < totalExercises) {
             startRest(restAfterExercise);
             setTimeout(() => {
-                setExIdx(i => i + 1);
+                setExIdx(nextExIdx);
                 setSetIdx(0);
             }, restAfterExercise * 1000);
         } else {
-            handleFinishWorkout();
+            handleFinishWorkout("FINISHED", session.id);
         }
     };
-
     return (
         <div className="workout-active-container">
             <div className="workout-progress">

@@ -62,12 +62,13 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+   transition: all 0.25s ease; 
 }
 
 .workout-modal-next-btn:hover {
   background: #43a047;
-  transform: translateY(-2px);
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
 .workout-modal-next-btn:active {
@@ -80,7 +81,8 @@
   color: #4caf50;
   background: #1e1e1e;
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 50px; /* match buttons */
+  margin-bottom: 12px; /* space between timer and button */
   animation: fadeIn 0.3s ease;
 }
 

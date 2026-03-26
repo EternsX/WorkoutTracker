@@ -2,45 +2,55 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
+
+  min-height: calc(100vh - 60px); /* 🔥 accounts for navbar */
+  padding: 20px;
+  
   flex-direction: column;
   gap: 20px;
+
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #242424; /* page background */
-  color: #f1f1f1; /* primary text */
-}
-
-.dashboard-card {
-  background-color: #333333; /* slightly lighter than page for contrast */
-  padding: 40px 60px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-  text-align: center;
-  max-width: 500px;
-  width: 90%;
-}
-
-.dashboard-title {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
+  background-color: #242424;
   color: #f1f1f1;
 }
 
+.dashboard-card {
+  background-color: #333333;
+  padding: clamp(20px, 5vw, 40px); /* 🔥 responsive padding */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  text-align: center;
+
+  max-width: 500px;
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+.dashboard-title {
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  margin-bottom: 10px;
+}
+
 .dashboard-subtitle {
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
   margin-bottom: 25px;
-  color: #cccccc;
 }
 
 .dashboard-button {
-  padding: 12px 28px;
-  font-size: 1rem;
-  border-radius: 8px;
+  padding: 14px 20px; /* bigger tap area */
+  font-size: clamp(0.9rem, 3vw, 1rem);
+
+  border-radius: 10px;
   cursor: pointer;
   border: none;
+
+  width: 100%; /* 🔥 full width on mobile */
+  max-width: 300px;
+
   transition: background-color 0.2s, transform 0.1s;
+
   color: #fff;
-  background-color: #007bff; /* main button color */
+  background-color: #007bff;
 }
 
 .dashboard-button:hover {
@@ -50,4 +60,25 @@
 
 .dashboard-button:active {
   transform: translateY(1px);
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 15px;
+  }
+
+  .dashboard-card {
+    border-radius: 10px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

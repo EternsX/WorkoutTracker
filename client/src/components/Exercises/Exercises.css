@@ -36,13 +36,12 @@
   right: 20px;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* vertical by default */
   gap: 12px;
 
   z-index: 100;
 }
 
-/* shared style */
 .floating-add-btn,
 .floating-start-exercise-btn {
   padding: 14px 20px;
@@ -56,6 +55,8 @@
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   transition: all 0.2s ease;
+
+  min-width: 140px; /* optional: keep consistent width */
 }
 
 /* Add Exercise (primary action) */
@@ -78,4 +79,22 @@
 .floating-start-exercise-btn:hover {
   background: #5c6bc0;
   transform: translateY(-2px);
+}
+
+@media (max-width: 480px) {
+  .floating-buttons {
+    flex-direction: row; /* horizontal on mobile */
+    bottom: 12px;
+    right: 12px;
+    left: 12px; /* optional: stretch across width */
+    justify-content: space-between; /* evenly spaced */
+    gap: 8px;
+  }
+
+  .floating-add-btn,
+  .floating-start-exercise-btn {
+    flex: 1; /* both buttons take equal width */
+    padding: 12px 0; /* vertical padding only */
+    font-size: 0.95rem;
+  }
 }

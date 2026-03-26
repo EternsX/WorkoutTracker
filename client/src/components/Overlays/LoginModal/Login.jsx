@@ -5,11 +5,14 @@ import useAuth from "../../../context/Auth/useAuth";
 import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
+import { useIsMobile } from "../../../utils/isMobile";
 
 export default function Login() {
     const { overlays, closeOverlay, openOverlay } = useOverlay();
     const { login } = useAuth();
     const navigate = useNavigate();
+    const isMobile = useIsMobile();
+
 
     const loginIsOpen = overlays.some((o) => o.type === MODAL_TYPES.LOGIN);
 
@@ -20,13 +23,13 @@ export default function Login() {
     const usernameRef = useRef(null);
 
     useEffect(() => {
-        if (loginIsOpen) {
+        if (loginIsOpen && !isMobile) {
             usernameRef.current?.focus();
-            setPassword("");
-            setUsername("");
-            setError("");
         }
-    }, [loginIsOpen]);
+        setPassword("");
+        setUsername("");
+        setError("");
+    }, [loginIsOpen, isMobile]);
 
     const handleLogin = async () => {
         setError("");

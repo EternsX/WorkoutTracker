@@ -1,11 +1,46 @@
 /* Set.css */
+/* Set.css */
 .set-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  position: relative; /* ← added */
+  position: relative;
+  /* ← added */
   justify-content: space-between;
   padding: 4px 0;
+}
+
+.set-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.set-action-button {
+  background: #3a3a3a;
+  color: #ffffff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.set-action-button:hover {
+  background: #4a4a4a;
+}
+
+.set-input {
+  min-width: 60px;
+  max-width: 100px;
+  flex: 1;
+  padding: 8px 10px;
+  /* bigger for touch */
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #2b2b2b;
+  color: #fff;
+  text-align: center;
+  font-size: 1rem;
 }
 
 .set-actions {
@@ -37,5 +72,23 @@
   background: #2b2b2b;
   color: #fff;
   text-align: center;
-  
+
+}
+
+@media (max-width: 480px) {
+  .set-row {
+    gap: 8px;
+  }
+
+  .set-input {
+    min-width: 50px;
+    max-width: 80px;
+    font-size: 0.95rem;
+  }
+
+  .set-action-button,
+  .set-row button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
 }

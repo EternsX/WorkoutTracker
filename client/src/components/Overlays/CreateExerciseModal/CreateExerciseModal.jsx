@@ -4,10 +4,12 @@ import useOverlay from "../../../context/UIOverlay/useOverlay";
 import { MODAL_TYPES } from "../../../constants/modalTypes";
 import "./CreateExerciseModal.css";
 import Modal from "../Modal/Modal";
+import { useIsMobile } from "../../../utils/isMobile";
 
 export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
   const { createExercise, loading, error } = useExercise();
+  const isMobile = useIsMobile();
 
   const [name, setName] = useState("");
   const nameRef = useRef(null);
@@ -23,12 +25,12 @@ export default function CreateExerciseModal() {
   const handleClose = () => closeOverlay(MODAL_TYPES.CREATE_EXERCISE);
 
   useEffect(() => {
-    if (overlayData) {
+    if (overlayData && !isMobile) {
       nameRef.current?.focus();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setName("");
     }
-  }, [overlayData]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setName("");
+  }, [overlayData, isMobile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
