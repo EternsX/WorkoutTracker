@@ -56,8 +56,16 @@ export const updateWorkout = asyncHandler(async (req, res) => {
 
 export const completeWorkout = asyncHandler(async (req, res) => {
     const { workoutId } = req.params;
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+        const err = new Error("Missing session ID");
+        err.statusCode = 400;
+        throw err;
+    }
 
     const workout = await workoutService.completeWorkout(
+        sessionId,
         workoutId,
         req.user.id
     );

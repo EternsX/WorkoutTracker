@@ -9,6 +9,8 @@ import WorkoutProvider from './context/Workouts/WorkoutProvider.jsx'
 import ExerciseProvider from './context/Exercises/ExerciseProvider.jsx'
 import SetProvider from './context/Sets/SetProvider.jsx'
 import SessionProvider from './context/Session/SessionProvider.jsx';
+import HistoryProvider from './context/History/HistoryProvider.jsx';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,9 +20,11 @@ createRoot(document.getElementById('root')).render(
           <ExerciseProvider>
             <SetProvider>
               <SessionProvider>
-                <OverlayProvider>
-                  <App />
-                </OverlayProvider>
+                <HistoryProvider>
+                  <OverlayProvider>
+                    <App />
+                  </OverlayProvider>
+                </HistoryProvider>
               </SessionProvider>
             </SetProvider>
           </ExerciseProvider>

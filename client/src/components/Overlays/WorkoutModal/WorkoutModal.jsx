@@ -47,7 +47,9 @@ export default function WorkoutModal() {
 
 
     const handleFinishWorkout = async (status = "DISCARDED", sessionId) => {
-        completeWorkout(workoutId);
+        if (status === "FINISHED") {
+            await completeWorkout(workoutId, sessionId);
+        }
         setWorkoutInProgress(false);
         await endSession(status, sessionId);
     };

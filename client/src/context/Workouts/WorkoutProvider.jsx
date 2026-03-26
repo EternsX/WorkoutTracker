@@ -66,9 +66,9 @@ export default function WorkoutProvider({ children }) {
     })();
   }, []);
 
-  const completeWorkout = useCallback(async (workoutId) => {
+  const completeWorkout = useCallback(async (workoutId, sessionId) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await completeWorkoutApi(workoutId);
+      const result = await completeWorkoutApi(workoutId, sessionId);
 
       return result;
     })();

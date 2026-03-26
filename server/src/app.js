@@ -6,6 +6,7 @@ import workoutRoutes from './routes/workouts.routes.js'
 import exerciseRoutes from './routes/exercises.routes.js'
 import setsRoutes from './routes/set.routes.js'
 import sessionRoutes from './routes/session.routes.js'
+import historyRoutes from './routes/history.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 
 
@@ -37,6 +38,7 @@ app.use("/workouts", workoutRoutes);
 app.use("/session", sessionRoutes);
 app.use("/workouts/:workoutId/exercises", exerciseRoutes);
 app.use("/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
+app.use("/history", historyRoutes);
 app.use(errorMiddleware);
 
 export default app;

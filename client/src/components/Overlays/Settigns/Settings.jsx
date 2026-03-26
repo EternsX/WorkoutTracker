@@ -44,7 +44,10 @@ export default function Settings() {
             />
           </>
         ) : (
+          <>
           <SButton text="Log out" onClick={handleLogout} />
+          <SButton text="Workout History" onClick={() => navigate('/history')}/>
+          </>
         )}
       </div>
     </div>

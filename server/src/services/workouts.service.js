@@ -105,7 +105,7 @@ export const deleteWorkout = async (workoutId, userId) => {
     return res.rows[0];
 };
 
-export const completeWorkout = async (workoutId, userId) => {
+export const completeWorkout = async (sessionId, workoutId, userId) => {
     if (!workoutId || !userId) {
         const err = new Error("Missing fields");
         err.statusCode = 400;
@@ -120,10 +120,10 @@ export const completeWorkout = async (workoutId, userId) => {
     }
 
     const res = await query(
-        `INSERT INTO completed_workouts (user_id, workout_id)
-         VALUES ($1, $2)
-         RETURNING id, user_id, workout_id, session_date`,
-        [userId, workoutId]
+        `INSERT INTO completed_workouts (user_id, workout_id, session_id)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [userId, workoutId, sessionId]
     );
 
     if (res.rows.length === 0) {
