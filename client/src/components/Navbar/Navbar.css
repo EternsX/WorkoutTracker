@@ -28,7 +28,7 @@
     font-size: clamp(16px, 4vw, 22px);
     color: rgb(154, 193, 224);
     flex: 2;
-    /* gives it more space */
+    cursor: pointer;
 }
 
 .settings button {

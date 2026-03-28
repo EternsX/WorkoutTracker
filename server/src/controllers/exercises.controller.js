@@ -45,10 +45,10 @@ export const deleteExercise = asyncHandler(async (req, res) => {
 
 // UPDATE exercise name
 export const updateExercise = asyncHandler(async (req, res) => {
-    const { name } = req.body;
+    const { name, type } = req.body;
     const { workoutExerciseId, workoutId } = req.params;
 
-    if (!name) {
+    if (!name || !type) {
         const err = new Error("Missing Fields");
         err.statusCode = 400;
         throw err;
@@ -56,6 +56,7 @@ export const updateExercise = asyncHandler(async (req, res) => {
 
     const exercise = await exerciseService.updateExercise(
         name,
+        type,
         workoutId,
         workoutExerciseId,
         req.user.id
@@ -77,6 +78,34 @@ export const updateRestTimes = asyncHandler(async (req, res) => {
 
     const result = await exerciseService.updateRestTimes(
         { rest_between_sets, rest_after_exercise },
+        workoutId,
+        workoutExerciseId,
+        req.user.id
+    );
+
+    res.status(200).json({ workoutExercise: result });
+});
+
+export const updateExerciseType = asyncHandler(async (req, res) => {
+    const { type } = req.body;
+    const { workoutExerciseId, workoutId } = req.params;
+
+    if (!type) {
+        const err = new Error("Missing Fields");
+        err.statusCode = 400;
+        throw err;
+    }
+
+    const exerciseType = type.toLowerCase();
+
+    if (!['reps', 'time'].includes(exerciseType)) {
+        const err = new Error("Invalid exercise type");
+        err.statusCode = 400;
+        throw err;
+    }
+
+    const result = await exerciseService.updateExerciseType(
+        exerciseType,
         workoutId,
         workoutExerciseId,
         req.user.id

@@ -5,6 +5,7 @@
   align-items: center;
   text-align: center;
   padding: 10px 0;
+  width: 100%;
 }
 
 /* progress text */
@@ -22,6 +23,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* exercise name */
@@ -44,7 +46,7 @@
   color: #bdbdbd;
 }
 
-/* reps highlight */
+/* reps or time highlight */
 .set-reps {
   font-size: 1.2rem;
   font-weight: 600;
@@ -62,12 +64,12 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-   transition: all 0.25s ease; 
+  transition: all 0.25s ease;
 }
 
 .workout-modal-next-btn:hover {
   background: #43a047;
-  transform: translateY(-1px); 
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
@@ -75,18 +77,62 @@
   transform: translateY(0);
 }
 
+.workout-modal-next-btn:disabled {
+  background: #777;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* rest timer */
 .rest-timer {
   font-size: 1.5rem;
   font-weight: 600;
   color: #4caf50;
   background: #1e1e1e;
   padding: 10px 20px;
-  border-radius: 50px; /* match buttons */
-  margin-bottom: 12px; /* space between timer and button */
+  border-radius: 50px;
+  margin-bottom: 12px;
   animation: fadeIn 0.3s ease;
+  min-width: 120px;
+  text-align: center;
 }
 
-/* smooth fade */
+/* duration timer controls */
+.duration-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.duration-controls button {
+  padding: 10px 16px;
+  border-radius: 50px;
+  border: none;
+  background: #388e3c;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.duration-controls button:hover {
+  background: #2e7d32;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.duration-controls button:active {
+  transform: translateY(0);
+}
+
+.timer-label {
+  font-weight: 600;
+  color: #ffffff;
+  align-self: center;
+}
+
+/* fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -96,11 +142,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* disabled button */
-.workout-modal-next-btn:disabled {
-  background: #777;
-  cursor: not-allowed;
-  transform: none;
 }

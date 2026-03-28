@@ -9,11 +9,14 @@ export const createExerciseUrl = (workoutId) =>
 export const getExercisesUrl = (workoutId) =>
   workoutExercisesUrl(workoutId);
 
-export const delExerciseUrl = (workoutId, exerciseId) =>
-  `${workoutExercisesUrl(workoutId)}/${exerciseId}`;
+export const delExerciseUrl = (workoutId, workoutExerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}`;
 
-export const updateExerciseUrl = (workoutId, exerciseId) =>
-  `${workoutExercisesUrl(workoutId)}/${exerciseId}`;
+export const updateExerciseUrl = (workoutId, workoutExerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}`;
 
-export const updateRestTimesUrl = (workoutId, exerciseId) =>
-  `${workoutExercisesUrl(workoutId)}/${exerciseId}/rest`;
+export const updateRestTimesUrl = (workoutId, workoutExerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}/rest`;
+
+export const updateExerciseTypeUrl = (workoutId, workoutExerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}/type`;

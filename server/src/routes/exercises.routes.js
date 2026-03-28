@@ -4,7 +4,8 @@ import {
     createExercise,
     updateExercise,
     deleteExercise,
-    updateRestTimes
+    updateRestTimes,
+    updateExerciseType
 } from '../controllers/exercises.controller.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -15,5 +16,6 @@ router.post('/', authMiddleware, createExercise);
 router.put('/:workoutExerciseId', authMiddleware, updateExercise);
 router.delete('/:workoutExerciseId', authMiddleware, deleteExercise);
 router.patch('/:workoutExerciseId/rest', authMiddleware, updateRestTimes);
+router.patch('/:workoutExerciseId/type', authMiddleware, updateExerciseType);
 
 export default router;

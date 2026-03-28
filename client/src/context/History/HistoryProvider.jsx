@@ -15,7 +15,6 @@ export default function HistoryProvider({ children }) {
             const result = await getHistoryApi();
 
             setHistory(result.error ? null : (result.history || null));
-            console.log(result)
 
             return result.history || null;
         })();

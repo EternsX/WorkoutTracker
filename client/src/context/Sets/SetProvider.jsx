@@ -30,31 +30,41 @@ export default function SetProvider({ children }) {
   }, []);
 
   // ✅ CREATE SET
-  const createSet = useCallback(async (reps, weight, workoutId, workout_exercise_id) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      const result = await apiCreateSet(reps, weight, workoutId, workout_exercise_id);
+  const createSet = useCallback(
+    async (reps, duration, weight, workoutId, workout_exercise_id) => {
+      return withLoadingAndError(setLoading, setError, async () => {
+        console.log(reps, duration)
+        const result = await apiCreateSet(
+          reps,
+          duration,
+          weight,
+          workoutId,
+          workout_exercise_id
+        );
 
-      if (!result.error) {
-        setSets(prev => ({
-          ...prev,
-          [workoutId]: {
-            ...(prev[workoutId] || {}),
-            [workout_exercise_id]: [
-              ...(prev[workoutId]?.[workout_exercise_id] || []),
-              result.set
-            ]
-          }
-        }));
-      }
+        if (!result.error) {
+          setSets((prev) => ({
+            ...prev,
+            [workoutId]: {
+              ...(prev[workoutId] || {}),
+              [workout_exercise_id]: [
+                ...(prev[workoutId]?.[workout_exercise_id] || []),
+                result.set,
+              ],
+            },
+          }));
+        }
 
-      return result;
-    })();
-  }, []);
-
+        return result;
+      })();
+    },
+    []
+  );
   // ✅ UPDATE SET
-  const updateSet = useCallback(async (setId, reps, weight, workoutId, workout_exercise_id) => {
+  const updateSet = useCallback(async (setId, reps, duration, weight, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await apiUpdateSet(setId, reps, weight, workoutId, workout_exercise_id);
+      console.log(reps, duration)
+      const result = await apiUpdateSet(setId, reps, duration, weight, workoutId, workout_exercise_id);
 
       if (!result.error) {
         setSets(prev => ({

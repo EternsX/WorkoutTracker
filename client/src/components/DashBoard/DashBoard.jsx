@@ -4,7 +4,6 @@ import useWorkout from '../../context/Workouts/useWorkout';
 import useSession from "../../context/Session/useSession";
 import useOverlay from "../../context/UIOverlay/useOverlay";
 import useAuth from "../../context/Auth/useAuth";
-import useHistory from "../../context/History/useHistory";
 import { MODAL_TYPES } from "../../constants/modalTypes";
 import './Dashboard.css';
 
@@ -13,8 +12,6 @@ export default function Dashboard() {
   const { session, getSession } = useSession();
   const { openOverlay } = useOverlay();
   const { user } = useAuth();
-  const { history, getHistory } = useHistory();
-  console.log(history)
   const navigate = useNavigate();
 
   const handleCreateWorkout = () => {
@@ -28,9 +25,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       getSession(user.workout_id);
-      getHistory();
     }
-  }, [user, getSession, getHistory]);
+  }, [user, getSession]);
 
   return (
     <div className="dashboard-container">

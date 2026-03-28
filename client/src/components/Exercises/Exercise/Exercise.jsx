@@ -4,10 +4,10 @@ import useExercise from "../../../context/Exercises/useExercise";
 import useExerciseItem from "./useExerciseItem";
 import ExerciseActions from "./ExerciseActions";
 import Sets from "../../Sets/Sets";
-import './Exercise.css';
+import "./Exercise.css";
 
 export default function Exercise({ exercise, workoutId }) {
-  const { updateExercise, delExercise, updateRestTimers } = useExercise();
+  const { updateExercise, delExercise, updateRestTimers, updateExerciseType } = useExercise();
 
   const {
     editingId,
@@ -22,20 +22,43 @@ export default function Exercise({ exercise, workoutId }) {
     setEditedName
   } = useExerciseItem(exercise, workoutId, updateExercise, delExercise);
 
-  const [restAfterExercise, setRestAfterExercise] = useState(exercise.rest_after_exercise || 180);
+  const [restAfterExercise, setRestAfterExercise] = useState(
+    exercise.rest_after_exercise || 180
+  );
 
-  // Keep rest timer in sync
+  // 🔥 NEW: type state
+  const [type, setType] = useState(exercise.type || "reps");
+
+  // ✅ Sync rest timer
   useEffect(() => {
-    if (exercise?.rest_after_exercise) {
+    if (exercise?.rest_after_exercise != null) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRestAfterExercise(exercise.rest_after_exercise);
     }
   }, [exercise?.rest_after_exercise]);
 
+  // ✅ Sync type
+  useEffect(() => {
+    if (exercise?.type) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setType(exercise.type);
+    }
+  }, [exercise?.type]);
+
   const handleRestChange = (value) => {
     setRestAfterExercise(value);
     updateRestTimers(
       { rest_after_exercise: value },
+      workoutId,
+      exercise.workout_exercise_id
+    );
+  };
+  // 🔥 NEW: handle type change
+  const handleTypeChange = (exerciseType) => {
+    setType(exerciseType);
+
+    updateExerciseType(
+      exerciseType,
       workoutId,
       exercise.workout_exercise_id
     );
@@ -61,6 +84,21 @@ export default function Exercise({ exercise, workoutId }) {
           <>
             <div className="exercise-info">
               <div className="exercise-name">{exercise.name}</div>
+
+              {/* 🔥 TYPE SELECT */}
+              <div className="exercise-type-wrapper">
+                <span>{type === "reps" ? "🏋️" : "⏳"}</span>
+                <select
+                  className="exercise-type-select"
+                  value={type}
+                  onChange={(e) => handleTypeChange(e.target.value)}
+                >
+                  <option value="reps">Reps</option>
+                  <option value="time">Time</option>
+                </select>
+              </div>
+
+              {/* ⏱ REST TIMER */}
               <div className="exercise-timer-wrapper">
                 <span>⏱</span>
                 <select
@@ -68,9 +106,13 @@ export default function Exercise({ exercise, workoutId }) {
                   value={restAfterExercise}
                   onChange={(e) => handleRestChange(Number(e.target.value))}
                 >
-                  {[15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map((sec) => (
-                    <option key={sec} value={sec}>{sec}s</option>
-                  ))}
+                  {[15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map(
+                    (sec) => (
+                      <option key={sec} value={sec}>
+                        {sec}s
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
             </div>
@@ -89,7 +131,11 @@ export default function Exercise({ exercise, workoutId }) {
         )}
       </div>
 
-      <Sets workoutId={workoutId} workoutExerciseId={exercise.workout_exercise_id} />
+      {/* 🔥 Pass type down */}
+      <Sets
+        workoutId={workoutId}
+        workoutExerciseId={exercise.workout_exercise_id}
+      />
     </div>
   );
 }

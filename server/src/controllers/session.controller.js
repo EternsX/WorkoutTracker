@@ -14,12 +14,12 @@ export const getWorkoutSession = asyncHandler(async (req, res) => {
 
 export const updateProgress = asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
-    const { workout_exercise_id, setNumber, reps, weight } = req.body;
-
-    if (!workout_exercise_id || setNumber == null || reps == null || weight == null) {
+    const { workout_exercise_id, setNumber, reps, duration, weight } = req.body;
+    console.log()
+    if (!workout_exercise_id || setNumber == null || weight == null || (reps == null && duration == null)) {
         const err = new Error("Missing required fields");
         err.statusCode = 400;
-        throw err; 
+        throw err;
     }
 
     const session = await sessionService.updateProgress(
@@ -28,6 +28,7 @@ export const updateProgress = asyncHandler(async (req, res) => {
         workout_exercise_id,
         setNumber,
         reps,
+        duration,
         weight,
     );
 
@@ -36,7 +37,7 @@ export const updateProgress = asyncHandler(async (req, res) => {
 
 export const endSession = asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
-    const { status } = req.body; 
+    const { status } = req.body;
     if (!status || !["FINISHED", "DISCARDED"].includes(status)) {
         const err = new Error("Invalid status");
         err.statusCode = 400;

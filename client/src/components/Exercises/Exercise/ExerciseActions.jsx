@@ -1,6 +1,3 @@
-// src/components/Exercise/ExerciseActions.jsx
-import React from "react";
-
 export default function ExerciseActions({ openMenuId, exercise, menuRef, toggleMenu, startEditing, handleDelete }) {
   return (
     <>

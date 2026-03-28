@@ -52,6 +52,7 @@ export const updateProgress = async (
     workout_exercise_id,
     setNumber,
     reps,
+    duration,
     weight
 ) => {
     if (!sessionId || !userId || !workout_exercise_id) {
@@ -100,10 +101,10 @@ export const updateProgress = async (
         // 4️⃣ Record the completed set
         const setRes = await client.query(
             `INSERT INTO completed_sets 
-                 (session_id, workout_exercise_id, set_number, reps, weight, completed_at)
-                 VALUES ($1, $2, $3, $4, $5, NOW())
+                 (session_id, workout_exercise_id, set_number, reps, duration, weight, completed_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, NOW())
                  RETURNING *`,
-            [sessionId, workout_exercise_id, setNumber, reps, weight]
+            [sessionId, workout_exercise_id, setNumber, reps, duration, weight]
         );
 
         if (!setRes.rows.length) {

@@ -18,7 +18,6 @@ export default function SessionProvider({ children }) {
             const result = await getSessionApi();
 
             setSession(result.error ? null : (result.session || null));
-            console.log(result)
 
             return result.session || null;
         })();
@@ -37,14 +36,15 @@ export default function SessionProvider({ children }) {
     }, []);
 
     const updateProgress = useCallback(
-        async (sessionId, workout_exercise_id, setNumber, reps, weight) => {
+        async (sessionId, workout_exercise_id, setNumber, reps, duration, weight) => {
             return withLoadingAndError(setLoading, setError, async () => {
                 const result = await updateProgressApi(
                     sessionId,
                     workout_exercise_id,
                     setNumber,
                     reps,
-                    weight,
+                    duration,
+                    weight
                 );
 
                 if (!result.error) {

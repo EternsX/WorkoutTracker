@@ -6,7 +6,8 @@ import {
   createExerciseApi,
   updateExerciseApi,
   deleteExerciseApi,
-  updateRestTimersApi
+  updateRestTimersApi,
+  updateExerciseTypeApi
 } from "./exercisesApi";
 
 export default function ExerciseProvider({ children }) {
@@ -43,9 +44,9 @@ export default function ExerciseProvider({ children }) {
   }, []);
 
   // ✅ UPDATE EXERCISE (use workout_exercise_id)
-  const updateExercise = useCallback(async (name, workoutId, workout_exercise_id) => {
+  const updateExercise = useCallback(async (name, type, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateExerciseApi(name, workoutId, workout_exercise_id);
+      const result = await updateExerciseApi(name, type, workoutId, workout_exercise_id);
       if (!result.error) {
         setExercises(prev =>
           prev.map(e =>
@@ -100,6 +101,24 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
+  const updateExerciseType = useCallback((type, workoutId, workout_exercise_id) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const result = await updateExerciseTypeApi(type, workoutId, workout_exercise_id);
+
+      if (!result.error) {
+        setExercises(prev =>
+          prev.map(e =>
+            e.workout_exercise_id !== workout_exercise_id
+              ? e
+              : { ...e, type }
+          )
+        );
+      }
+
+      return result;
+    })();
+  }, []);
+
   const value = useMemo(() => ({
     exercises,
     loading,
@@ -109,7 +128,8 @@ export default function ExerciseProvider({ children }) {
     updateExercise,
     updateRestTimers,
     delExercise,
-    getExercise
+    getExercise,
+    updateExerciseType
   }), [
     exercises,
     loading,
@@ -119,7 +139,8 @@ export default function ExerciseProvider({ children }) {
     updateExercise,
     updateRestTimers,
     delExercise,
-    getExercise
+    getExercise,
+    updateExerciseType
   ]);
 
   return (

@@ -10,9 +10,11 @@ export default function Sets({ workoutId, workoutExerciseId }) {
 
   // ✅ This is now clearly a workout_exercise
   const workoutExercise = getExercise(workoutExerciseId);
+  const type = workoutExercise?.type || "reps"; // default to "reps" if not set
 
   const [newWeight, setNewWeight] = useState("");
   const [newReps, setNewReps] = useState("");
+  const [duration, setDuration] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [restBetweenSets, setRestBetweenSets] = useState(60);
 
@@ -35,6 +37,14 @@ export default function Sets({ workoutId, workoutExerciseId }) {
     }
   }, [workoutExercise?.rest_between_sets]);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNewReps("");
+    setDuration("");
+  }, [workoutExercise?.type]);
+
+
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleAddSet();
@@ -42,16 +52,17 @@ export default function Sets({ workoutId, workoutExerciseId }) {
   };
 
   const handleAddSet = async () => {
-    if (!newReps) return;
 
     await createSet(
       Number(newReps),
+      Number(duration),
       Number(newWeight),
       workoutId,
       workoutExerciseId
     );
 
     setNewReps("");
+    setDuration("");
     setNewWeight("");
   };
 
@@ -66,7 +77,13 @@ export default function Sets({ workoutId, workoutExerciseId }) {
 
           <span className="sets-reps">
             {curSetsSafe.length > 0 &&
-              ` • ${curSetsSafe.map((s) => s.reps).join("-")} reps`}
+              ` • ${curSetsSafe
+                .map((s) =>
+                  type === "reps"
+                    ? s?.reps ?? 0 // show reps if type is reps
+                    : s?.duration ?? 0 // show duration if type is time
+                )
+                .join("-")} ${type === "reps" ? "reps" : "sec"}`}
           </span>
         </div>
 
@@ -112,19 +129,38 @@ export default function Sets({ workoutId, workoutExerciseId }) {
             set={s}
             i={index}
             workoutId={workoutId}
-            workoutExerciseId={workoutExerciseId} // ✅ FIX
+            workoutExerciseId={workoutExerciseId}
+            type={type}
           />
         ))}
 
         <div className="set-add-row">
+
+          {type === "reps" ? (
+            <>
+              <input
+                placeholder="Reps"
+                value={newReps}
+                onChange={(e) => setNewReps(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+
+            </>
+          ) : (
+            <input
+              type="number"
+              placeholder="Duration (sec)"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              onKeyDown={handleKeyDown}
+              min={0}  // optional: prevent 0 or negative
+            />
+          )}
+
+
+
           <input
-            placeholder="Reps"
-            value={newReps}
-            onChange={(e) => setNewReps(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <input
-            placeholder="Weight"
+            placeholder="Weight (kg)"
             value={newWeight}
             onChange={(e) => setNewWeight(e.target.value)}
             onKeyDown={handleKeyDown}

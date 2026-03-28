@@ -24,7 +24,7 @@ export const getSets = async (workout_exercise_id, workoutId, userId) => {
 };
 
 // --- CREATE SET ---
-export const createSet = async (reps, weight, workout_exercise_id, workoutId, userId) => {
+export const createSet = async (reps, duration, weight, workout_exercise_id, workoutId, userId) => {
   if (!workout_exercise_id || !workoutId || !userId)
     throw { statusCode: 400, message: "Missing fields" };
 
@@ -45,10 +45,10 @@ export const createSet = async (reps, weight, workout_exercise_id, workoutId, us
     const nextOrder = maxRes.rows[0].max_order + 1;
 
     const res = await query(
-      `INSERT INTO sets (reps, weight, set_order, workout_exercise_id)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO sets (reps, duration, weight, set_order, workout_exercise_id)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [reps, weight, nextOrder, workout_exercise_id]
+      [reps ?? null, duration ?? null, weight ?? 0, nextOrder, workout_exercise_id]
     );
 
     await query("COMMIT");
@@ -61,26 +61,57 @@ export const createSet = async (reps, weight, workout_exercise_id, workoutId, us
 };
 
 // --- UPDATE SET ---
-export const updateSet = async (reps, weight, setId, workout_exercise_id, workoutId, userId) => {
-  if (!setId || !workout_exercise_id || !workoutId || !userId)
+export const updateSet = async ({ reps, duration, weight }, setId, workout_exercise_id, workoutId, userId) => {
+  if (!setId || !workout_exercise_id || !workoutId || !userId) {
     throw { statusCode: 400, message: "Missing fields" };
+  }
 
-  if (!(await validateUser(userId, workoutId)))
+  // Check user access
+  if (!(await validateUser(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
+  }
 
-  if (!(await validateSet(setId, workout_exercise_id)))
+  // Check set belongs to this workout_exercise
+  if (!(await validateSet(setId, workout_exercise_id))) {
     throw { statusCode: 403, message: "Access denied" };
+  }
 
-  const res = await query(
-    `UPDATE sets
-     SET reps = $1, weight = $2
-     WHERE id = $3
-     RETURNING *`,
-    [reps, weight, setId]
-  );
+  // Build the update query dynamically
+  const fields = [];
+  const values = [];
+  let idx = 1;
 
-  if (res.rows.length === 0)
+  if (reps != null) {
+    fields.push(`reps = $${idx++}`);
+    values.push(reps);
+  } else {
+    fields.push(`reps = NULL`);
+  }
+
+  if (duration != null) {
+    fields.push(`duration = $${idx++}`);
+    values.push(duration);
+  } else {
+    fields.push(`duration = NULL`);
+  }
+
+  fields.push(`weight = $${idx++}`);
+  values.push(weight);
+
+  values.push(setId); // for WHERE clause
+
+  const queryText = `
+    UPDATE sets
+    SET ${fields.join(", ")}
+    WHERE id = $${idx}
+    RETURNING *
+  `;
+
+  const res = await query(queryText, values);
+
+  if (res.rows.length === 0) {
     throw { statusCode: 404, message: "Set not found" };
+  }
 
   return res.rows[0];
 };

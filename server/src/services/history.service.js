@@ -6,7 +6,6 @@ export const getHistory = async (userId) => {
         err.statusCode = 400;
         throw err;
     }
-    console.log(userId)
     const res = await query(
         "SELECT * FROM completed_workouts WHERE user_id = $1",
         [userId]

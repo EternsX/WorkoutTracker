@@ -27,9 +27,11 @@ export default function Navbar({ openWorkoutSidebar }) {
       </div>
 
       {/* ✅ Make the title clickable */}
-      <span className="title" onClick={handleGoHome} style={{ cursor: "pointer" }}>
-        Workout Tracker
-      </span>
+      <div className="title-container">
+        <span className="title" onClick={handleGoHome} >
+          Workout Tracker
+        </span>
+      </div>
 
       <div className="settings">
         <NavButton

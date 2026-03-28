@@ -12,6 +12,7 @@ export const updateProgressApi = (
   workout_exercise_id,
   setNumber,
   reps,
+  duration,
   weight,
 ) =>
   request(updateProgressUrl(sessionId), {
@@ -20,6 +21,7 @@ export const updateProgressApi = (
       workout_exercise_id,
       setNumber,
       reps,
+      duration,
       weight,
     })
   });
