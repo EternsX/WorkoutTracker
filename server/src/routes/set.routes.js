@@ -1,17 +1,51 @@
 import express from 'express';
 import {
-    getSets,
-    createSet,
-    updateSet,
-    deleteSet
+  getSets,
+  createSet,
+  updateSet,
+  deleteSet
 } from '../controllers/sets.controller.js';
 import authMiddleware from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import {
+  workoutExerciseParamsSchema,
+  setParamsSchema,
+  createSetSchema,
+  updateSetSchema
+} from '../validators/set.validator.js';
 
-const router = express.Router({ mergeParams: true }); // mergeParams needed if nested
+const router = express.Router({ mergeParams: true });
 
-router.get('/', authMiddleware, getSets);
-router.post('/', authMiddleware, createSet);
-router.put('/:setId', authMiddleware, updateSet);
-router.delete('/:setId', authMiddleware, deleteSet);
+router.use(authMiddleware);
+
+// GET / sets
+router.get(
+  '/',
+  validate(workoutExerciseParamsSchema, 'params'),
+  getSets
+);
+
+// POST / sets
+router.post(
+  '/',
+  validate(workoutExerciseParamsSchema, 'params'),
+  validate(createSetSchema),
+  createSet
+);
+
+// PUT / sets/:setId
+router.put(
+  '/:setId',
+  validate(setParamsSchema, 'params'),
+  validate(updateSetSchema),
+  updateSet
+);
+
+// DELETE / sets/:setId
+router.delete(
+  '/:setId',
+  validate(setParamsSchema, 'params'),
+  deleteSet
+);
 
 export default router;

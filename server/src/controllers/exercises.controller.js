@@ -1,7 +1,7 @@
 import * as exerciseService from '../services/exercises.service.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 
-// GET exercises
+// GET
 export const getExercises = asyncHandler(async (req, res) => {
     const exercises = await exerciseService.getExercises(
         req.params.workoutId,
@@ -11,18 +11,10 @@ export const getExercises = asyncHandler(async (req, res) => {
     res.status(200).json({ exercises });
 });
 
-// CREATE exercise
+// CREATE
 export const createExercise = asyncHandler(async (req, res) => {
-    const { name } = req.body;
-
-    if (!name) {
-        const err = new Error("Missing Fields");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const exercise = await exerciseService.createExercise(
-        name,
+        req.body.name,
         req.params.workoutId,
         req.user.id
     );
@@ -30,84 +22,48 @@ export const createExercise = asyncHandler(async (req, res) => {
     res.status(201).json({ exercise });
 });
 
-// DELETE exercise
+// DELETE
 export const deleteExercise = asyncHandler(async (req, res) => {
-    const { workoutExerciseId, workoutId } = req.params;
-
     const result = await exerciseService.deleteExercise(
-        workoutId,
-        workoutExerciseId,
+        req.params.workoutId,
+        req.params.workoutExerciseId,
         req.user.id
     );
 
     res.status(200).json(result);
 });
 
-// UPDATE exercise name
+// UPDATE
 export const updateExercise = asyncHandler(async (req, res) => {
-    const { name, type } = req.body;
-    const { workoutExerciseId, workoutId } = req.params;
-
-    if (!name || !type) {
-        const err = new Error("Missing Fields");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const exercise = await exerciseService.updateExercise(
-        name,
-        type,
-        workoutId,
-        workoutExerciseId,
+        req.body.name,
+        req.body.type,
+        req.params.workoutId,
+        req.params.workoutExerciseId,
         req.user.id
     );
 
     res.status(200).json({ exercise });
 });
 
-// UPDATE rest times
+// UPDATE REST
 export const updateRestTimes = asyncHandler(async (req, res) => {
-    const { rest_between_sets, rest_after_exercise } = req.body;
-    const { workoutExerciseId, workoutId } = req.params;
-
-    if (rest_between_sets == null && rest_after_exercise == null) {
-        const err = new Error("Missing Fields");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const result = await exerciseService.updateRestTimes(
-        { rest_between_sets, rest_after_exercise },
-        workoutId,
-        workoutExerciseId,
+        req.body,
+        req.params.workoutId,
+        req.params.workoutExerciseId,
         req.user.id
     );
 
     res.status(200).json({ workoutExercise: result });
 });
 
+// UPDATE TYPE
 export const updateExerciseType = asyncHandler(async (req, res) => {
-    const { type } = req.body;
-    const { workoutExerciseId, workoutId } = req.params;
-
-    if (!type) {
-        const err = new Error("Missing Fields");
-        err.statusCode = 400;
-        throw err;
-    }
-
-    const exerciseType = type.toLowerCase();
-
-    if (!['reps', 'time'].includes(exerciseType)) {
-        const err = new Error("Invalid exercise type");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const result = await exerciseService.updateExerciseType(
-        exerciseType,
-        workoutId,
-        workoutExerciseId,
+        req.body.type.toLowerCase(),
+        req.params.workoutId,
+        req.params.workoutExerciseId,
         req.user.id
     );
 

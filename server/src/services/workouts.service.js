@@ -1,137 +1,93 @@
 import { query } from "../config/db.js";
-import { validateUser } from "../config/validations.js";
+import { doesUserOwnWorkout } from "../config/validations.js";
 
+// --- GET all workouts for user ---
 export const getWorkouts = async (userId) => {
-    if (!userId) {
-        const err = new Error("Missing user");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!userId) throw { statusCode: 400, message: "Missing user" };
 
-    const res = await query(
-        "SELECT id, name FROM workouts WHERE user_id = $1",
-        [userId]
-    );
+  const res = await query(
+    "SELECT id, name FROM workouts WHERE user_id = $1",
+    [userId]
+  );
 
-    return res.rows;
+  return res.rows;
 };
 
+// --- GET workout by ID ---
 export const getWorkoutById = async (userId, workoutId) => {
-    if (!userId || !workoutId) {
-        const err = new Error("Missing fields");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!userId || !workoutId) throw { statusCode: 400, message: "Missing fields" };
 
-    if (!(await validateUser(userId, workoutId)))
-        throw { statusCode: 403, message: "Access denied" };
+  if (!(await doesUserOwnWorkout(userId, workoutId)))
+    throw { statusCode: 403, message: "Access denied" };
 
-    const res = await query(
-        "SELECT id, name FROM workouts WHERE user_id = $1 AND id = $2",
-        [userId, workoutId]
-    );
+  const res = await query(
+    "SELECT id, name FROM workouts WHERE user_id = $1 AND id = $2",
+    [userId, workoutId]
+  );
 
-    if (res.rows.length === 0) {
-        const err = new Error("Workout not found");
-        err.statusCode = 404;
-        throw err;
-    }
-
-    return res.rows[0];
+  if (!res.rows.length) throw { statusCode: 404, message: "Workout not found" };
+  return res.rows[0];
 };
 
+// --- CREATE workout ---
 export const createWorkout = async (name, userId) => {
-    if (!name || !userId) {
-        const err = new Error("Missing fields");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!name || !userId) throw { statusCode: 400, message: "Missing fields" };
 
+  const res = await query(
+    "INSERT INTO workouts (name, user_id) VALUES ($1, $2) RETURNING id, name",
+    [name, userId]
+  );
 
-    const res = await query(
-        "INSERT INTO workouts (name, user_id) VALUES ($1, $2) RETURNING id, name",
-        [name, userId]
-    );
-
-    return res.rows[0];
+  return res.rows[0];
 };
 
+// --- UPDATE workout ---
 export const updateWorkout = async (name, workoutId, userId) => {
-    if (!name || !workoutId || !userId) {
-        const err = new Error("Missing fields");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!name || !workoutId || !userId) throw { statusCode: 400, message: "Missing fields" };
 
-    if (!(await validateUser(userId, workoutId)))
-        throw { statusCode: 403, message: "Access denied" };
+  if (!(await doesUserOwnWorkout(userId, workoutId)))
+    throw { statusCode: 403, message: "Access denied" };
 
+  const res = await query(
+    "UPDATE workouts SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING id, name",
+    [name, workoutId, userId]
+  );
 
-    const res = await query(
-        "UPDATE workouts SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING id, name",
-        [name, workoutId, userId]
-    );
-
-    if (res.rows.length === 0) {
-        const err = new Error("Workout not found");
-        err.statusCode = 404;
-        throw err;
-    }
-
-    return res.rows[0];
+  if (!res.rows.length) throw { statusCode: 404, message: "Workout not found" };
+  return res.rows[0];
 };
 
+// --- DELETE workout ---
 export const deleteWorkout = async (workoutId, userId) => {
-    if (!workoutId || !userId) {
-        const err = new Error("Missing fields");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!workoutId || !userId) throw { statusCode: 400, message: "Missing fields" };
 
-    if (!(await validateUser(userId, workoutId)))
-        throw { statusCode: 403, message: "Access denied" };
+  if (!(await doesUserOwnWorkout(userId, workoutId)))
+    throw { statusCode: 403, message: "Access denied" };
 
-    const res = await query(
-        "DELETE FROM workouts WHERE id = $1 AND user_id = $2 RETURNING id, name",
-        [workoutId, userId]
-    );
+  const res = await query(
+    "DELETE FROM workouts WHERE id = $1 AND user_id = $2 RETURNING id, name",
+    [workoutId, userId]
+  );
 
-    if (res.rows.length === 0) {
-        const err = new Error("Workout not found");
-        err.statusCode = 404;
-        throw err;
-    }
-
-    return res.rows[0];
+  if (!res.rows.length) throw { statusCode: 404, message: "Workout not found" };
+  return res.rows[0];
 };
 
+// --- COMPLETE workout ---
 export const completeWorkout = async (sessionId, workoutId, userId) => {
-    if (!workoutId || !userId) {
-        const err = new Error("Missing fields");
-        err.statusCode = 400;
-        throw err;
-    }
+  if (!workoutId || !userId || !sessionId)
+    throw { statusCode: 400, message: "Missing fields" };
 
-    // Authorization
-    if (!(await validateUser(userId, workoutId))) {
-        const err = new Error("Access denied");
-        err.statusCode = 403;
-        throw err;
-    }
+  if (!(await doesUserOwnWorkout(userId, workoutId)))
+    throw { statusCode: 403, message: "Access denied" };
 
-    const res = await query(
-        `INSERT INTO completed_workouts (user_id, workout_id, session_id)
-         VALUES ($1, $2, $3)
-         RETURNING *`,
-        [userId, workoutId, sessionId]
-    );
+  const res = await query(
+    `INSERT INTO completed_workouts (user_id, workout_id, session_id)
+     VALUES ($1, $2, $3)
+     RETURNING *`,
+    [userId, workoutId, sessionId]
+  );
 
-    if (res.rows.length === 0) {
-        const err = new Error("Workout not found");
-        err.statusCode = 404;
-        throw err;
-    }
-
-    return res.rows[0];
+  if (!res.rows.length) throw { statusCode: 404, message: "Workout not found" };
+  return res.rows[0];
 };
-

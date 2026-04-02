@@ -5,6 +5,7 @@ import Dashboard from "./components/DashBoard/DashBoard";
 import Exercises from "./components/Exercises/Exercises";
 
 import WorkoutHistory from "./components/WorkoutHistory/WorkoutHistory"; // import your component
+import Progress from "./components/Progress/Progress";
 
 function App() {
   return (
@@ -19,9 +20,12 @@ function App() {
 
         {/* "/history" route */}
         <Route path="history" element={<WorkoutHistory />} />
+        <Route path="/progress" element={<Progress />} />
 
         {/* fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
+
 
       </Route>
     </Routes>

@@ -1,59 +1,63 @@
 import { query } from "../config/db.js";
-import { validateUser } from "../config/validations.js";
-import { validateSet } from "../config/validations.js";
+import {
+  doesUserOwnWorkout,
+  doesWorkoutContainExercise,
+  doesSetBelongToExercise
+} from "../config/validations.js";
 
 // --- GET SETS ---
-export const getSets = async (workout_exercise_id, workoutId, userId) => {
-  if (!workout_exercise_id || !workoutId || !userId)
-    throw { statusCode: 400, message: "Missing fields" };
+export const getSets = async (workoutId, workoutExerciseId, userId) => {
 
-  if (!(await validateUser(userId, workoutId)))
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
+  }
+
+  if (!(await doesWorkoutContainExercise(workoutId, workoutExerciseId))) {
+    throw { statusCode: 404, message: "Exercise not found in this workout" };
+  }
 
   const res = await query(
-    `
-    SELECT s.*
-    FROM sets s
-    WHERE s.workout_exercise_id = $1
-    ORDER BY s.set_order
-  `,
-    [workout_exercise_id]
+    `SELECT s.*
+     FROM sets s
+     WHERE s.workout_exercise_id = $1
+     ORDER BY s.set_order`,
+    [workoutExerciseId]
   );
 
   return res.rows;
 };
 
 // --- CREATE SET ---
-export const createSet = async (reps, duration, weight, workout_exercise_id, workoutId, userId) => {
-  if (!workout_exercise_id || !workoutId || !userId)
-    throw { statusCode: 400, message: "Missing fields" };
+export const createSet = async (reps, duration, weight, workoutExerciseId, workoutId, userId) => {
 
-  if (!(await validateUser(userId, workoutId)))
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
+  }
+
+  if (!(await doesWorkoutContainExercise(workoutId, workoutExerciseId))) {
+    throw { statusCode: 404, message: "Exercise not found in this workout" };
+  }
 
   await query("BEGIN");
-
   try {
-    // Get current max set order
+    // Determine next set order
     const maxRes = await query(
       `SELECT COALESCE(MAX(set_order), 0) AS max_order
        FROM sets
        WHERE workout_exercise_id = $1`,
-      [workout_exercise_id]
+      [workoutExerciseId]
     );
-
     const nextOrder = maxRes.rows[0].max_order + 1;
 
     const res = await query(
       `INSERT INTO sets (reps, duration, weight, set_order, workout_exercise_id)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [reps ?? null, duration ?? null, weight ?? 0, nextOrder, workout_exercise_id]
+      [reps ?? null, duration ?? null, weight ?? 0, nextOrder, workoutExerciseId]
     );
 
     await query("COMMIT");
     return res.rows[0];
-
   } catch (err) {
     await query("ROLLBACK");
     throw err;
@@ -61,22 +65,17 @@ export const createSet = async (reps, duration, weight, workout_exercise_id, wor
 };
 
 // --- UPDATE SET ---
-export const updateSet = async ({ reps, duration, weight }, setId, workout_exercise_id, workoutId, userId) => {
-  if (!setId || !workout_exercise_id || !workoutId || !userId) {
-    throw { statusCode: 400, message: "Missing fields" };
-  }
+export const updateSet = async ({ reps, duration, weight }, setId, workoutExerciseId, workoutId, userId) => {
 
-  // Check user access
-  if (!(await validateUser(userId, workoutId))) {
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
   }
 
-  // Check set belongs to this workout_exercise
-  if (!(await validateSet(setId, workout_exercise_id))) {
-    throw { statusCode: 403, message: "Access denied" };
+  if (!(await doesSetBelongToExercise(setId, workoutExerciseId))) {
+    throw { statusCode: 404, message: "Set not found in this exercise" };
   }
 
-  // Build the update query dynamically
+  // Build dynamic SET clause
   const fields = [];
   const values = [];
   let idx = 1;
@@ -98,8 +97,7 @@ export const updateSet = async ({ reps, duration, weight }, setId, workout_exerc
   fields.push(`weight = $${idx++}`);
   values.push(weight);
 
-  values.push(setId); // for WHERE clause
-
+  values.push(setId); // WHERE clause
   const queryText = `
     UPDATE sets
     SET ${fields.join(", ")}
@@ -108,34 +106,28 @@ export const updateSet = async ({ reps, duration, weight }, setId, workout_exerc
   `;
 
   const res = await query(queryText, values);
-
-  if (res.rows.length === 0) {
-    throw { statusCode: 404, message: "Set not found" };
-  }
-
+  if (!res.rows.length) throw { statusCode: 404, message: "Set not found" };
   return res.rows[0];
 };
 
 // --- DELETE SET ---
-export const deleteSet = async (setId, workout_exercise_id, workoutId, userId) => {
-  if (!setId || !workout_exercise_id || !workoutId || !userId)
-    throw { statusCode: 400, message: "Missing fields" };
+export const deleteSet = async (setId, workoutExerciseId, workoutId, userId) => {
 
-  if (!(await validateUser(userId, workoutId)))
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
+  }
 
-  if (!(await validateSet(setId, workout_exercise_id)))
-    throw { statusCode: 403, message: "Access denied" };
+  if (!(await doesSetBelongToExercise(setId, workoutExerciseId))) {
+    throw { statusCode: 404, message: "Set not found in this exercise" };
+  }
 
   const res = await query(
     `DELETE FROM sets
      WHERE id = $1 AND workout_exercise_id = $2
      RETURNING *`,
-    [setId, workout_exercise_id]
+    [setId, workoutExerciseId]
   );
 
-  if (res.rows.length === 0)
-    throw { statusCode: 404, message: "Set not found" };
-
+  if (!res.rows.length) throw { statusCode: 404, message: "Set not found" };
   return res.rows[0];
 };

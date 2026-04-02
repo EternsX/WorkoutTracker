@@ -2,7 +2,11 @@ import * as authService from "../services/auth.service.js";
 import jwt from "jsonwebtoken";
 import { asyncHandler } from '../middleware/asyncHandler.js';
 
+// Not using Cookie-based auth, cause it made the deployment through Render problematic
+
+// Register
 export const register = asyncHandler(async (req, res) => {
+
     const user = await authService.register(req.body);
 
     const token = jwt.sign(
@@ -11,10 +15,12 @@ export const register = asyncHandler(async (req, res) => {
         { expiresIn: "7d" }
     );
 
-    res.status(201).json({ user, token }); // ✅ send token
+    res.status(201).json({ user, token });
 });
 
+// Login
 export const login = asyncHandler(async (req, res) => {
+
     const user = await authService.login(req.body);
 
     const token = jwt.sign(
@@ -23,26 +29,15 @@ export const login = asyncHandler(async (req, res) => {
         { expiresIn: "7d" }
     );
 
-    res.json({ user, token }); // ✅ send token
+    res.json({ user, token });
 });
 
+// Logout (stateless JWT)
 export const logout = asyncHandler(async (req, res) => {
-    res.json({ message: "Logged out" }); // no cookie anymore
+    res.json({ message: "Logged out" });
 });
 
+// Get current user
 export const user = asyncHandler(async (req, res) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-        return res.status(200).json({ user: null });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ user: { id: decoded.id } });
-    } catch (err) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
+    res.json({ user: req.user || null });
 });

@@ -6,7 +6,9 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getHistory);
+router.use(authMiddleware);
+
+router.get('/', getHistory);
 
 
 export default router;

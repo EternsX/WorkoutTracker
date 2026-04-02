@@ -19,8 +19,8 @@ export default function Settings() {
     closeOverlay(MODAL_TYPES.SETTINGS);
     navigate("/", { replace: true });
   };
-  
-  
+
+
   if (!settingsIsOpen) return null;
 
   return (
@@ -45,8 +45,15 @@ export default function Settings() {
           </>
         ) : (
           <>
-          <SButton text="Log out" onClick={handleLogout} />
-          <SButton text="Workout History" onClick={() => navigate('/history')}/>
+            <SButton text="Log out" onClick={handleLogout} />
+            <SButton text="Workout History" onClick={() => {
+              closeOverlay(MODAL_TYPES.SETTINGS);
+              navigate('/history')
+            }} />
+            <SButton text="Progress" onClick={() => {
+              closeOverlay(MODAL_TYPES.SETTINGS);
+              navigate('/progress');
+            }} />
           </>
         )}
       </div>

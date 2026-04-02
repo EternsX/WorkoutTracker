@@ -1,6 +1,12 @@
+// validations.js
 import { query } from "./db.js";
 
-export async function validateUser(userId, workoutId) {
+/**
+ * ✅ Boolean checks (returns true/false)
+ */
+
+// Check if a user owns a specific workout
+export async function doesUserOwnWorkout(userId, workoutId) {
     const res = await query(
         'SELECT 1 FROM workouts WHERE id = $1 AND user_id = $2',
         [workoutId, userId]
@@ -8,15 +14,17 @@ export async function validateUser(userId, workoutId) {
     return res.rows.length > 0;
 }
 
-export async function validateWorkoutExercise(workoutId, exerciseId) {
+// Check if a workout contains a specific exercise
+export async function doesWorkoutContainExercise(workoutId, workoutExerciseId) {
     const res = await query(
-        'SELECT 1 FROM workout_exercises WHERE workout_id = $1 AND exercise_id = $2',
-        [workoutId, exerciseId]
+        'SELECT 1 FROM workout_exercises WHERE workout_id = $1 AND id = $2',
+        [workoutId, workoutExerciseId]
     );
     return res.rows.length > 0;
 }
 
-export async function validateWorkoutExerciseId(workoutId, workoutExerciseId) {
+// Check if a workout contains a specific workout_exercise_id
+export async function doesWorkoutHaveWorkoutExerciseId(workoutId, workoutExerciseId) {
     const res = await query(
         'SELECT 1 FROM workout_exercises WHERE id = $1 AND workout_id = $2',
         [workoutExerciseId, workoutId]
@@ -24,20 +32,25 @@ export async function validateWorkoutExerciseId(workoutId, workoutExerciseId) {
     return res.rows.length > 0;
 }
 
-export async function validateSet(setId, workout_exercise_id) {
-    const res = await query(`
-        SELECT 1
-        FROM sets
-        WHERE id = $1
-        AND workout_exercise_id = $2
-    `, [setId, workout_exercise_id]);
-
+// Check if a set belongs to a specific workout_exercise
+export async function doesSetBelongToExercise(setId, workoutExerciseId) {
+    const res = await query(
+        `SELECT 1
+         FROM sets
+         WHERE id = $1 AND workout_exercise_id = $2`,
+        [setId, workoutExerciseId]
+    );
     return res.rows.length > 0;
 }
 
-export async function validateSessionOwnership(sessionId, userId) {
+/**
+ * ⚡ Throws errors if the validation fails
+ */
+
+// Get a session only if it belongs to the user, otherwise throw
+export async function getSessionOrThrowIfNotOwned(sessionId, userId) {
     const session = await query(
-        `SELECT workout_id, user_id FROM workout_sessions WHERE id = $1`,
+        'SELECT workout_id, user_id FROM workout_sessions WHERE id = $1',
         [sessionId]
     );
 
@@ -53,5 +66,5 @@ export async function validateSessionOwnership(sessionId, userId) {
         throw err;
     }
 
-    return session.rows[0]; 
+    return session.rows[0];
 }

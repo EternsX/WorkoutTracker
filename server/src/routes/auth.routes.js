@@ -6,12 +6,19 @@ import {
     user
 } from "../controllers/auth.controller.js";
 
+import { validate } from "../middleware/validate.js";
+import { registerSchema, loginSchema } from "../validators/auth.validator.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// Public routes
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
+
+router.use(authMiddleware);
+
 router.get("/user", user);
-router.post("/register", register);
-router.post("/login", login);
 router.get("/logout", logout);
 
 export default router;

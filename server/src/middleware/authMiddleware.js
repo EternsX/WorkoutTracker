@@ -1,25 +1,28 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
+import * as authService from "../services/auth.service.js";
 
-export default function authMiddleware(req, res, next) {
+export default async function authMiddleware(req, res, next) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-        return res.status(401).json({ error: 'No token provided' });
+        req.user = null; // allow optional auth
+        return next();
     }
 
-    // Format: "Bearer TOKEN"
     const token = authHeader.split(" ")[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'Invalid token format' });
+        return res.status(401).json({ error: "Invalid token format" });
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // attach user info
+
+        const user = await authService.getById(decoded.id);
+
+        req.user = user;
         next();
     } catch (err) {
-        console.error('JWT verification error:', err);
-        return res.status(401).json({ error: 'Invalid token' });
+        return res.status(401).json({ error: "Invalid token" });
     }
 }

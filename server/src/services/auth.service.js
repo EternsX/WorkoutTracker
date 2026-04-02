@@ -2,12 +2,6 @@ import bcrypt from "bcrypt";
 import { query } from "../config/db.js";
 
 export const register = async ({ username, password }) => {
-    if (!username || !password) {
-        const err = new Error("Username and password are required");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const result = await query(
@@ -18,7 +12,7 @@ export const register = async ({ username, password }) => {
         [username, hashedPassword]
     );
 
-    if (result.rows.length === 0) {
+    if (!result.rows.length) {
         const err = new Error("Username already exists");
         err.statusCode = 400;
         throw err;
@@ -28,12 +22,6 @@ export const register = async ({ username, password }) => {
 };
 
 export const login = async ({ username, password }) => {
-    if (!username || !password) {
-        const err = new Error("Username and password are required");
-        err.statusCode = 400;
-        throw err;
-    }
-
     const result = await query(
         `SELECT id, username, password FROM users WHERE username = $1`,
         [username]
@@ -48,6 +36,7 @@ export const login = async ({ username, password }) => {
     }
 
     const match = await bcrypt.compare(password, user.password);
+
     if (!match) {
         const err = new Error("Invalid username or password");
         err.statusCode = 401;
@@ -58,4 +47,13 @@ export const login = async ({ username, password }) => {
         id: user.id,
         username: user.username
     };
+};
+
+export const getById = async (id) => {
+    const result = await query(
+        `SELECT id, username FROM users WHERE id = $1`,
+        [id]
+    );
+
+    return result.rows[0] || null;
 };

@@ -8,7 +8,7 @@ import setsRoutes from './routes/set.routes.js'
 import sessionRoutes from './routes/session.routes.js'
 import historyRoutes from './routes/history.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
-
+import progressRoutes from './routes/progress.routes.js';
 
 const app = express();
 const allowedOrigins = [
@@ -39,6 +39,7 @@ app.use("/session", sessionRoutes);
 app.use("/workouts/:workoutId/exercises", exerciseRoutes);
 app.use("/workouts/:workoutId/exercises/:exerciseId/sets", setsRoutes);
 app.use("/history", historyRoutes);
+app.use("/progress", progressRoutes);
 app.use(errorMiddleware);
 
 export default app;
