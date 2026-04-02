@@ -4,7 +4,7 @@ import { withLoadingAndError } from "../../utils/apiHelpers";
 import {
     getBestSetApi,
     getVolumeApi
-} from "./progressApi";
+} from "./ProgressApi";
 
 export default function ProgressProvider({ children }) {
     const [bestSetProgress, setBestSetProgress] = useState([]);
