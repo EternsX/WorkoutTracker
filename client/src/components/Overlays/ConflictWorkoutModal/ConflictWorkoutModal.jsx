@@ -33,7 +33,7 @@ export default function ConflictWorkoutModal() {
         setIsLoading(true);
 
         try {
-            const result = await endSession("discarded", currentSession.id);
+            const result = await endSession("DISCARDED", currentSession.id);
 
             // ❌ Stop if API failed
             if (result?.error) return;

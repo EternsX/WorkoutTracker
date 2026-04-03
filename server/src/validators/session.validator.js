@@ -15,7 +15,7 @@ export const sessionParamsSchema = Joi.object({
 // Update progress for a set within a workout session
 export const updateProgressSchema = Joi.object({
   workout_exercise_id: Joi.string().uuid().required(),
-  setNumber: Joi.number().min(1).required(),
+  setNumber: Joi.number().min(0).required(),
   reps: Joi.number().min(0),
   duration: Joi.number().min(0),
   weight: Joi.number().min(0).required()
