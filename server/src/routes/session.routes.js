@@ -12,7 +12,8 @@ import { validate } from '../middleware/validate.js';
 import {
     updateProgressSchema,
     endSessionSchema,
-    sessionParamsSchema
+    sessionParamsSchema,
+    startSessionSchema
 } from "../validators/session.validator.js";
 
 const router = express.Router();
@@ -25,7 +26,7 @@ router.get('/', getWorkoutSession);
 // ✅ validate params here
 router.post(
   '/:workoutId/start',
-  validate(sessionParamsSchema, "params"),
+  validate(startSessionSchema, "params"),
   startWorkoutSession
 );
 

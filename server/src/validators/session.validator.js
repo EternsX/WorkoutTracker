@@ -1,5 +1,9 @@
 import Joi from "joi";
 
+export const startSessionSchema = Joi.object({
+  workoutId: Joi.string().uuid().required()
+});
+
 // --- Params ---
 // Optional workoutId (for starting session), sessionId required
 export const sessionParamsSchema = Joi.object({

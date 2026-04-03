@@ -43,7 +43,7 @@ export default function SessionProvider({ children }) {
                     workout_exercise_id,
                     setNumber,
                     reps,
-                    duration,
+                    Number(duration),
                     weight
                 );
 
