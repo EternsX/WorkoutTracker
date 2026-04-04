@@ -9,6 +9,7 @@ import sessionRoutes from './routes/session.routes.js'
 import historyRoutes from './routes/history.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 import progressRoutes from './routes/progress.routes.js';
+import { globalLimiter } from './middleware/rateLimiter.js';1
 
 const app = express();
 const allowedOrigins = [
@@ -21,7 +22,7 @@ app.use(cors({
   origin: function(origin, callback) {
     // allow requests with no origin (like Postman)
     if (!origin) return callback(null, true);
-
+    
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -32,7 +33,9 @@ app.use(cors({
 }));
 
 
+app.use(globalLimiter); 
 app.use(express.json());
+
 app.use("/auth", authRoutes);
 app.use("/workouts", workoutRoutes);
 app.use("/session", sessionRoutes);
