@@ -10,7 +10,6 @@ export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
   const { createExercise, loading, error } = useExercise();
   const isMobile = useIsMobile();
-  console.log(error)
 
   const [name, setName] = useState("");
   const nameRef = useRef(null);
