@@ -86,7 +86,7 @@ export const createExercise = async (name, workoutId, userId) => {
 };
 
 // 🔹 UPDATE exercise
-export const updateExercise = async (name, type, workoutId, workoutExerciseId, userId) => {
+export const updateExercise = async (name, workoutId, workoutExerciseId, userId) => {
   if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
   }
@@ -103,8 +103,8 @@ export const updateExercise = async (name, type, workoutId, workoutExerciseId, u
 
   // update name
   await query(
-    "UPDATE exercises SET name = $1, type = $2 WHERE id = $3",
-    [name, type, exerciseId]
+    "UPDATE exercises SET name = $1 WHERE id = $2",
+    [name, exerciseId]
   );
 
   // 🔥 RETURN FULL OBJECT

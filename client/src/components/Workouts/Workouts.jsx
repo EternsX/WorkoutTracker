@@ -4,7 +4,7 @@ import useWorkout from '../../context/Workouts/useWorkout';
 import './Workouts.css';
 
 export default function Workouts() {
-  const { workouts, delWorkout, updateWorkout } = useWorkout();
+  const { workouts, deleteWorkout, updateWorkout } = useWorkout();
   const navigate = useNavigate();
   const { workoutId: currentWorkoutId } = useParams(); // current workout from URL
   const [editingId, setEditingId] = useState(null);
@@ -51,7 +51,7 @@ export default function Workouts() {
 
   const handleDelete = (id) => {
     console.log(currentWorkoutId, id)
-    delWorkout(id);
+    deleteWorkout(id);
     setActiveMenuId(null);
     if (currentWorkoutId === String(id)) {
       navigate('/'); // only navigate if the deleted workout is currently open

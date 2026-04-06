@@ -28,8 +28,7 @@ export const getSets = async (workoutId, workoutExerciseId, userId) => {
 };
 
 // --- CREATE SET ---
-export const createSet = async (reps, duration, weight, workoutExerciseId, workoutId, userId) => {
-
+export const createSet = async (value, type, weight, workoutExerciseId, workoutId, userId) => {
   if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
   }
@@ -49,11 +48,18 @@ export const createSet = async (reps, duration, weight, workoutExerciseId, worko
     );
     const nextOrder = maxRes.rows[0].max_order + 1;
 
+    // Insert with dynamic field depending on type
     const res = await query(
       `INSERT INTO sets (reps, duration, weight, set_order, workout_exercise_id)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [reps ?? null, duration ?? null, weight ?? 0, nextOrder, workoutExerciseId]
+      [
+        type === "reps" ? value : null,
+        type === "time" ? value : null,
+        weight,
+        nextOrder,
+        workoutExerciseId
+      ]
     );
 
     await query("COMMIT");
@@ -65,8 +71,8 @@ export const createSet = async (reps, duration, weight, workoutExerciseId, worko
 };
 
 // --- UPDATE SET ---
-export const updateSet = async ({ reps, duration, weight }, setId, workoutExerciseId, workoutId, userId) => {
-
+export const updateSet = async (value, type, weight, setId, workoutExerciseId, workoutId, userId) => {
+  // --- Authorization checks ---
   if (!(await doesUserOwnWorkout(userId, workoutId))) {
     throw { statusCode: 403, message: "Access denied" };
   }
@@ -75,29 +81,25 @@ export const updateSet = async ({ reps, duration, weight }, setId, workoutExerci
     throw { statusCode: 404, message: "Set not found in this exercise" };
   }
 
-  // Build dynamic SET clause
+  // --- Build dynamic SET clause ---
   const fields = [];
   const values = [];
   let idx = 1;
 
-  if (reps != null) {
+  if (type === "reps") {
     fields.push(`reps = $${idx++}`);
-    values.push(reps);
-  } else {
-    fields.push(`reps = NULL`);
-  }
-
-  if (duration != null) {
+    values.push(value);
+  } else if (type === "time") {
     fields.push(`duration = $${idx++}`);
-    values.push(duration);
-  } else {
-    fields.push(`duration = NULL`);
+    values.push(value);
   }
 
+  // Always update weight
   fields.push(`weight = $${idx++}`);
   values.push(weight);
 
-  values.push(setId); // WHERE clause
+  // WHERE clause
+  values.push(setId);
   const queryText = `
     UPDATE sets
     SET ${fields.join(", ")}
@@ -106,7 +108,9 @@ export const updateSet = async ({ reps, duration, weight }, setId, workoutExerci
   `;
 
   const res = await query(queryText, values);
+
   if (!res.rows.length) throw { statusCode: 404, message: "Set not found" };
+
   return res.rows[0];
 };
 

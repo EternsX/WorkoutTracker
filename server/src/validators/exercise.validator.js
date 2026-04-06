@@ -20,7 +20,6 @@ export const createExerciseSchema = Joi.object({
 // Updating an exercise
 export const updateExerciseSchema = Joi.object({
   name: Joi.string().min(1).required(),
-  type: Joi.string().valid("reps", "duration").required()
 });
 
 // Updating rest times
@@ -31,5 +30,5 @@ export const updateRestTimesSchema = Joi.object({
 
 // Updating exercise type
 export const updateExerciseTypeSchema = Joi.object({
-  type: Joi.string().valid("reps", "duration").required()
+  type: Joi.string().valid("reps", "time").required()
 });

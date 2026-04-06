@@ -53,8 +53,8 @@ export default function Set({
 
         await updateSet(
             set.id,
-            reps,
-            duration,
+            type == "reps" ? reps : duration,
+            type,
             weight,
             workoutId,
             workoutExerciseId

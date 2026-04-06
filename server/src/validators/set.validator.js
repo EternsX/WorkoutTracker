@@ -17,16 +17,14 @@ export const setParamsSchema = Joi.object({
 });
 
 // --- Body ---
-// Create a set
 export const createSetSchema = Joi.object({
-  reps: Joi.number().integer().min(1).optional(),
-  duration: Joi.number().integer().min(1).optional(),
+  type: Joi.string().valid("reps", "time").required(),
+  value: Joi.number().integer().min(1).required(), // reps or duration depending on type
   weight: Joi.number().min(0).optional()
-}).or("reps", "duration"); // Must include at least reps or duration
+});
 
-// Update a set
 export const updateSetSchema = Joi.object({
-  reps: Joi.number().integer().min(1).optional().allow(null),
-  duration: Joi.number().integer().min(1).optional().allow(null),
+  type: Joi.string().valid("reps", "time").required(),
+  value: Joi.number().integer().min(1).required(), // reps or duration depending on type
   weight: Joi.number().min(0).required()
-}).or("reps", "duration"); // Must include at least reps or duration
+});

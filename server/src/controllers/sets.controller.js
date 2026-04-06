@@ -13,11 +13,11 @@ export const getSets = asyncHandler(async (req, res) => {
 
 // CREATE
 export const createSet = asyncHandler(async (req, res) => {
-  const { reps, duration, weight } = req.body;
+  const { value, type, weight } = req.body;
 
   const set = await setService.createSet(
-    reps ?? null,
-    duration ?? null,
+    value,
+    type,
     weight ?? 0,
     req.params.exerciseId,
     req.params.workoutId,
@@ -29,10 +29,13 @@ export const createSet = asyncHandler(async (req, res) => {
 
 // UPDATE
 export const updateSet = asyncHandler(async (req, res) => {
-  const { reps, duration, weight } = req.body;
+  const { value, type, weight } = req.body;
+  
 
   const set = await setService.updateSet(
-    { reps, duration, weight },
+    value,
+    type,
+    weight ?? 0,
     req.params.setId,
     req.params.exerciseId,
     req.params.workoutId,

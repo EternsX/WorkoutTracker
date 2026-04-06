@@ -54,8 +54,8 @@ export default function Sets({ workoutId, workoutExerciseId }) {
   const handleAddSet = async () => {
 
     await createSet(
-      Number(newReps),
-      Number(duration),
+      type == "reps" ? newReps : duration,
+      type,
       Number(newWeight),
       workoutId,
       workoutExerciseId

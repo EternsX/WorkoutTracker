@@ -46,13 +46,15 @@ export default function Progress() {
 
     const loadExercises = async () => {
       const result = await getExercises(selectedWorkout);
-      setExercises(result || []);
 
-      if (!result.find((e) => e.workout_exercise_id === selectedExercise)) {
+      const exercisesArray = result?.exercises || [];
+
+      setExercises(exercisesArray);
+
+      if (!exercisesArray.find((e) => e.workout_exercise_id === selectedExercise)) {
         setSearchParams({ workout: selectedWorkout });
       }
     };
-
     loadExercises();
   }, [selectedWorkout, selectedExercise, getExercises, setSearchParams]);
 
@@ -66,7 +68,7 @@ export default function Progress() {
 
     const loadProgress = async () => {
       const result = await getBestSet(selectedExercise);
-      setProgressData(result.progress || []);
+      setProgressData(result.bestSet?.progress || []);
     };
 
     loadProgress();

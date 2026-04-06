@@ -1,63 +1,69 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import AuthContext from "./AuthContext";
-import { fetchUserApi, loginApi, registerApi } from "./authApi";
 import { withLoadingAndError } from "../../utils/apiHelpers";
+import { requireFields } from "../../utils/validation";
+import { fetchUserApi, loginApi, registerApi } from "./authApi";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(() => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const data = await fetchUserApi();
+      try {
+        const result = await fetchUserApi();
 
-      if (data?.error) {
-        localStorage.removeItem("token"); // ✅ REMOVE BAD TOKEN
+        setUser(result.user || null);
+        return { user: result.user };
+      } catch (err) {
+        // important: handle invalid token case
+        localStorage.removeItem("token");
         setUser(null);
-        return data.error;
+        throw err;
       }
+    })();
+  }, []);
 
-      setUser(data.user);
+  const login = useCallback((username, password) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+
+      const errors = requireFields({ username, password });
+      if (Object.keys(errors).length) throw { errors };
+
+      await loginApi(username, password);
+      const { user } = await fetchUser();
+
+      return { success: true, user };
+    })();
+  }, [fetchUser]);
+
+  const register = useCallback((username, password) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      
+      const errors = requireFields({ username, password });
+      if (Object.keys(errors).length) throw { errors };
+      
+      await registerApi(username, password);
+
+      // auto-login after registration
+      const { user } = await login(username, password);
+
+      return { success: true, user };
+    })();
+  }, [login]);
+
+  const logout = useCallback(() => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      localStorage.removeItem("token");
+      setUser(null);
       return { success: true };
     })();
   }, []);
 
   useEffect(() => {
-    fetchUser();
+     fetchUser();
   }, [fetchUser]);
-
-  const login = useCallback(async (username, password) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      const { error } = await loginApi(username, password);
-      if (error) return { error };
-
-      await fetchUser();
-      return { success: true };
-    })();
-  }, [fetchUser]);
-
-  const register = useCallback(async (username, password) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      const { error } = await registerApi(username, password);
-      if (error) return { error };
-
-      const loginRes = await login(username, password);
-
-      if (!loginRes?.success) {
-        return { error: loginRes?.error || "Login after register failed" };
-      }
-
-      return { success: true };
-    })();
-  }, [login]);
-
-  const logout = useCallback(async () => {
-    return withLoadingAndError(setLoading, setError, () => {
-      localStorage.removeItem("token");
-      setUser(null);
-    })();
-  }, []);
 
   const value = useMemo(() => ({
     user,

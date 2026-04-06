@@ -5,13 +5,20 @@ export const validate = (schema, property = "body") => (req, res, next) => {
     });
 
     if (error) {
-        console.log(error)
-        return res.status(400).json({
-            message: "Validation failed",
-            errors: error.details.map(d => d.message)
+        const err = new Error("Validation failed");
+        err.statusCode = 400;
+
+        const errors = {};
+        error.details.forEach(d => {
+            const field = d.path.join('.') || "general";
+            errors[field] = d.message;
         });
+
+        err.errors = errors; // ✅ use errors, not details
+
+        return next(err);
     }
 
-    req[property] = value; // ✅ cleaned data
+    req[property] = value;
     next();
 };

@@ -37,7 +37,6 @@ export const deleteExercise = asyncHandler(async (req, res) => {
 export const updateExercise = asyncHandler(async (req, res) => {
     const exercise = await exerciseService.updateExercise(
         req.body.name,
-        req.body.type,
         req.params.workoutId,
         req.params.workoutExerciseId,
         req.user.id

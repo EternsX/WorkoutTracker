@@ -2,14 +2,14 @@ import "./Register.css";
 import { useEffect, useState, useRef } from "react";
 import useOverlay from "../../../context/UIOverlay/useOverlay";
 import useAuth from "../../../context/Auth/useAuth";
-import { MODAL_TYPES } from "../../../constants/modalTypes"; // adjust path if you move it to constants
+import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
 import { useIsMobile } from "../../../utils/isMobile";
 
 export default function Register() {
-    const { overlays, closeOverlay } = useOverlay();
-    const { register } = useAuth();
+    const { overlays, closeOverlay, openOverlay } = useOverlay();
+    const { register, loading, error } = useAuth(); // ✅ use context state
     const navigate = useNavigate();
     const isMobile = useIsMobile();
 
@@ -17,56 +17,38 @@ export default function Register() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
     const usernameRef = useRef(null);
 
+    // Reset form when modal opens
     useEffect(() => {
         if (registerIsOpen && !isMobile) {
             usernameRef.current?.focus();
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPassword("");
         setUsername("");
-        setError("");
     }, [registerIsOpen, isMobile]);
 
-    const handleChange = (e, setValue) => {
-        setValue(e.target.value);
-    };
-
     const handleRegister = async () => {
-        setError("");
+        if (loading) return; // prevent double submit
 
-        if (!username || !password) {
-            setError("Please fill all fields");
-            return;
-        }
+        const res = await register(username, password);
 
-        try {
-            setLoading(true);
-
-            const res = await register(username, password);
-
-            if (!res?.success) {
-                setError(res?.error || "Register failed");
-                return;
-            }
-
-            closeOverlay(MODAL_TYPES.REGISTER)
+        if (res?.success) {
+            closeOverlay(MODAL_TYPES.REGISTER);
             navigate("/", { replace: true });
-        } catch (err) {
-            setError("Server error");
-            console.log(err);
-        } finally {
-            setLoading(false);
         }
     };
 
-    if (!registerIsOpen) return null; // optional optimization
+    const handleOpenLogin = () => {
+        closeOverlay(MODAL_TYPES.REGISTER);
+        openOverlay({ type: MODAL_TYPES.LOGIN });
+    };
+
+    if (!registerIsOpen) return null;
 
     return (
         <Modal type={MODAL_TYPES.REGISTER}>
-            <h2 className="title">Register</h2>
             <form
                 className="form"
                 onSubmit={(e) => {
@@ -74,36 +56,44 @@ export default function Register() {
                     handleRegister();
                 }}
             >
+                <h2 className="title">Register</h2>
+
                 <div className="input-group">
                     <input
                         ref={usernameRef}
-                        onChange={(e) => handleChange(e, setUsername)}
                         value={username}
-                        id="username"
+                        onChange={(e) => setUsername(e.target.value)}
                         autoComplete="username"
-                        type="text"
                         placeholder=" "
                     />
-                    <label htmlFor="username">Username</label>
+                    <label>Username</label>
+                    {error?.username && <div className="error">{error.username}</div>}
                 </div>
 
                 <div className="input-group">
                     <input
-                        onChange={(e) => handleChange(e, setPassword)}
-                        value={password}
-                        id="password"
-                        autoComplete="current-password"
                         type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
                         placeholder=" "
                     />
-                    <label htmlFor="password">Password</label>
+                    <label>Password</label>
+                    {error?.password && <div className="error">{error.password}</div>}
                 </div>
 
-                {error && <div className="error">{error}</div>}
+                {error?.general && <div className="error">{error.general}</div>}
 
                 <button type="submit" disabled={loading} className="button">
                     {loading ? <span className="spinner"></span> : "Register"}
                 </button>
+
+                <p className="switch-text">
+                    Already have an account?{" "}
+                    <span className="switch-link" onClick={handleOpenLogin}>
+                        Login
+                    </span>
+                </p>
             </form>
         </Modal>
     );

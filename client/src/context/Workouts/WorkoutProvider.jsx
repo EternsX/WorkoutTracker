@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import WorkoutContext from "./WorkoutContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
+import { requireFields } from "../../utils/validation";
 import {
   getWorkoutsApi,
   createWorkoutApi,
@@ -16,69 +17,74 @@ export default function WorkoutProvider({ children }) {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  const getWorkouts = useCallback(async () => {
+  // ✅ GET WORKOUTS
+  const getWorkouts = useCallback(() => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await getWorkoutsApi();
 
-      if (!result.error) {
-        setWorkouts(result.workouts || []);
-      }
+      const workoutsArray = result?.workouts || [];
+      setWorkouts(workoutsArray);
 
-      return result;
+      return { workouts: workoutsArray };
     })();
   }, []);
 
-  const createWorkout = useCallback(async (name) => {
+  // ✅ CREATE WORKOUT
+  const createWorkout = useCallback((name) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ name });
+      if (Object.keys(errors).length) throw { errors };
+
       const result = await createWorkoutApi(name);
 
-      if (!result.error) {
-        setWorkouts(prev => [...prev, result.workout]);
-      }
+      setWorkouts(prev => [...prev, result.workout]);
 
-      return result;
+      return { workout: result.workout };
     })();
   }, []);
 
-  const updateWorkout = useCallback(async (workoutId, name) => {
+  // ✅ UPDATE WORKOUT
+  const updateWorkout = useCallback((workoutId, name) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ name });
+      if (Object.keys(errors).length) throw { errors };
+
       const result = await updateWorkoutApi(workoutId, name);
 
-      if (!result.error) {
-        setWorkouts(prev =>
-          prev.map(w => (w.id === workoutId ? result.workout : w))
-        );
-      }
+      setWorkouts(prev =>
+        prev.map(w => (w.id === workoutId ? result.workout : w))
+      );
 
-      return result;
+      return { workout: result.workout };
     })();
   }, []);
 
-  const delWorkout = useCallback(async (workoutId) => {
+  // ✅ DELETE WORKOUT
+  const deleteWorkout = useCallback((workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await deleteWorkoutApi(workoutId);
+      await deleteWorkoutApi(workoutId);
 
-      if (!result.error) {
-        setWorkouts(prev => prev.filter(w => w.id !== workoutId));
-      }
+      setWorkouts(prev => prev.filter(w => w.id !== workoutId));
 
-      return result;
+      return { success: true };
     })();
   }, []);
 
-  const completeWorkout = useCallback(async (workoutId, sessionId) => {
+  // ✅ COMPLETE WORKOUT
+  const completeWorkout = useCallback((workoutId, sessionId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await completeWorkoutApi(workoutId, sessionId);
 
-      return result;
+      return { result };
     })();
   }, []);
 
+  // ✅ GET SINGLE WORKOUT (SYNC)
   const getWorkout = useCallback((workoutId) => {
-    const workout = workouts.find(w => w.id === workoutId);
-    return workout
-  }, [workouts])
+    return workouts.find(w => w.id === workoutId) || null;
+  }, [workouts]);
 
+  // ✅ AUTO LOAD ON LOGIN
   useEffect(() => {
     if (!user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -96,10 +102,20 @@ export default function WorkoutProvider({ children }) {
     getWorkouts,
     createWorkout,
     updateWorkout,
-    delWorkout,
-    getWorkout,
+    deleteWorkout,
     completeWorkout,
-  }), [workouts, loading, error, getWorkouts, createWorkout, updateWorkout, completeWorkout, delWorkout, getWorkout]);
+    getWorkout,
+  }), [
+    workouts,
+    loading,
+    error,
+    getWorkouts,
+    createWorkout,
+    updateWorkout,
+    deleteWorkout,
+    completeWorkout,
+    getWorkout
+  ]);
 
   return (
     <WorkoutContext.Provider value={value}>

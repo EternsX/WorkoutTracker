@@ -2,11 +2,14 @@ export function withLoadingAndError(setLoading, setError, asyncFn) {
   return async (...args) => {
     setError(null);
     setLoading(true);
+
     try {
       return await asyncFn(...args);
     } catch (err) {
-      setError(err.message || "Network error");
-      return { error: err.message || "Network error" };
+      // Ensure we have structured errors
+      const errorObj = err.errors || { general: err.message || "Network error" };
+      setError(errorObj);
+      return { error: errorObj };
     } finally {
       setLoading(false);
     }
@@ -26,6 +29,14 @@ export const request = async (url, options = {}) => {
   });
 
   const data = await res.json();
-  if (!res.ok) return { error: data.message || "Request failed", status: res.status };
+
+  if (!res.ok) {
+    throw {
+      message: data.message || "Request failed",
+      errors: data.errors || { general: data.message || "Request failed" },
+      statusCode: res.status
+    };
+  }
+
   return data;
 };

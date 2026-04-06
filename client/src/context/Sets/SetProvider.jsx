@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import SetContext from "./SetContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
+import { requireFields } from "../../utils/validation";
 import {
   apiGetSets,
   apiCreateSet,
@@ -14,92 +15,92 @@ export default function SetProvider({ children }) {
   const [error, setError] = useState(null);
 
   // ✅ GET SETS
-  const getSets = useCallback(async (workoutId, workout_exercise_id) => {
+  const getSets = useCallback((workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await apiGetSets(workoutId, workout_exercise_id);
+
       setSets(prev => ({
         ...prev,
         [workoutId]: {
           ...(prev[workoutId] || {}),
-          [workout_exercise_id]: result.error ? [] : (result.sets || [])
+          [workout_exercise_id]: result.sets || []
         }
       }));
 
-      return result.sets || [];
+      return { sets: result.sets || [] };
     })();
   }, []);
 
   // ✅ CREATE SET
-  const createSet = useCallback(
-    async (reps, duration, weight, workoutId, workout_exercise_id) => {
-      return withLoadingAndError(setLoading, setError, async () => {
-        console.log(reps, duration)
-        const result = await apiCreateSet(
-          reps,
-          duration,
-          weight,
-          workoutId,
-          workout_exercise_id
-        );
-
-        if (!result.error) {
-          setSets((prev) => ({
-            ...prev,
-            [workoutId]: {
-              ...(prev[workoutId] || {}),
-              [workout_exercise_id]: [
-                ...(prev[workoutId]?.[workout_exercise_id] || []),
-                result.set,
-              ],
-            },
-          }));
-        }
-
-        return result;
-      })();
-    },
-    []
-  );
-  // ✅ UPDATE SET
-  const updateSet = useCallback(async (setId, reps, duration, weight, workoutId, workout_exercise_id) => {
+  // ✅ CREATE SET
+const createSet = useCallback(
+  (value, type, weight, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      console.log(reps, duration)
-      const result = await apiUpdateSet(setId, reps, duration, weight, workoutId, workout_exercise_id);
+      // Validate input
+      const errors = requireFields(type === "reps" ? { reps: value, weight } : { duration: value, weight });
+      if (Object.keys(errors).length) throw { errors };
 
-      if (!result.error) {
-        setSets(prev => ({
-          ...prev,
-          [workoutId]: {
-            ...(prev[workoutId] || {}),
-            [workout_exercise_id]: prev[workoutId]?.[workout_exercise_id]?.map(s =>
-              s.id === setId ? result.set : s
-            ) || []
-          }
-        }));
-      }
+      const result = await apiCreateSet(value, type, weight, workoutId, workout_exercise_id);
 
-      return result;
+      setSets(prev => ({
+        ...prev,
+        [workoutId]: {
+          ...(prev[workoutId] || {}),
+          [workout_exercise_id]: [
+            ...(prev[workoutId]?.[workout_exercise_id] || []),
+            result.set
+          ]
+        }
+      }));
+
+      return { set: result.set };
     })();
-  }, []);
+  },
+  []
+);
+
+// ✅ UPDATE SET
+const updateSet = useCallback(
+  (setId, value, type, weight, workoutId, workout_exercise_id) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      // Validate input
+      const errors = requireFields(type === "reps" ? { reps: value, weight } : { duration: value, weight });
+      if (Object.keys(errors).length) throw { errors };
+
+      const result = await apiUpdateSet(setId, value, type, weight, workoutId, workout_exercise_id);
+
+      setSets(prev => ({
+        ...prev,
+        [workoutId]: {
+          ...(prev[workoutId] || {}),
+          [workout_exercise_id]: prev[workoutId]?.[workout_exercise_id]?.map(s =>
+            s.id === setId ? result.set : s
+          ) || []
+        }
+      }));
+
+      return { set: result.set };
+    })();
+  },
+  []
+);
 
   // ✅ DELETE SET
-  const deleteSet = useCallback(async (setId, workoutId, workout_exercise_id) => {
+  const deleteSet = useCallback((setId, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await apiDeleteSet(setId, workoutId, workout_exercise_id);
+      await apiDeleteSet(setId, workoutId, workout_exercise_id);
 
-      if (!result.error) {
-        setSets(prev => ({
-          ...prev,
-          [workoutId]: {
-            ...(prev[workoutId] || {}),
-            [workout_exercise_id]: prev[workoutId]?.[workout_exercise_id]?.filter(
-              s => s.id !== setId
-            ) || []
-          }
-        }));
-      }
+      setSets(prev => ({
+        ...prev,
+        [workoutId]: {
+          ...(prev[workoutId] || {}),
+          [workout_exercise_id]: prev[workoutId]?.[workout_exercise_id]?.filter(
+            s => s.id !== setId
+          ) || []
+        }
+      }));
 
-      return result;
+      return { success: true };
     })();
   }, []);
 

@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import ExerciseContext from "./ExerciseContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
+import { requireFields } from "../../utils/validation";
 import {
   getExercisesApi,
   createExerciseApi,
@@ -15,69 +16,64 @@ export default function ExerciseProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ GET EXERCISES (these are workout_exercises now)
-  const getExercises = useCallback(async (workoutId) => {
+  // ✅ GET EXERCISES
+  const getExercises = useCallback((workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await getExercisesApi(workoutId);
 
-      if (result.error) {
-        setExercises([]);
-        return result;
-      }
-
       setExercises(result.exercises || []);
-      return result.exercises || [];
+      return { exercises: result.exercises || [] };
     })();
   }, []);
 
-  // ✅ CREATE EXERCISE (creates workout_exercise)
-  const createExercise = useCallback(async (name, workoutId) => {
+  // ✅ CREATE EXERCISE
+  const createExercise = useCallback((name, workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ name });
+      if (Object.keys(errors).length) throw { errors };
+
       const result = await createExerciseApi(name, workoutId);
 
-      if (!result.error) {
-        setExercises(prev => [...prev, result.exercise]);
-      }
+      setExercises(prev => [...prev, result.exercise]);
 
-      return result;
+      return { success: true, exercise: result.exercise };
     })();
   }, []);
 
-  // ✅ UPDATE EXERCISE (use workout_exercise_id)
-  const updateExercise = useCallback(async (name, type, workoutId, workout_exercise_id) => {
+  // ✅ UPDATE EXERCISE
+  const updateExercise = useCallback((name, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateExerciseApi(name, type, workoutId, workout_exercise_id);
-      if (!result.error) {
-        setExercises(prev =>
-          prev.map(e =>
-            e.workout_exercise_id === workout_exercise_id
-              ? result.exercise
-              : e
-          )
-        );
-      }
+      const errors = requireFields({ name });
+      if (Object.keys(errors).length) throw { errors };
 
-      return result;
+      const result = await updateExerciseApi(name, workoutId, workout_exercise_id);
+
+      setExercises(prev =>
+        prev.map(e =>
+          e.workout_exercise_id === workout_exercise_id
+            ? result.exercise
+            : e
+        )
+      );
+
+      return { success: true, exercise: result.exercise };
     })();
   }, []);
 
-  // ✅ DELETE EXERCISE (use workout_exercise_id)
-  const delExercise = useCallback(async (workoutId, workout_exercise_id) => {
+  // ✅ DELETE EXERCISE
+  const delExercise = useCallback((workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      console.log(workout_exercise_id)
-      const result = await deleteExerciseApi(workoutId, workout_exercise_id);
+      await deleteExerciseApi(workoutId, workout_exercise_id);
 
-      if (!result.error) {
-        setExercises(prev =>
-          prev.filter(e => e.workout_exercise_id !== workout_exercise_id)
-        );
-      }
+      setExercises(prev =>
+        prev.filter(e => e.workout_exercise_id !== workout_exercise_id)
+      );
 
-      return result;
+      return { success: true };
     })();
   }, []);
 
-  // ✅ GET SINGLE EXERCISE
+  // ✅ GET SINGLE EXERCISE (sync)
   const getExercise = useCallback((workout_exercise_id) => {
     return exercises.find(e => e.workout_exercise_id === workout_exercise_id) || null;
   }, [exercises]);
@@ -85,37 +81,37 @@ export default function ExerciseProvider({ children }) {
   // ✅ UPDATE REST TIMERS
   const updateRestTimers = useCallback((restFields, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateRestTimersApi(restFields, workoutId, workout_exercise_id);
+      await updateRestTimersApi(restFields, workoutId, workout_exercise_id);
 
-      if (!result.error) {
-        setExercises(prev =>
-          prev.map(e =>
-            e.workout_exercise_id !== workout_exercise_id
-              ? e
-              : { ...e, ...restFields }
-          )
-        );
-      }
+      setExercises(prev =>
+        prev.map(e =>
+          e.workout_exercise_id !== workout_exercise_id
+            ? e
+            : { ...e, ...restFields }
+        )
+      );
 
-      return result;
+      return { success: true };
     })();
   }, []);
 
+  // ✅ UPDATE EXERCISE TYPE
   const updateExerciseType = useCallback((type, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await updateExerciseTypeApi(type, workoutId, workout_exercise_id);
+      const errors = requireFields({ type });
+      if (Object.keys(errors).length) throw { errors };
 
-      if (!result.error) {
-        setExercises(prev =>
-          prev.map(e =>
-            e.workout_exercise_id !== workout_exercise_id
-              ? e
-              : { ...e, type }
-          )
-        );
-      }
+      await updateExerciseTypeApi(type, workoutId, workout_exercise_id);
 
-      return result;
+      setExercises(prev =>
+        prev.map(e =>
+          e.workout_exercise_id !== workout_exercise_id
+            ? e
+            : { ...e, type }
+        )
+      );
+
+      return { success: true };
     })();
   }, []);
 

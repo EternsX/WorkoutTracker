@@ -9,23 +9,23 @@ export const createExerciseApi = (name, workoutId) =>
     body: JSON.stringify({ name })
   });
 
-export const updateExerciseApi = (name, type, workoutId, exerciseId) =>
-  request(updateExerciseUrl(workoutId, exerciseId), {
+export const updateExerciseApi = (name, workoutId, workoutExerciseId) =>
+  request(updateExerciseUrl(workoutId, workoutExerciseId), {
     method: "PUT",
-    body: JSON.stringify({ name, type })
+    body: JSON.stringify({ name })
   });
 
-export const updateRestTimersApi = (restFields, workoutId, exerciseId) =>
-  request(updateRestTimesUrl(workoutId, exerciseId), {
+export const updateRestTimersApi = (restFields, workoutId, workoutExerciseId) =>
+  request(updateRestTimesUrl(workoutId, workoutExerciseId), {
     method: "PATCH",
     body: JSON.stringify({ ...restFields })
   });
 
-export const updateExerciseTypeApi = (type, workoutId, exerciseId) =>
-  request(updateExerciseTypeUrl(workoutId, exerciseId), {
+export const updateExerciseTypeApi = (type, workoutId, workoutExerciseId) =>
+  request(updateExerciseTypeUrl(workoutId, workoutExerciseId), {
     method: "PATCH",
     body: JSON.stringify({ type })
   });
 
-export const deleteExerciseApi = (workoutId, exerciseId) =>
-  request(delExerciseUrl(workoutId, exerciseId), { method: "DELETE" });
+export const deleteExerciseApi = (workoutId, workoutExerciseId) =>
+  request(delExerciseUrl(workoutId, workoutExerciseId), { method: "DELETE" });
