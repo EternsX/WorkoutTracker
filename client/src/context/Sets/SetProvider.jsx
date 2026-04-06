@@ -37,9 +37,8 @@ const createSet = useCallback(
   (value, type, weight, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
       // Validate input
-      const errors = requireFields(type === "reps" ? { reps: value, weight } : { duration: value, weight });
+      const errors = requireFields(type === "reps" ? { reps: value } : { duration: value });
       if (Object.keys(errors).length) throw { errors };
-
       const result = await apiCreateSet(value, type, weight, workoutId, workout_exercise_id);
 
       setSets(prev => ({
