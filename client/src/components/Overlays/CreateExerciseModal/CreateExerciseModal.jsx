@@ -10,6 +10,7 @@ export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
   const { createExercise, loading, error } = useExercise();
   const isMobile = useIsMobile();
+  console.log(error)
 
   const [name, setName] = useState("");
   const nameRef = useRef(null);
@@ -35,13 +36,11 @@ export default function CreateExerciseModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) return;
-
     const res = await createExercise(name.trim(), workoutId);
 
-    if (res?.error) return; // ❌ stay open if error
+    if (res?.error) return;
 
-    handleClose(); // ✅ close only on success
+    handleClose();
   };
 
   if (!overlayData) return null;
@@ -61,9 +60,10 @@ export default function CreateExerciseModal() {
             placeholder=" "
           />
           <label htmlFor="name">Exercise Name</label>
+          {error?.name && <div className="error-text"><span className="error-symbol">*</span>{error.name}</div>}
+
         </div>
 
-        {error && <div className="error">{error}</div>}
 
         <button className="button" disabled={loading} type="submit">
           {loading ? <span className="spinner"></span> : "Create"}

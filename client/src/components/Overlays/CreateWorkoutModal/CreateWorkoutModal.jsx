@@ -14,7 +14,6 @@ export default function CreateWorkoutModal() {
   const workoutRef = useRef(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-
   const overlayData = overlays.find(
     (o) => o.type === MODAL_TYPES.CREATE_WORKOUT
   );
@@ -31,7 +30,6 @@ export default function CreateWorkoutModal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!workout.trim()) return;
 
     const result = await createWorkout(workout.trim());
 
@@ -58,10 +56,10 @@ export default function CreateWorkoutModal() {
             placeholder=" "
           />
           <label htmlFor="workout">Workout</label>
+          {error?.name && <div className="error-text"><span className="error-symbol">*</span>{error.name}</div>}
         </div>
 
         {/* ✅ error display */}
-        {error && <div className="error">{error}</div>}
 
         <button className="button" disabled={loading} type="submit">
           {loading ? <span className="spinner"></span> : "Create"}

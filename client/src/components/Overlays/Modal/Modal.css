@@ -160,6 +160,22 @@
     font-size: 14px;
 }
 
+.error-text {
+    margin-top: 6px;
+    font-size: 13px;
+    color: rgba(255, 90, 90, 0.85);
+    /* soft red */
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.error-symbol {
+    margin-left: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
 .spinner {
     width: 18px;
     height: 18px;
@@ -180,13 +196,17 @@
 
 @media (max-width: 480px) {
     .overlay-backdrop {
-        align-items: center; /* 🔥 center vertically */
-        padding: 15px;       /* keep some spacing from edges */
+        align-items: center;
+        /* 🔥 center vertically */
+        padding: 15px;
+        /* keep some spacing from edges */
     }
 
     .overlay-panel {
-        width: 90%;       /* responsive width */
-        max-width: 420px; /* optional max width */
+        width: 90%;
+        /* responsive width */
+        max-width: 420px;
+        /* optional max width */
         border-radius: 16px;
         padding: clamp(20px, 5vw, 40px);
     }
@@ -195,6 +215,7 @@
         from {
             transform: translateY(100%);
         }
+
         to {
             transform: translateY(0);
         }

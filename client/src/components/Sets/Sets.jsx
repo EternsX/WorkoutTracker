@@ -139,6 +139,7 @@ export default function Sets({ workoutId, workoutExerciseId }) {
           {type === "reps" ? (
             <>
               <input
+                type="number"
                 placeholder="Reps"
                 value={newReps}
                 onChange={(e) => setNewReps(e.target.value)}
@@ -160,6 +161,7 @@ export default function Sets({ workoutId, workoutExerciseId }) {
 
 
           <input
+            type="number"
             placeholder="Weight (kg)"
             value={newWeight}
             onChange={(e) => setNewWeight(e.target.value)}

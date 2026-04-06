@@ -67,7 +67,7 @@ export default function Register() {
                         placeholder=" "
                     />
                     <label>Username</label>
-                    {error?.username && <div className="error">{error.username}</div>}
+                    {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
                 </div>
 
                 <div className="input-group">
@@ -79,7 +79,7 @@ export default function Register() {
                         placeholder=" "
                     />
                     <label>Password</label>
-                    {error?.password && <div className="error">{error.password}</div>}
+                    {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>
 
                 {error?.general && <div className="error">{error.general}</div>}

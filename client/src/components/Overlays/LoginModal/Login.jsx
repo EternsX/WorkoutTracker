@@ -62,21 +62,23 @@ export default function Login() {
                         placeholder=" "
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        className={error?.username ? "input-invalid" : ""}
                     />
                     <label>Username</label>
-                    {error?.username && <div className="error">{error.username}</div>}
+                    {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
                 </div>
 
                 <div className="input-group">
                     <input
-                        placeholder=" "
                         type="password"
+                        placeholder=" "
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        className={error?.password ? "input-invalid" : ""}
                     />
                     <label>Password</label>
-                    {error?.password && <div className="error">{error.password}</div>}
+                    {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>
                 {error?.general && <div className="error">{error.general}</div>}
 
