@@ -5,6 +5,40 @@ import {
   doesWorkoutHaveWorkoutExerciseId
 } from "../config/validations.js";
 
+/* ================= HELPERS ================= */
+
+// 🔹 get full exercise object
+const getExerciseByWorkoutExerciseId = async (workoutExerciseId) => {
+  const res = await query(`
+    SELECT 
+      e.id,
+      e.name,
+      we.id AS workout_exercise_id,
+      we.rest_after_exercise,
+      we.rest_between_sets,
+      we.exercise_order,
+      we.created_at,
+      we.type,
+      we.workout_id
+    FROM workout_exercises we
+    JOIN exercises e ON e.id = we.exercise_id
+    WHERE we.id = $1
+  `, [workoutExerciseId]);
+
+  return res.rows[0] || null;
+};
+
+// 🔹 get exercise_id only
+const getExerciseId = async (workoutExerciseId) => {
+  const res = await query(
+    "SELECT exercise_id FROM workout_exercises WHERE id = $1",
+    [workoutExerciseId]
+  );
+  return res.rows[0]?.exercise_id;
+};
+
+/* ================= SERVICES ================= */
+
 // 🔹 GET exercises
 export const getExercises = async (workoutId, userId) => {
   if (!(await doesUserOwnWorkout(userId, workoutId))) {
@@ -20,7 +54,8 @@ export const getExercises = async (workoutId, userId) => {
       we.rest_between_sets,
       we.exercise_order,
       we.created_at,
-      we.type
+      we.type,
+      we.workout_id
     FROM workout_exercises we
     JOIN exercises e ON e.id = we.exercise_id
     WHERE we.workout_id = $1
@@ -28,6 +63,21 @@ export const getExercises = async (workoutId, userId) => {
   `, [workoutId]);
 
   return res.rows;
+};
+
+// 🔹 GET single exercise (optional but useful)
+export const getExercise = async (workoutId, workoutExerciseId, userId) => {
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
+    throw { statusCode: 403, message: "Access denied" };
+  }
+
+  const exercise = await getExerciseByWorkoutExerciseId(workoutExerciseId);
+
+  if (!exercise) {
+    throw { statusCode: 404, message: "Exercise not found" };
+  }
+
+  return exercise;
 };
 
 // 🔹 CREATE exercise
@@ -52,7 +102,7 @@ export const createExercise = async (name, workoutId, userId) => {
     );
     const exerciseId = res.rows[0].id;
 
-    // create workout_exercise + RETURN ID
+    // create workout_exercise
     const weRes = await query(
       `INSERT INTO workout_exercises (workout_id, exercise_id, exercise_order)
        VALUES ($1, $2, $3)
@@ -61,23 +111,9 @@ export const createExercise = async (name, workoutId, userId) => {
     );
     const workoutExerciseId = weRes.rows[0].id;
 
-    // 🔥 RETURN FULL OBJECT
-    const fullRes = await query(`
-      SELECT 
-        e.id,
-        e.name,
-        we.id AS workout_exercise_id,
-        we.rest_after_exercise,
-        we.rest_between_sets,
-        we.exercise_order,
-        we.created_at
-      FROM workout_exercises we
-      JOIN exercises e ON e.id = we.exercise_id
-      WHERE we.id = $1
-    `, [workoutExerciseId]);
-
     await query("COMMIT");
-    return fullRes.rows[0];
+
+    return await getExerciseByWorkoutExerciseId(workoutExerciseId);
 
   } catch (err) {
     await query("ROLLBACK");
@@ -94,35 +130,14 @@ export const updateExercise = async (name, workoutId, workoutExerciseId, userId)
     throw { statusCode: 404, message: "Workout exercise not found" };
   }
 
-  // get exercise_id
-  const res = await query(
-    "SELECT exercise_id FROM workout_exercises WHERE id = $1",
-    [workoutExerciseId]
-  );
-  const exerciseId = res.rows[0].exercise_id;
+  const exerciseId = await getExerciseId(workoutExerciseId);
 
-  // update name
   await query(
     "UPDATE exercises SET name = $1 WHERE id = $2",
     [name, exerciseId]
   );
 
-  // 🔥 RETURN FULL OBJECT
-  const fullRes = await query(`
-    SELECT 
-      e.id,
-      e.name,
-      we.id AS workout_exercise_id,
-      we.rest_after_exercise,
-      we.rest_between_sets,
-      we.exercise_order,
-      we.created_at
-    FROM workout_exercises we
-    JOIN exercises e ON e.id = we.exercise_id
-    WHERE we.id = $1
-  `, [workoutExerciseId]);
-
-  return fullRes.rows[0];
+  return await getExerciseByWorkoutExerciseId(workoutExerciseId);
 };
 
 // 🔹 DELETE exercise
@@ -136,16 +151,9 @@ export const deleteExercise = async (workoutId, workoutExerciseId, userId) => {
 
   await query("BEGIN");
   try {
-    // get exercise_id
-    const res = await query(
-      "SELECT exercise_id FROM workout_exercises WHERE id = $1",
-      [workoutExerciseId]
-    );
-    const exerciseId = res.rows[0].exercise_id;
+    const exerciseId = await getExerciseId(workoutExerciseId);
 
-    // delete link
     await query("DELETE FROM workout_exercises WHERE id = $1", [workoutExerciseId]);
-    // delete exercise
     await query("DELETE FROM exercises WHERE id = $1", [exerciseId]);
 
     await query("COMMIT");
@@ -169,6 +177,7 @@ export const updateRestTimes = async (fields, workoutId, workoutExerciseId, user
   const setClauses = [];
   const values = [];
   let i = 1;
+
   for (const key in fields) {
     if (fields[key] != null) {
       setClauses.push(`${key} = $${i}`);
@@ -176,17 +185,21 @@ export const updateRestTimes = async (fields, workoutId, workoutExerciseId, user
       i++;
     }
   }
+
   if (!setClauses.length) return null;
 
   values.push(workoutId, workoutExerciseId);
+
   const queryText = `
     UPDATE workout_exercises
     SET ${setClauses.join(', ')}
     WHERE workout_id = $${i} AND id = $${i + 1}
     RETURNING *;
   `;
+
   const { rows } = await query(queryText, values);
   if (!rows.length) throw { statusCode: 404, message: "Workout exercise not found" };
+
   return rows[0];
 };
 
@@ -207,5 +220,6 @@ export const updateExerciseType = async (type, workoutId, workoutExerciseId, use
   `, [type, workoutId, workoutExerciseId]);
 
   if (!rows.length) throw { statusCode: 404, message: "Workout exercise not found" };
+
   return rows[0];
 };

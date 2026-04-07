@@ -21,6 +21,7 @@ export default function WorkoutSidebar({ workoutSidebarIsOpen, closeWorkoutSideb
         openOverlay({ type: MODAL_TYPES.CREATE_WORKOUT });
     };
 
+
     return (
         <div
             className={`workout-sidebar-backdrop ${workoutSidebarIsOpen ? "show" : ""}`}
@@ -38,7 +39,7 @@ export default function WorkoutSidebar({ workoutSidebarIsOpen, closeWorkoutSideb
                 </button>
 
                 {workouts && workouts.length > 0 ? (
-                    <Workouts workouts={workouts} />
+                    <Workouts workouts={workouts} closeWorkoutSidebar={closeWorkoutSidebar} />
                 ) : (
                     <p className="empty-message">
                         {user 

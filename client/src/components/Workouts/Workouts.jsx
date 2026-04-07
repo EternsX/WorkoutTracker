@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useWorkout from '../../context/Workouts/useWorkout';
 import './Workouts.css';
 
-export default function Workouts() {
-  const { workouts, deleteWorkout, updateWorkout } = useWorkout();
+export default function Workouts({ workouts, closeWorkoutSidebar }) {
+  const { deleteWorkout, updateWorkout } = useWorkout();
   const navigate = useNavigate();
   const { workoutId: currentWorkoutId } = useParams(); // current workout from URL
   const [editingId, setEditingId] = useState(null);
@@ -58,6 +58,14 @@ export default function Workouts() {
     }
   };
 
+  const handleClick = (id) => {
+    navigate(`/workouts/${id}`);
+
+    if (closeWorkoutSidebar) {
+      closeWorkoutSidebar();
+    }
+  };
+
   return (
     <div className="workouts-list" ref={menuRef}>
       {workouts.map((w) => (
@@ -75,9 +83,9 @@ export default function Workouts() {
             </div>
           ) : (
             <div className="workout-item">
-              <Link to={`/workouts/${w.id}`} className="workout-link">
+              <div onClick={() => handleClick(w.id)} className="workout-link">
                 {w.name}
-              </Link>
+              </div>
 
               <div className="dots-menu-wrapper">
                 <span className="dots" onClick={() => toggleMenu(w.id)}>⋮</span>

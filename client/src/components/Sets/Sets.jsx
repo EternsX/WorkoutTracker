@@ -21,13 +21,12 @@ export default function Sets({ workoutId, workoutExerciseId }) {
   // ✅ Get sets for this workout_exercise
   const curSets = sets[workoutId]?.[workoutExerciseId];
   const curSetsSafe = curSets || [];
-
   // ✅ Fetch sets only if not loaded yet
   useEffect(() => {
-    if (workoutId && workoutExerciseId && !curSets) {
+    if (workoutId && workoutExerciseId && getExercise(workoutExerciseId).workout_id == workoutId && !curSets) {
       getSets(workoutId, workoutExerciseId);
     }
-  }, [workoutId, workoutExerciseId, getSets, curSets]);
+  }, [workoutId, workoutExerciseId, getExercise, getSets, curSets]);
 
   // ✅ Sync rest timer correctly (fix: != null)
   useEffect(() => {

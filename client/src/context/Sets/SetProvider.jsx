@@ -11,34 +11,41 @@ import {
 
 export default function SetProvider({ children }) {
   const [sets, setSets] = useState({});
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Track how many fetches are currently running
+  const [loadingCount, setLoadingCount] = useState(0);
+  const loading = loadingCount > 0; // page is loading if any fetch is active
 
   // ✅ GET SETS
   const getSets = useCallback((workoutId, workout_exercise_id) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      const result = await apiGetSets(workoutId, workout_exercise_id);
+    setLoadingCount(prev => prev + 1);
 
-      setSets(prev => ({
-        ...prev,
-        [workoutId]: {
-          ...(prev[workoutId] || {}),
-          [workout_exercise_id]: result.sets || []
-        }
-      }));
+    return withLoadingAndError(() => {}, setError, async () => {
+      try {
+        const result = await apiGetSets(workoutId, workout_exercise_id);
 
-      return { sets: result.sets || [] };
+        setSets(prev => ({
+          ...prev,
+          [workoutId]: {
+            ...(prev[workoutId] || {}),
+            [workout_exercise_id]: result.sets || []
+          }
+        }));
+
+        return { sets: result.sets || [] };
+      } finally {
+        setLoadingCount(prev => prev - 1);
+      }
     })();
   }, []);
 
   // ✅ CREATE SET
-  // ✅ CREATE SET
-const createSet = useCallback(
-  (value, type, weight, workoutId, workout_exercise_id) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      // Validate input
+  const createSet = useCallback((value, type, weight, workoutId, workout_exercise_id) => {
+    return withLoadingAndError(() => {}, setError, async () => {
       const errors = requireFields(type === "reps" ? { reps: value } : { duration: value });
       if (Object.keys(errors).length) throw { errors };
+
       const result = await apiCreateSet(value, type, weight, workoutId, workout_exercise_id);
 
       setSets(prev => ({
@@ -54,15 +61,11 @@ const createSet = useCallback(
 
       return { set: result.set };
     })();
-  },
-  []
-);
+  }, []);
 
-// ✅ UPDATE SET
-const updateSet = useCallback(
-  (setId, value, type, weight, workoutId, workout_exercise_id) => {
-    return withLoadingAndError(setLoading, setError, async () => {
-      // Validate input
+  // ✅ UPDATE SET
+  const updateSet = useCallback((setId, value, type, weight, workoutId, workout_exercise_id) => {
+    return withLoadingAndError(() => {}, setError, async () => {
       const errors = requireFields(type === "reps" ? { reps: value, weight } : { duration: value, weight });
       if (Object.keys(errors).length) throw { errors };
 
@@ -80,13 +83,11 @@ const updateSet = useCallback(
 
       return { set: result.set };
     })();
-  },
-  []
-);
+  }, []);
 
   // ✅ DELETE SET
   const deleteSet = useCallback((setId, workoutId, workout_exercise_id) => {
-    return withLoadingAndError(setLoading, setError, async () => {
+    return withLoadingAndError(() => {}, setError, async () => {
       await apiDeleteSet(setId, workoutId, workout_exercise_id);
 
       setSets(prev => ({
@@ -113,9 +114,5 @@ const updateSet = useCallback(
     deleteSet
   }), [sets, loading, error, getSets, createSet, updateSet, deleteSet]);
 
-  return (
-    <SetContext.Provider value={value}>
-      {children}
-    </SetContext.Provider>
-  );
+  return <SetContext.Provider value={value}>{children}</SetContext.Provider>;
 }
