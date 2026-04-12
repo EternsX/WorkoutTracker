@@ -96,14 +96,12 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
         await updateProgress(session.id, nextExerciseId, nextSetIdx, reps, duration, weight);
 
         if (setIdx + 1 < totalSets) {
+            setSetIdx(nextSetIdx);
             startRest(restBetweenSets);
-            setTimeout(() => setSetIdx(nextSetIdx), restBetweenSets * 1000);
         } else if (exIdx + 1 < totalExercises) {
+            setExIdx(nextExIdx);
+            setSetIdx(0);
             startRest(restAfterExercise);
-            setTimeout(() => {
-                setExIdx(nextExIdx);
-                setSetIdx(0);
-            }, restAfterExercise * 1000);
         } else {
             handleFinishWorkout("FINISHED", session.id);
         }
