@@ -14,7 +14,7 @@ export const validate = (schema, property = "body") => (req, res, next) => {
             errors[field] = d.message;
         });
 
-        err.errors = errors; // ✅ use errors, not details
+        err.errors = errors; 
 
         return next(err);
     }

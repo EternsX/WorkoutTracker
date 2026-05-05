@@ -9,7 +9,7 @@ import sessionRoutes from './routes/session.routes.js'
 import historyRoutes from './routes/history.routes.js'
 import { errorMiddleware } from './middleware/errorMiddleware.js'
 import progressRoutes from './routes/progress.routes.js';
-import { globalLimiter } from './middleware/rateLimiter.js';1
+import { globalLimiter } from './middleware/rateLimiter.js'; 1
 
 const app = express();
 const allowedOrigins = [
@@ -19,24 +19,25 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // allow requests with no origin (like Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked for origin ${origin}`));
     }
   },
-  methods: ['GET','POST','PUT','DELETE','PATCH']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
 
 
-app.use(globalLimiter); 
+app.use(globalLimiter);
 app.use(express.json());
 
-app.use("/auth", authRoutes);
+app.use(cors());
+app.options(/.*/, cors());app.use("/auth", authRoutes);
 app.use("/workouts", workoutRoutes);
 app.use("/session", sessionRoutes);
 app.use("/workouts/:workoutId/exercises", exerciseRoutes);

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import ExerciseContext from "./ExerciseContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
 import { requireFields } from "../../utils/validation";
@@ -8,14 +8,16 @@ import {
   updateExerciseApi,
   deleteExerciseApi,
   updateRestTimersApi,
-  updateExerciseTypeApi
+  updateExerciseTypeApi,
+  swapExercisesApi
 } from "./exercisesApi";
 
 export default function ExerciseProvider({ children }) {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [swapId, setSwapId] = useState(null);
+  const swapRefs = useRef(new Map());
   // ✅ GET EXERCISES
   const getExercises = useCallback((workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
@@ -115,28 +117,48 @@ export default function ExerciseProvider({ children }) {
     })();
   }, []);
 
+  const swapExercises = useCallback((workoutId, targetId, sourceId) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ targetId, sourceId });
+      if (Object.keys(errors).length) throw { errors };
+      await swapExercisesApi(workoutId, targetId, sourceId);
+
+      getExercises(workoutId);
+
+      return { success: true };
+    })();
+  }, []);
+
   const value = useMemo(() => ({
     exercises,
     loading,
     error,
+    swapId,
+    swapRefs,
     getExercises,
     createExercise,
     updateExercise,
     updateRestTimers,
     delExercise,
     getExercise,
-    updateExerciseType
+    updateExerciseType,
+    swapExercises,
+    setSwapId
   }), [
     exercises,
     loading,
     error,
+    swapId,
+    swapRefs,
     getExercises,
     createExercise,
     updateExercise,
     updateRestTimers,
     delExercise,
     getExercise,
-    updateExerciseType
+    updateExerciseType,
+    swapExercises,
+    setSwapId
   ]);
 
   return (

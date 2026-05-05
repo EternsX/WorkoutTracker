@@ -223,3 +223,111 @@ export const updateExerciseType = async (type, workoutId, workoutExerciseId, use
 
   return rows[0];
 };
+
+// 🔹 SWAP exercises
+export const swapExercises = async (workoutId, sourceId, targetId, userId) => {
+  // 🔐 Auth checks
+  if (!(await doesUserOwnWorkout(userId, workoutId))) {
+    throw { statusCode: 403, message: "Access denied" };
+  }
+
+  if (!(await doesWorkoutHaveWorkoutExerciseId(workoutId, sourceId))) {
+    throw { statusCode: 404, message: "Source workout exercise not found" };
+  }
+
+  if (!(await doesWorkoutHaveWorkoutExerciseId(workoutId, targetId))) {
+    throw { statusCode: 404, message: "Target workout exercise not found" };
+  }
+
+  const client = await query; // assuming pg pool wrapper supports this
+
+  console.log('BEGUN!!!!!!!!!!!!!!')
+  await query("BEGIN");
+
+  try {
+    // 📦 Get both exercise orders
+    const { rows } = await query(
+      `
+      SELECT id, exercise_order
+      FROM workout_exercises
+      WHERE workout_id = $1 AND id IN ($2, $3)
+      `,
+      [workoutId, sourceId, targetId]
+    );
+
+    if (rows.length !== 2) {
+      throw { statusCode: 404, message: "Workout exercise not found" };
+    }
+
+    const source = rows.find(r => r.id === sourceId);
+    const target = rows.find(r => r.id === targetId);
+
+    const sourceOrder = Number(source.exercise_order);
+    const targetOrder = Number(target.exercise_order);
+
+    if (sourceOrder === targetOrder) {
+      await query("COMMIT");
+      return { success: true };
+    }
+
+    // STEP 1: move source to a temporary safe value
+    await query(
+      `
+      UPDATE workout_exercises
+      SET exercise_order = -1
+      WHERE id = $1 AND workout_id = $2
+      `,
+      [sourceId, workoutId]
+    );
+
+    const min = Math.min(sourceOrder, targetOrder);
+    const max = Math.max(sourceOrder, targetOrder);
+
+    const order = sourceOrder < targetOrder ? 'ASC' : 'DESC';
+
+    // STEP 2: shift all exercises between source and target in the opposite direction
+    let res = await query(
+      `SELECT id, exercise_order
+      FROM workout_exercises
+      WHERE exercise_order BETWEEN $1 AND $2
+      AND workout_id = $3
+      ORDER BY exercise_order ${order}`,
+      [min, max, workoutId]
+    );
+
+    console.log(res.rows);
+
+    const operator = sourceOrder < targetOrder ? '-' : '+';
+
+    for (const row of res.rows) {
+      await query(
+        `
+        UPDATE workout_exercises
+        SET exercise_order = exercise_order ${operator} 1
+        WHERE id = $1 AND workout_id = $2
+        `,
+        [row.id, workoutId]
+      );
+    }
+
+    // STEP 3: move source into target position
+    await query(
+      `
+      UPDATE workout_exercises
+      SET exercise_order = $1
+      WHERE id = $2 AND workout_id = $3
+      `,
+      [targetOrder, sourceId, workoutId]
+    );
+
+    console.log('STEP 3 DONE')
+
+    await query("COMMIT");
+
+    return { success: true };
+
+  } catch (err) {
+    await query("ROLLBACK");
+    throw err;
+  }
+};

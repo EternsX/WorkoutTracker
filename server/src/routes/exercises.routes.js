@@ -5,7 +5,8 @@ import {
     updateExercise,
     deleteExercise,
     updateRestTimes,
-    updateExerciseType
+    updateExerciseType,
+    swapExercise,
 } from '../controllers/exercises.controller.js';
 
 import authMiddleware from '../middleware/authMiddleware.js';
@@ -17,7 +18,7 @@ import {
     createExerciseSchema,
     updateExerciseSchema,
     updateRestTimesSchema,
-    updateExerciseTypeSchema
+    updateExerciseTypeSchema,
 } from '../validators/exercise.validator.js';
 
 const router = express.Router({ mergeParams: true });
@@ -60,5 +61,11 @@ router.patch(
     validate(updateExerciseTypeSchema),
     updateExerciseType
 );
+
+router.patch(
+    '/:workoutExerciseId/swap',
+    validate(workoutExerciseParamsSchema, "params"),
+    swapExercise
+)
 
 export default router;

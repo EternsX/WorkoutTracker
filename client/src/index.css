@@ -16,3 +16,7 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-main);
 }
+
+div {
+  user-select: none;
+}

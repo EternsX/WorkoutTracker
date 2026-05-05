@@ -1,5 +1,5 @@
 import { request } from "../../utils/apiHelpers";
-import { createExerciseUrl, delExerciseUrl, updateExerciseTypeUrl, updateExerciseUrl, getExercisesUrl, updateRestTimesUrl } from "../../api/exercises.api";
+import { createExerciseUrl, delExerciseUrl, updateExerciseTypeUrl, updateExerciseUrl, getExercisesUrl, updateRestTimesUrl, swapExerciseAPI } from "../../api/exercises.api";
 
 export const getExercisesApi = (workoutId) => request(getExercisesUrl(workoutId));
 
@@ -29,3 +29,9 @@ export const updateExerciseTypeApi = (type, workoutId, workoutExerciseId) =>
 
 export const deleteExerciseApi = (workoutId, workoutExerciseId) =>
   request(delExerciseUrl(workoutId, workoutExerciseId), { method: "DELETE" });
+
+export const swapExercisesApi = (workoutId, targetId, sourceId) =>
+  request(swapExerciseAPI(workoutId, sourceId), {
+    method: "PATCH",
+    body: JSON.stringify({ targetId })
+  });

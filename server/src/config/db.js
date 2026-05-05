@@ -3,13 +3,21 @@ const { Pool } = pkg;
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  // ssl: { rejectUnauthorized: false },
+  ssl: false
 });
 
 // Test connection
-pool.query("SELECT 1")
-  .then(() => console.log("PostgreSQL connected"))
-  .catch(err => console.error(err));
+const testConnection = async () => {
+  try {
+    await pool.query("SELECT 1");
+    console.log("PostgreSQL connected");
+  } catch (err) {
+    console.error("DB connection failed:", err);
+  }
+};
+
+testConnection();
 
 // Simple query helper for non-transactional queries
 export const query = (text, params) => pool.query(text, params);

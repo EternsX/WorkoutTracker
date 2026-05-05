@@ -7,7 +7,7 @@ import Sets from "../../Sets/Sets";
 import "./Exercise.css";
 
 export default function Exercise({ exercise, workoutId }) {
-  const { updateExercise, delExercise, updateRestTimers, updateExerciseType } = useExercise();
+  const { updateExercise, delExercise, updateRestTimers, updateExerciseType, swapExercises, setSwapId, swapId, swapRefs } = useExercise();
 
   const {
     editingId,
@@ -19,8 +19,9 @@ export default function Exercise({ exercise, workoutId }) {
     cancelEditing,
     handleUpdate,
     handleDelete,
+    openSwap,
     setEditedName
-  } = useExerciseItem(exercise, workoutId, updateExercise, delExercise);
+  } = useExerciseItem(exercise, workoutId, updateExercise, delExercise, setSwapId);
 
   const [restAfterExercise, setRestAfterExercise] = useState(
     exercise.rest_after_exercise || 180
@@ -44,6 +45,24 @@ export default function Exercise({ exercise, workoutId }) {
       setType(exercise.type);
     }
   }, [exercise?.type]);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      const clickedInside = Array.from(swapRefs.current.values()).some((el) =>
+        el.contains(e.target)
+      );
+
+      if (!clickedInside) {
+        setSwapId(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleRestChange = (value) => {
     setRestAfterExercise(value);
@@ -116,7 +135,6 @@ export default function Exercise({ exercise, workoutId }) {
                 </select>
               </div>
             </div>
-
             <div className="exercise-actions">
               <ExerciseActions
                 openMenuId={openMenuId}
@@ -125,12 +143,28 @@ export default function Exercise({ exercise, workoutId }) {
                 toggleMenu={toggleMenu}
                 startEditing={startEditing}
                 handleDelete={handleDelete}
+                openSwap={openSwap}
               />
             </div>
           </>
         )}
+        <div
+          ref={(el) => {
+            if (el) {
+              swapRefs.current.set(exercise.workout_exercise_id, el);
+            } else {
+              swapRefs.current.delete(exercise.workout_exercise_id);
+            }
+          }}
+          className={`swap ${swapId && swapId !== exercise.workout_exercise_id ? 'active' : ''}`}
+          onClick={() => {
+            swapExercises(workoutId, exercise.workout_exercise_id, swapId)
+            setSwapId(null);
+          }}
+        >
+          ←
+        </div>
       </div>
-
       {/* 🔥 Pass type down */}
       <Sets
         workoutId={workoutId}

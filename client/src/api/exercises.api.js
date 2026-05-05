@@ -20,3 +20,6 @@ export const updateRestTimesUrl = (workoutId, workoutExerciseId) =>
 
 export const updateExerciseTypeUrl = (workoutId, workoutExerciseId) =>
   `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}/type`;
+
+export const swapExerciseAPI = (workoutId, workoutExerciseId) =>
+  `${workoutExercisesUrl(workoutId)}/${workoutExerciseId}/swap`;

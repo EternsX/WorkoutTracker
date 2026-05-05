@@ -1,4 +1,4 @@
-export default function ExerciseActions({ openMenuId, exercise, menuRef, toggleMenu, startEditing, handleDelete }) {
+export default function ExerciseActions({ openMenuId, exercise, menuRef, toggleMenu, startEditing, handleDelete, openSwap }) {
   return (
     <>
       <button
@@ -12,7 +12,7 @@ export default function ExerciseActions({ openMenuId, exercise, menuRef, toggleM
         <div className="menu-dropdown" ref={menuRef}>
           <button onClick={startEditing}>Edit</button>
           <button onClick={handleDelete}>Delete</button>
-        </div>
+          <button onClick={() => openSwap(exercise.workout_exercise_id)}>Swap</button>        </div>
       )}
     </>
   );

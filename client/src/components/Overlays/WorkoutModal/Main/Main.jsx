@@ -3,10 +3,10 @@ import { useState } from 'react'; // ✅ add
 import './Main.css';
 
 export default function Main({ session, sets, handleBeginWorkout, handleFinishWorkout }) {
-    const { getExercise } = useExercise();
+    const { exercises } = useExercise();
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const exerciseIds = Object.keys(sets);
+    
 
     const handleDiscard = async () => {
         if (!session || isDeleting) return;
@@ -22,18 +22,17 @@ export default function Main({ session, sets, handleBeginWorkout, handleFinishWo
 
     return (
         <div className="workout-modal-exercises-container">
-            {exerciseIds.length === 0 && (
+            {exercises.length === 0 && (
                 <p className="empty-message">No exercises with sets yet</p>
             )}
 
-            {exerciseIds.map((exerciseId) => {
-                const exercise = getExercise(exerciseId);
-                const numSets = sets[exerciseId]?.length || 0;
+            {exercises.map((exercise) => {
+                const numSets = sets[exercise.id]?.length || 0;
 
                 if (!exercise) return null;
 
                 return (
-                    <div className="workout-modal-exercise" key={exerciseId}>
+                    <div className="workout-modal-exercise" key={exercise.id}>
                         <span>{exercise.name}</span>
                         <span>{numSets} set{numSets !== 1 ? 's' : ''}</span>
                     </div>

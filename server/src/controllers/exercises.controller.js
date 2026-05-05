@@ -68,3 +68,13 @@ export const updateExerciseType = asyncHandler(async (req, res) => {
 
     res.status(200).json({ workoutExercise: result });
 });
+
+export const swapExercise = asyncHandler(async (req, res) => {
+    const result = await exerciseService.swapExercises(
+        req.params.workoutId,
+        req.params.workoutExerciseId,
+        req.body.targetId,
+        req.user.id
+    );
+    res.status(200).json({ workoutExercise: result });
+});

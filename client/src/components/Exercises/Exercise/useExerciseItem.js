@@ -1,7 +1,7 @@
 // src/components/Exercise/useExerciseItem.js
 import { useState, useRef, useEffect } from "react";
 
-export default function useExerciseItem(exercise, workoutId, updateExercise, delExercise) {
+export default function useExerciseItem(exercise, workoutId, updateExercise, delExercise, setSwapId) {
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -30,6 +30,11 @@ export default function useExerciseItem(exercise, workoutId, updateExercise, del
     await delExercise(workoutId, exercise.workout_exercise_id);
     setOpenMenuId(null);
   };
+  
+  const openSwap = (id) => {
+    setSwapId(id);
+    setOpenMenuId(null);
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -52,6 +57,7 @@ export default function useExerciseItem(exercise, workoutId, updateExercise, del
     cancelEditing,
     handleUpdate,
     handleDelete,
-    setEditedName
+    setEditedName,
+    openSwap
   };
 }
