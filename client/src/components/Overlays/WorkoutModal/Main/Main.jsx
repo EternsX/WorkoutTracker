@@ -6,8 +6,6 @@ export default function Main({ session, sets, handleBeginWorkout, handleFinishWo
     const { exercises } = useExercise();
     const [isDeleting, setIsDeleting] = useState(false);
 
-    
-
     const handleDiscard = async () => {
         if (!session || isDeleting) return;
 
@@ -27,12 +25,12 @@ export default function Main({ session, sets, handleBeginWorkout, handleFinishWo
             )}
 
             {exercises.map((exercise) => {
-                const numSets = sets[exercise.id]?.length || 0;
+                const numSets = sets[exercise.workout_exercise_id]?.length || 0;
 
                 if (!exercise) return null;
 
                 return (
-                    <div className="workout-modal-exercise" key={exercise.id}>
+                    <div className="workout-modal-exercise" key={exercise.workout_exercise_id}>
                         <span>{exercise.name}</span>
                         <span>{numSets} set{numSets !== 1 ? 's' : ''}</span>
                     </div>
