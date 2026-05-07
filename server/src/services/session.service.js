@@ -43,11 +43,11 @@ export const getWorkoutSession = async (userId) => {
 /**
  * Update session progress
  */
-export const updateProgress = async (sessionId, userId, workout_exercise_id, setNumber, reps, duration, weight) => {
-  // 1️⃣ Validate session ownership
+export const updateProgress = async (sessionId, userId, workout_exercise_id, setNumber, reps, duration, weight, restUntil) => {
+  // Validate session ownership
   const session = await getSessionOrThrowIfNotOwned(sessionId, userId);
 
-  // 2️⃣ Validate exercise belongs to this workout
+  // Validate exercise belongs to this workout
   if (!(await doesWorkoutHaveWorkoutExerciseId(session.workout_id, workout_exercise_id))) {
     const err = new Error("Exercise does not belong to this workout");
     err.statusCode = 400;
@@ -58,8 +58,8 @@ export const updateProgress = async (sessionId, userId, workout_exercise_id, set
   try {
     await client.query("BEGIN");
 
-    // 3️⃣ Update session progress as JSON
-    const progress = { workout_exercise_id, setNumber };
+    // Update session progress as JSON
+    const progress = { workout_exercise_id, setNumber, restUntil };
     const sessionRes = await client.query(
       `UPDATE workout_sessions
        SET progress = $3::jsonb,
@@ -75,7 +75,7 @@ export const updateProgress = async (sessionId, userId, workout_exercise_id, set
       throw err;
     }
 
-    // 4️⃣ Record the completed set
+    // Record the completed set
     await client.query(
       `INSERT INTO completed_sets
            (session_id, workout_exercise_id, set_number, reps, duration, weight, completed_at)
@@ -84,9 +84,11 @@ export const updateProgress = async (sessionId, userId, workout_exercise_id, set
     );
 
     await client.query("COMMIT");
+    console.log("SUCCESSFULLY UPDATED PROGRESS", sessionRes.rows[0]);
     return sessionRes.rows[0];
   } catch (error) {
     await client.query("ROLLBACK");
+    console.error("Error updating progress:", error);
     throw error;
   } finally {
     client.release();
@@ -97,7 +99,7 @@ export const updateProgress = async (sessionId, userId, workout_exercise_id, set
  * Finish or discard a workout session
  */
 export const endSession = async (sessionId, userId, status) => {
-  // 1️⃣ Validate session ownership
+  // Validate session ownership
   await getSessionOrThrowIfNotOwned(sessionId, userId);
 
   const res = await query(

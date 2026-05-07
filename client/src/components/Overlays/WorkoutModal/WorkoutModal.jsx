@@ -2,7 +2,7 @@ import './WorkoutModal.css'
 import useOverlay from '../../../context/UIOverlay/useOverlay'
 import { MODAL_TYPES } from '../../../constants/modalTypes';
 import useWorkout from '../../../context/Workouts/useWorkout';
-import Main from './Main/Main';
+import Preview from './Preview/Preview';
 import Secondary from './Secondary/Secondary';
 import { useState } from 'react';
 import useSet from '../../../context/Sets/useSet'
@@ -31,7 +31,6 @@ export default function WorkoutModal() {
     const ex_idx = exercises?.findIndex(e => e.workout_exercise_id === id);
     const safe_idx = ex_idx === -1 ? 0 : ex_idx;
     const set_idx = session?.progress?.setNumber || 0;
-
 
     const handleBeginWorkout = () => {
         setWorkoutInProgress(true);
@@ -82,7 +81,7 @@ export default function WorkoutModal() {
                         handleFinishWorkout={handleFinishWorkout}
                     />
                 ) : (
-                    <Main
+                    <Preview
                         session={session}
                         sets={workoutSets}
                         handleBeginWorkout={handleBeginWorkout}

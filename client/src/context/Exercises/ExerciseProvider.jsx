@@ -19,9 +19,9 @@ export default function ExerciseProvider({ children }) {
   const [swapId, setSwapId] = useState(null);
   const swapRefs = useRef(new Map());
   // ✅ GET EXERCISES
-  const getExercises = useCallback((workoutId) => {
+  const getExercises = useCallback((workoutId, signal) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await getExercisesApi(workoutId);
+      const result = await getExercisesApi(workoutId, signal);
 
       setExercises(result.exercises || []);
       return { exercises: result.exercises || [] };
@@ -127,7 +127,7 @@ export default function ExerciseProvider({ children }) {
 
       return { success: true };
     })();
-  }, []);
+  }, [getExercises]);
 
   const value = useMemo(() => ({
     exercises,

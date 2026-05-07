@@ -1,7 +1,7 @@
 import { request } from "../../utils/apiHelpers";
 import { createExerciseUrl, delExerciseUrl, updateExerciseTypeUrl, updateExerciseUrl, getExercisesUrl, updateRestTimesUrl, swapExerciseAPI } from "../../api/exercises.api";
 
-export const getExercisesApi = (workoutId) => request(getExercisesUrl(workoutId));
+export const getExercisesApi = (workoutId, signal) => request(getExercisesUrl(workoutId), { signal });
 
 export const createExerciseApi = (name, workoutId) =>
   request(createExerciseUrl(workoutId), {

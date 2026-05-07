@@ -14,7 +14,7 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
 
     // ⏱ Duration timer state
     const [timerRunning, setTimerRunning] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(0); // instead of reps for time-based exercises
     const [timerFinished, setTimerFinished] = useState(false);
     const [paused, setPaused] = useState(false); // new state to track pause
 
@@ -51,6 +51,20 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
         }, 1000);
         return () => clearInterval(interval);
     }, [isResting]);
+
+    useEffect(() => {
+        console.log('Session progress updated:', session?.progress);
+        const restUntil = session?.progress?.restUntil;
+        if (!restUntil) return;
+
+        const remaining = new Date(restUntil).getTime() - Date.now();
+
+        if (remaining > 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setRestTime(Math.ceil(remaining / 1000));
+            setIsResting(true);
+        }
+    }, [session?.progress?.restUntil]);
 
     // Duration timer effect
     useEffect(() => {
@@ -93,18 +107,24 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
         const duration = curExercise?.type === 'time' ? curSet?.duration || 0 : null;
         const weight = curExercise?.weight || 0;
 
-        await updateProgress(session.id, nextExerciseId, nextSetIdx, reps, duration, weight);
 
+        let restUntil = null;
         if (setIdx + 1 < totalSets) {
+            restUntil = new Date(Date.now() + restBetweenSets * 1000);
             setSetIdx(nextSetIdx);
             startRest(restBetweenSets);
         } else if (exIdx + 1 < totalExercises) {
+            restUntil = new Date(Date.now() + restAfterExercise * 1000);
             setExIdx(nextExIdx);
             setSetIdx(0);
             startRest(restAfterExercise);
         } else {
             handleFinishWorkout("FINISHED", session.id);
+            return;
         }
+
+        await updateProgress(session.id, nextExerciseId, nextSetIdx, reps, duration, weight, restUntil);
+
     };
 
     return (

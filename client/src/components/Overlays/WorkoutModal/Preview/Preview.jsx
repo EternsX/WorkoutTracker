@@ -1,8 +1,8 @@
 import useExercise from '../../../../context/Exercises/useExercise';
 import { useState } from 'react'; // ✅ add
-import './Main.css';
+import './Preview.css';
 
-export default function Main({ session, sets, handleBeginWorkout, handleFinishWorkout }) {
+export default function Preview({ session, sets, handleBeginWorkout, handleFinishWorkout }) {
     const { exercises } = useExercise();
     const [isDeleting, setIsDeleting] = useState(false);
 

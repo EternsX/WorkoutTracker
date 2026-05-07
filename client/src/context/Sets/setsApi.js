@@ -2,8 +2,8 @@
 import { request } from "../../utils/apiHelpers"; // your generic fetch wrapper
 import { createSetUrl, delSetUrl, updateSetUrl, getSetsUrl } from "../../api/sets.api";
 
-export const apiGetSets = async (workoutId, workoutExerciseId) => {
-  const result = await request(getSetsUrl(workoutId, workoutExerciseId));
+export const apiGetSets = async (workoutId, workoutExerciseId, signal) => {
+  const result = await request(getSetsUrl(workoutId, workoutExerciseId), { signal });
   return result;
 };
 

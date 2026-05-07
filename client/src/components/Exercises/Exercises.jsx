@@ -20,38 +20,52 @@ export default function Exercises() {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-    async function loadAll() {
+    async function loadExercisesAndSets() {
       try {
-        // 1️⃣ Get exercises
-        const exercisesData = await getExercises(workoutId);
-
-        // 2️⃣ Get all sets for every exercise
-        const setsPromises = exercisesData.map(ex =>
-          getSets(workoutId, ex.workout_exercise_id)
+        const res = await getExercises(workoutId, signal);
+        const exercises = res.exercises || [];
+        const setsPromises = exercises.map(ex =>
+          getSets(workoutId, ex.workout_exercise_id, signal)
         );
 
         await Promise.all(setsPromises);
 
-        // 3️⃣ Wait for session if not loaded
-        if (!session) {
-          await getSession();
-        }
+        setPageLoading(false);
 
-        if (isMounted) setPageLoading(false);
       } catch (err) {
         console.error(err);
-        if (isMounted) setPageLoading(false);
+        setPageLoading(false);
       }
     }
 
-    loadAll();
+    loadExercisesAndSets();
 
-    return () => {
-      isMounted = false;
-    };
-  }, [workoutId, getExercises, getSets, getSession, session]);
+    return () => controller.abort();
+  }, [workoutId, getExercises, getSets]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    async function loadSession() {
+      if (!session) {
+        try {
+          await getSession(signal);
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.error(err);
+          }
+        }
+      }
+    }
+
+    loadSession();
+
+    return () => controller.abort();
+  }, [session, getSession]);
 
   const handleAddExercise = () => {
     openOverlay({ type: MODAL_TYPES.CREATE_EXERCISE, payload: { workoutId } });

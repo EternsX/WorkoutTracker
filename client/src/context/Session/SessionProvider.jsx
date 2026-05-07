@@ -14,9 +14,9 @@ export default function SessionProvider({ children }) {
   const [error, setError] = useState(null);
 
   // ✅ GET CURRENT SESSION
-  const getSession = useCallback(() => {
+  const getSession = useCallback((signal) => {
     return withLoadingAndError(setLoading, setError, async () => {
-      const result = await getSessionApi();
+      const result = await getSessionApi(signal);
       setSession(result.session || null);
       return { session: result.session || null };
     })();
@@ -33,7 +33,7 @@ export default function SessionProvider({ children }) {
 
   // ✅ UPDATE PROGRESS
   const updateProgress = useCallback(
-    (sessionId, workout_exercise_id, setNumber, reps, duration, weight) => {
+    (sessionId, workout_exercise_id, setNumber, reps, duration, weight, restUntil) => {
       return withLoadingAndError(setLoading, setError, async () => {
         const result = await updateProgressApi(
           sessionId,
@@ -41,8 +41,10 @@ export default function SessionProvider({ children }) {
           setNumber,
           reps,
           Number(duration),
-          weight
+          weight,
+          restUntil
         );
+        console.log("Progress updated:", result);
         setSession(result.session);
         return { session: result.session };
       })();

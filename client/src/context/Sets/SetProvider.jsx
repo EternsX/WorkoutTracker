@@ -18,12 +18,12 @@ export default function SetProvider({ children }) {
   const loading = loadingCount > 0; // page is loading if any fetch is active
 
   // ✅ GET SETS
-  const getSets = useCallback((workoutId, workout_exercise_id) => {
+  const getSets = useCallback((workoutId, workout_exercise_id, signal) => {
     setLoadingCount(prev => prev + 1);
 
     return withLoadingAndError(() => {}, setError, async () => {
       try {
-        const result = await apiGetSets(workoutId, workout_exercise_id);
+        const result = await apiGetSets(workoutId, workout_exercise_id, signal);
 
         setSets(prev => ({
           ...prev,

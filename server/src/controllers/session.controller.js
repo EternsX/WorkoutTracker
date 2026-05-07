@@ -20,8 +20,8 @@ export const getWorkoutSession = asyncHandler(async (req, res) => {
 
 export const updateProgress = asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
-    const { workout_exercise_id, setNumber, reps, duration, weight } = req.body;
-
+    const { workout_exercise_id, setNumber, reps, duration, weight, restUntil } = req.body;
+    console.log(req.body)
     const session = await sessionService.updateProgress(
         sessionId,
         req.user.id,
@@ -29,7 +29,8 @@ export const updateProgress = asyncHandler(async (req, res) => {
         setNumber,
         reps,
         duration,
-        weight
+        weight,
+        restUntil
     );
 
     res.status(200).json({ session });
