@@ -66,6 +66,12 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+.skip-set-btn.disabled {
+  background: #777;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .skip-set-btn:hover {
   background: #43a047;
   color: #e8f5e9;

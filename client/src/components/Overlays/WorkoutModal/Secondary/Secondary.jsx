@@ -137,7 +137,7 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
                 <div className="exercise-name-btn">
                     <h3 className="exercise-name">{curExercise?.name}</h3>
                     <div className="skip-wrapper">
-                        <button className="skip-set-btn" onClick={() => handleNext(true)}>
+                        <button className={`skip-set-btn ${(isResting || timerRunning) ? 'disabled' : ''}`} onClick={(isResting || timerRunning) ? undefined : () => handleNext(true)}>
                             ⏭
                         </button>
                         <span className="skip-label">skip</span>
