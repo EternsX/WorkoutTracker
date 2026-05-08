@@ -23,14 +23,74 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* exercise name */
+.exercise-name-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .exercise-name {
   font-size: 1.4rem;
   font-weight: 600;
   color: #ffffff;
+}
+
+.skip-set-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  background: #4caf50;
+  border: none;
+  border-radius: 50%;
+  padding: 0 0 1px 1px;
+
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+
+  transform: scale(1);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.skip-set-btn:hover {
+  background: #43a047;
+  color: #e8f5e9;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.skip-set-btn:active {
+  transform: scale(0.96);
+}
+
+.skip-wrapper {
+  position: absolute;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.skip-label {
+  font-size: 0.65rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* set container */
@@ -70,7 +130,7 @@
 .workout-modal-next-btn:hover {
   background: #43a047;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .workout-modal-next-btn:active {
@@ -119,7 +179,7 @@
 .duration-controls button:hover {
   background: #2e7d32;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .duration-controls button:active {
@@ -132,12 +192,14 @@
   align-self: center;
 }
 
+
 /* fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(5px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

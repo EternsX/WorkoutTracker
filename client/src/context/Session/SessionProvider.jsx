@@ -44,7 +44,6 @@ export default function SessionProvider({ children }) {
           weight,
           restUntil
         );
-        console.log("Progress updated:", result);
         setSession(result.session);
         return { session: result.session };
       })();

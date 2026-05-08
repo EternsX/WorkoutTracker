@@ -53,7 +53,6 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
     }, [isResting]);
 
     useEffect(() => {
-        console.log('Session progress updated:', session?.progress);
         const restUntil = session?.progress?.restUntil;
         if (!restUntil) return;
 
@@ -84,16 +83,17 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
     }, [timerRunning]);
 
     const startRest = (seconds) => {
+        if (seconds <= 0) return;
         setRestTime(seconds);
         setIsResting(true);
     };
 
-    const handleNext = async () => {
+    const handleNext = async (skip = false) => {
         if (!curExercise || !session) return;
 
-        const restBetweenSets = curSet?.rest_between_sets ?? curExercise?.rest_between_sets ?? 60;
-        const restAfterExercise = curExercise?.rest_after_exercise ?? 120;
-
+        const restBetweenSets = skip ? 0 : curSet?.rest_between_sets ?? curExercise?.rest_between_sets ?? 60;
+        const restAfterExercise = skip ? 0 : curExercise?.rest_after_exercise ?? 120;
+        
         let nextSetIdx = setIdx + 1;
         let nextExIdx = exIdx;
 
@@ -134,7 +134,15 @@ export default function Secondary({ ex_idx = 0, set_idx = 0, sets, handleFinishW
             </div>
 
             <div className="workout-current">
-                <h3 className="exercise-name">{curExercise?.name}</h3>
+                <div className="exercise-name-btn">
+                    <h3 className="exercise-name">{curExercise?.name}</h3>
+                    <div className="skip-wrapper">
+                        <button className="skip-set-btn" onClick={() => handleNext(true)}>
+                            ⏭
+                        </button>
+                        <span className="skip-label">skip</span>
+                    </div>
+                </div>
                 <div className="set-info">
                     <span className="set-number">Set {setIdx + 1} / {totalSets}</span>
                     <span className="set-reps">

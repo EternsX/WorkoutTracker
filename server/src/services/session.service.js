@@ -84,11 +84,9 @@ export const updateProgress = async (sessionId, userId, workout_exercise_id, set
     );
 
     await client.query("COMMIT");
-    console.log("SUCCESSFULLY UPDATED PROGRESS", sessionRes.rows[0]);
     return sessionRes.rows[0];
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("Error updating progress:", error);
     throw error;
   } finally {
     client.release();
