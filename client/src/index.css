@@ -18,5 +18,9 @@ body {
 }
 
 div {
-  user-select: none;
+  caret-color: transparent;
+}
+
+input {
+  caret-color: auto;
 }

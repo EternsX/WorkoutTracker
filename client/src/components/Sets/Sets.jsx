@@ -3,6 +3,7 @@ import useSet from "../../context/Sets/useSet";
 import "./Sets.css";
 import Set from "./Set/Set";
 import useExercise from "../../context/Exercises/useExercise";
+import REST_TIMERS from "../../constants/restTimers";
 
 export default function Sets({ workoutId, workoutExerciseId }) {
   const { getExercise, updateRestTimers } = useExercise();
@@ -108,7 +109,7 @@ export default function Sets({ workoutId, workoutExerciseId }) {
               );
             }}
           >
-            {[15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map(
+            {REST_TIMERS.map(
               (sec) => (
                 <option key={sec} value={sec}>
                   {sec} sec

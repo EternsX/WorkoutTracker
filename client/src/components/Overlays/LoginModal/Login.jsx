@@ -6,6 +6,7 @@ import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
 import { useIsMobile } from "../../../utils/isMobile";
+import { ToggleEye } from "../../../utils/ToggleEye.jsx";
 
 export default function Login() {
     const { overlays, closeOverlay, openOverlay } = useOverlay();
@@ -15,8 +16,9 @@ export default function Login() {
 
     const loginIsOpen = overlays.some((o) => o.type === MODAL_TYPES.LOGIN);
 
-    const [username, setUsername] = useState("");
+    const [usernameOrEmail, setUsernameOrEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const usernameRef = useRef(null);
 
     // Reset form when modal opens
@@ -26,12 +28,12 @@ export default function Login() {
         }
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setPassword("");
-        setUsername("");
+        setUsernameOrEmail("");
     }, [loginIsOpen, isMobile]);
 
     const handleLogin = async () => {
         if (loading) return; // prevent double submit
-        const res = await login(username, password);
+        const res = await login(usernameOrEmail, password);
         if (res?.success) {
             closeOverlay(MODAL_TYPES.LOGIN);
             navigate("/", { replace: true });
@@ -57,27 +59,30 @@ export default function Login() {
 
                 <div className="input-group">
                     <input
+                        id="username-or-email"
                         ref={usernameRef}
                         autoComplete="username"
                         placeholder=" "
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className={error?.username ? "input-invalid" : ""}
+                        value={usernameOrEmail}
+                        onChange={(e) => setUsernameOrEmail(e.target.value)}
+                        className={error?.usernameOrEmail ? "input-invalid" : ""}
                     />
-                    <label>Username</label>
-                    {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
+                    <label for="username-or-email">Username or Email</label>
+                    {error?.usernameOrEmail && <div className="error-text"><span className="error-symbol">*</span>{error.usernameOrEmail}</div>}
                 </div>
 
                 <div className="input-group">
                     <input
-                        type="password"
+                        
+                        type={passwordVisible ? "text" : "password"}
                         placeholder=" "
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={error?.password ? "input-invalid" : ""}
                     />
-                    <label>Password</label>
+                    <label for="password">Password</label>
+                    <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
                     {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>
                 {error?.general && <div className="error">{error.general}</div>}

@@ -5,6 +5,7 @@ import useExerciseItem from "./useExerciseItem";
 import ExerciseActions from "./ExerciseActions";
 import Sets from "../../Sets/Sets";
 import "./Exercise.css";
+import REST_TIMERS from "../../../constants/restTimers";
 
 export default function Exercise({ exercise, workoutId }) {
   const { updateExercise, delExercise, updateRestTimers, updateExerciseType, swapExercises, setSwapId, swapId, swapRefs } = useExercise();
@@ -125,7 +126,7 @@ export default function Exercise({ exercise, workoutId }) {
                   value={restAfterExercise}
                   onChange={(e) => handleRestChange(Number(e.target.value))}
                 >
-                  {[15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180].map(
+                  {REST_TIMERS.map(
                     (sec) => (
                       <option key={sec} value={sec}>
                         {sec}s

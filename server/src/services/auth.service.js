@@ -1,30 +1,39 @@
 import bcrypt from "bcrypt";
 import { query } from "../config/db.js";
 
-export const register = async ({ username, password }) => {
+export const register = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await query(
-        `INSERT INTO users (username, password)
-         VALUES ($1, $2)
-         ON CONFLICT (username) DO NOTHING
+    try {
+        const result = await query(
+            `INSERT INTO users (username, email, password)
+         VALUES ($1, $2, $3)
          RETURNING id, username`,
-        [username, hashedPassword]
-    );
+            [username, email, hashedPassword]
+        );
 
-    if (!result.rows.length) {
-        const err = new Error("Username already exists");
-        err.statusCode = 400;
+        return result.rows[0];
+    } catch (err) {
+        if (err.code === "23505") {
+            if (err.detail?.includes("username")) {
+                throw new Error("Username already exists");
+            }
+            if (err.detail?.includes("email")) {
+                throw new Error("Email already exists");
+            }
+            throw new Error("User already exists");
+        }
         throw err;
     }
-
-    return result.rows[0];
 };
 
-export const login = async ({ username, password }) => {
+export const login = async ({ usernameOrEmail, password }) => {
+    const email = usernameOrEmail.includes("@") ? usernameOrEmail : null;
+    const username = email ? null : usernameOrEmail;
+
     const result = await query(
-        `SELECT id, username, password FROM users WHERE username = $1`,
-        [username]
+        `SELECT id, username, password FROM users WHERE username = $1 OR email = $2`,
+        [username, email]
     );
 
     const user = result.rows[0];

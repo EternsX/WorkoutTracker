@@ -67,7 +67,6 @@ export default function SetProvider({ children }) {
   const updateSet = useCallback((setId, value, weight, type, workoutId, workout_exercise_id) => {
     return withLoadingAndError(() => {}, setError, async () => {
       const errors = requireFields(type === "reps" ? { reps: value, weight } : { duration: value, weight });
-      console.log(errors)
       if (Object.keys(errors).length) throw { errors };
 
       const result = await apiUpdateSet(setId, value, type, weight, workoutId, workout_exercise_id);

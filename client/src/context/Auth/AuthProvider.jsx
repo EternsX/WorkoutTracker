@@ -25,26 +25,26 @@ export default function AuthProvider({ children }) {
     })();
   }, []);
 
-  const login = useCallback((username, password) => {
+  const login = useCallback((usernameOrEmail, password) => {
     return withLoadingAndError(setLoading, setError, async () => {
 
-      const errors = requireFields({ username, password });
+      const errors = requireFields({ usernameOrEmail, password });
       if (Object.keys(errors).length) throw { errors };
-
-      await loginApi(username, password);
+      
+      await loginApi(usernameOrEmail, password);
       const { user } = await fetchUser();
 
       return { success: true, user };
     })();
   }, [fetchUser]);
 
-  const register = useCallback((username, password) => {
+  const register = useCallback((username, email, password) => {
     return withLoadingAndError(setLoading, setError, async () => {
       
-      const errors = requireFields({ username, password });
+      const errors = requireFields({ username, email, password });
       if (Object.keys(errors).length) throw { errors };
       
-      await registerApi(username, password);
+      await registerApi(username, email, password);
 
       // auto-login after registration
       const { user } = await login(username, password);

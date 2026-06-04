@@ -6,6 +6,7 @@ import { MODAL_TYPES } from "../../../constants/modalTypes";
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
 import { useIsMobile } from "../../../utils/isMobile";
+import { ToggleEye } from "../../../utils/ToggleEye.jsx";
 
 export default function Register() {
     const { overlays, closeOverlay, openOverlay } = useOverlay();
@@ -16,7 +17,9 @@ export default function Register() {
     const registerIsOpen = overlays.some((o) => o.type === MODAL_TYPES.REGISTER);
 
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const usernameRef = useRef(null);
 
     // Reset form when modal opens
@@ -32,7 +35,7 @@ export default function Register() {
     const handleRegister = async () => {
         if (loading) return; // prevent double submit
 
-        const res = await register(username, password);
+        const res = await register(username, email, password);
 
         if (res?.success) {
             closeOverlay(MODAL_TYPES.REGISTER);
@@ -60,25 +63,43 @@ export default function Register() {
 
                 <div className="input-group">
                     <input
+                        id="username"
                         ref={usernameRef}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        autoComplete="username"
+                        autoComplete="off"
+                        name="username"
                         placeholder=" "
                     />
-                    <label>Username</label>
+                    <label for="username">Username</label>
                     {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
                 </div>
 
                 <div className="input-group">
                     <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                        name="email"
                         placeholder=" "
                     />
-                    <label>Password</label>
+                    <label for="email">Email</label>
+                    {error?.email && <div className="error-text"><span className="error-symbol">*</span>{error.email}</div>}
+                </div>
+
+                <div className="input-group">
+                    <input
+                        id="new-password"
+                        type={passwordVisible ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
+                        name="new-password"
+                        placeholder=" "
+                    />
+                    <label for="new-password">Password</label>
+                    <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
                     {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>
 

@@ -4,10 +4,10 @@ import { request } from "../../utils/apiHelpers";
 
 export const fetchUserApi = () => request(userUrl);
 
-export const loginApi = async (username, password) => {
+export const loginApi = async (usernameOrEmail, password) => {
   const data = await request(loginUrl, {
     method: "POST",
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ usernameOrEmail, password })
   });
 
   if (data?.token) {
@@ -17,10 +17,10 @@ export const loginApi = async (username, password) => {
   return data;
 };
 
-export const registerApi = async (username, password) => {
+export const registerApi = async (username, email, password) => {
   const data = await request(registerUrl, {
     method: "POST",
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, email, password })
   });
 
   if (data?.token) {

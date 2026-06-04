@@ -188,6 +188,18 @@
     animation: spin 0.8s linear infinite;
 }
 
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color:white;
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
