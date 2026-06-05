@@ -1,4 +1,4 @@
-.s-btn {
+.o-btn {
     padding: 15px;
     background: none;
     cursor: pointer;
@@ -10,12 +10,12 @@
     margin-bottom: 30px;
 }
 
-.s-btn:hover {
+.o-btn:hover {
     background-color: var(--bg-button-hover);
     border-color: var(--border-button-hover);
 }
 
-.s-btn:active {
+.o-btn:active {
     background:none;
     border: var(--border-button);
 }

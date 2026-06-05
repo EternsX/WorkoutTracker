@@ -7,6 +7,7 @@ import Exercises from "./components/Exercises/Exercises";
 import WorkoutHistory from "./components/WorkoutHistory/WorkoutHistory"; // import your component
 import Progress from "./components/Progress/Progress";
 import Validate from "./components/Validate/Validate";
+import Settings from "./components/Settings/Settings";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         {/* "/history" route */}
         <Route path="history" element={<WorkoutHistory />} />
         <Route path="/progress" element={<Progress />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/validate/:token" element={<Validate />} />
 
         {/* fallback */}

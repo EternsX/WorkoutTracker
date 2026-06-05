@@ -71,7 +71,7 @@ export default function Register() {
                         name="username"
                         placeholder=" "
                     />
-                    <label for="username">Username</label>
+                    <label htmlFor="username">Username</label>
                     {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
                 </div>
 
@@ -84,7 +84,7 @@ export default function Register() {
                         name="email"
                         placeholder=" "
                     />
-                    <label for="email">Email</label>
+                    <label htmlFor="email">Email</label>
                     {error?.email && <div className="error-text"><span className="error-symbol">*</span>{error.email}</div>}
                 </div>
 
@@ -98,7 +98,7 @@ export default function Register() {
                         name="new-password"
                         placeholder=" "
                     />
-                    <label for="new-password">Password</label>
+                    <label htmlFor="new-password">Password</label>
                     <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
                     {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>

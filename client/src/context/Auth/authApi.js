@@ -1,5 +1,5 @@
 // authApi.js
-import { userUrl, loginUrl, registerUrl, logoutUrl, verifyUrl } from "../../api/auth.api";
+import { userUrl, loginUrl, registerUrl, logoutUrl, verifyUrl, updateUsernameUrl, updateEmailUrl } from "../../api/auth.api";
 import { request } from "../../utils/apiHelpers";
 
 export const fetchUserApi = () => request(userUrl);
@@ -33,3 +33,13 @@ export const registerApi = async (username, email, password) => {
 export const logoutApi = () => request(logoutUrl);
 
 export const verifyApi = (token) => request(verifyUrl(token));
+
+export const updateUsernameApi = (username) => request(updateUsernameUrl, {
+  method: "PUT",
+  body: JSON.stringify({ username })
+});
+
+export const updateEmailApi = (email) => request(updateEmailUrl, {
+  method: "PUT",
+  body: JSON.stringify({ email })
+});

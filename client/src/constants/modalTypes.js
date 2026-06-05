@@ -1,7 +1,7 @@
 export const MODAL_TYPES = {
   LOGIN: "login",
   REGISTER: "register",
-  SETTINGS: "settings",
+  OPTIONS: "options",
   CREATE_WORKOUT: "createWorkout",
   CREATE_EXERCISE: "createExercise",
   START_WORKOUT: "start_workout",

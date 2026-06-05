@@ -2,11 +2,11 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import AuthContext from "./AuthContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
 import { requireFields } from "../../utils/validation";
-import { fetchUserApi, loginApi, registerApi, verifyApi } from "./authApi";
+import { fetchUserApi, loginApi, registerApi, verifyApi, updateEmailApi, updateUsernameApi } from "./authApi";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchUser = useCallback(() => {
@@ -68,6 +68,20 @@ export default function AuthProvider({ children }) {
     })();
   }, []); 
 
+  const updateUsername = useCallback((username) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      await updateUsernameApi(username);
+      return { success: true };
+    })();
+  }, []); 
+
+  const updateEmail = useCallback((email) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      await updateEmailApi(email);
+      return { success: true };
+    })();
+  }, []);
+
   useEffect(() => {
      fetchUser();
   }, [fetchUser]);
@@ -80,8 +94,10 @@ export default function AuthProvider({ children }) {
     login,
     register,
     logout,
-    verify
-  }), [user, loading, error, fetchUser, login, register, logout, verify]);
+    verify,
+    updateUsername,
+    updateEmail
+  }), [user, loading, error, fetchUser, login, register, logout, verify, updateUsername, updateEmail]);
 
   return (
     <AuthContext.Provider value={value}>

@@ -1,0 +1,84 @@
+.settings-container {
+    max-width: 420px;
+    margin: 40px auto;
+    padding: 24px;
+    background-color: #332c2c;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.settings-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.settings-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.settings-label {
+    font-weight: bold;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.settings-input {
+    width: 260px; /* fixed width instead of 100% */
+    padding: 10px 12px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #2a2424;
+    color: #fff;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.settings-input:focus {
+    border-color: #888;
+}
+
+.settings-input[readonly] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.settings-info button {
+    width: fit-content;
+    align-self: flex-start;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #555;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.settings-info button:hover {
+    background-color: #777;
+}
+
+.missing-email {
+    margin-top: 10px;
+    color: #ff5c5c;
+    font-size: 13px;
+    text-align: center;
+}
+
+.unverified-email {
+    margin-top: 10px;
+    color: #ffb347;
+    font-size: 13px;
+}

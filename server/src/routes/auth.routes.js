@@ -4,13 +4,15 @@ import {
     login,
     logout,
     user,   
-    verify
+    verify,
+    updateUsername,
+    updateEmail
 } from "../controllers/auth.controller.js";
 import { authLimiter } from '../middleware/rateLimiter.js';
 
 
 import { validate } from "../middleware/validate.js";
-import { registerSchema, loginSchema } from "../validators/auth.validator.js";
+import { registerSchema, loginSchema, updateEmailSchema, updateUsernameSchema } from "../validators/auth.validator.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -24,5 +26,7 @@ router.use(authMiddleware);
 router.get("/user", user);
 router.get("/logout", logout);
 router.get("/verify/:token", verify);
+router.put("/update-username", validate(updateUsernameSchema), updateUsername);
+router.put("/update-email", validate(updateEmailSchema), updateEmail);
 
 export default router;

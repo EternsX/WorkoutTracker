@@ -67,13 +67,13 @@ export default function Login() {
                         onChange={(e) => setUsernameOrEmail(e.target.value)}
                         className={error?.usernameOrEmail ? "input-invalid" : ""}
                     />
-                    <label for="username-or-email">Username or Email</label>
+                    <label htmlFor="username-or-email">Username or Email</label>
                     {error?.usernameOrEmail && <div className="error-text"><span className="error-symbol">*</span>{error.usernameOrEmail}</div>}
                 </div>
 
                 <div className="input-group">
                     <input
-                        
+                        id="password"
                         type={passwordVisible ? "text" : "password"}
                         placeholder=" "
                         autoComplete="current-password"
@@ -81,7 +81,7 @@ export default function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                         className={error?.password ? "input-invalid" : ""}
                     />
-                    <label for="password">Password</label>
+                    <label htmlFor="password">Password</label>
                     <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
                     {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
                 </div>

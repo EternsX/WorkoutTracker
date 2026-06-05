@@ -1,15 +1,18 @@
 import bcrypt from "bcrypt";
 import { query } from "../config/db.js";
+import crypto from "crypto";
 
 export const register = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10);
+    const token = crypto.randomBytes(32).toString("hex");
+    const expire = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
     try {
         const result = await query(
-            `INSERT INTO users (username, email, password)
-         VALUES ($1, $2, $3)
-         RETURNING id`,
-            [username, email, hashedPassword]
+            `INSERT INTO users (username, email, password, verification_token, verification_token_expires)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, username, email, verified`,
+            [username, email, hashedPassword, token, expire]
         );
 
         return result.rows[0];
@@ -53,13 +56,16 @@ export const login = async ({ usernameOrEmail, password }) => {
     }
 
     return {
-        id: user.id
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        verified: user.verified
     };
 };
 
 export const getById = async (id) => {
     const result = await query(
-        `SELECT id, username FROM users WHERE id = $1`,
+        `SELECT id, username, email, verified FROM users WHERE id = $1`,
         [id]
     );
 
@@ -79,6 +85,36 @@ export const verify = async (token) => {
         throw err;
     }
     console.log("User verified:", result.rows[0]);
+    
+    return result.rows[0];
+};
+
+export const updateUsername = async (id, username) => {
+    const result = await query(
+        `UPDATE users SET username = $1 WHERE id = $2 RETURNING id, username, email, verified`,
+        [username, id]
+    );
+
+    if (!result.rows[0]) {
+        const err = new Error("User not found");
+        err.statusCode = 404;
+        throw err;
+    }
+
+    return result.rows[0];
+};
+
+export const updateEmail = async (id, email) => {
+    const result = await query(
+        `UPDATE users SET email = $1 WHERE id = $2 RETURNING id, username, email, verified`,
+        [email, id]
+    );
+    
+    if (!result.rows[0]) {
+        const err = new Error("User not found");
+        err.statusCode = 404;
+        throw err;
+    }
     
     return result.rows[0];
 };

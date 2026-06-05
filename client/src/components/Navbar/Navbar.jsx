@@ -9,8 +9,8 @@ export default function Navbar({ openWorkoutSidebar }) {
   const { openOverlay } = useOverlay();
   const navigate = useNavigate();
 
-  const handleOpenSettings = () => {
-    openOverlay({ type: MODAL_TYPES.SETTINGS });
+  const handleOpenOptions = () => {
+    openOverlay({ type: MODAL_TYPES.OPTIONS });
   };
 
   const handleGoHome = () => {
@@ -35,7 +35,7 @@ export default function Navbar({ openWorkoutSidebar }) {
 
       <div className="settings">
         <NavButton
-          onClick={handleOpenSettings}
+          onClick={handleOpenOptions}
           text={<Settings size={20} color="#8ab4ff" />}
         />
       </div>
