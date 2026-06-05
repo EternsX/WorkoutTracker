@@ -3,7 +3,8 @@ import {
     register,
     login,
     logout,
-    user
+    user,   
+    verify
 } from "../controllers/auth.controller.js";
 import { authLimiter } from '../middleware/rateLimiter.js';
 
@@ -22,5 +23,6 @@ router.use(authMiddleware);
 
 router.get("/user", user);
 router.get("/logout", logout);
+router.get("/verify/:token", verify);
 
 export default router;

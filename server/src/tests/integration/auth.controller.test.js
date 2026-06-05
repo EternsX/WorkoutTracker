@@ -5,8 +5,10 @@ import {
   register,
   login,
   logout,
-  user as getUser
+  user as getUser,
+  verify
 } from '../../controllers/auth.controller.js';
+import authMiddleware from '../../middleware/authMiddleware.js';
 
 import { validate } from '../../middleware/validate.js';
 import {
@@ -23,7 +25,8 @@ app.use(express.json());
 app.post('/register', validate(registerSchema), register);
 app.post('/login', validate(loginSchema), login);
 app.post('/logout', logout);
-app.get('/user', getUser);
+app.get('/user', authMiddleware, getUser);
+app.get('/verify', authMiddleware, verify);
 
 // ✅ Error handler (important for failed tests)
 app.use((err, req, res, next) => {
@@ -49,12 +52,13 @@ describe('Auth Controller', () => {
     test('should return user + token', async () => {
       authService.register.mockResolvedValue({
         id: 1,
-        username: 'test'
+        username: 'test',
+        email: 'test@example.com'
       });
 
       const res = await request(app)
         .post('/register')
-        .send({ username: 'test', password: '123456' });
+        .send({ username: 'test', email: 'test@example.com', password: '123456' });
 
       expect(res.statusCode).toBe(201);
       expect(res.body.user.username).toBe('test');
@@ -69,7 +73,7 @@ describe('Auth Controller', () => {
 
       const res = await request(app)
         .post('/register')
-        .send({ username: 'test', password: '123456' });
+        .send({ username: 'test', email: 'test@example.com', password: '123456' });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Username already exists');
@@ -78,7 +82,7 @@ describe('Auth Controller', () => {
     test('should fail validation with bad input', async () => {
       const res = await request(app)
         .post('/register')
-        .send({ username: '', password: '' });
+        .send({ username: '', email: '', password: '' });
 
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toBe('Validation failed');
@@ -99,7 +103,7 @@ describe('Auth Controller', () => {
 
       const res = await request(app)
         .post('/login')
-        .send({ username: 'test', password: '123456' });
+        .send({ usernameOrEmail: 'test', password: '123456' });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.user.username).toBe('test');
@@ -114,7 +118,7 @@ describe('Auth Controller', () => {
 
       const res = await request(app)
         .post('/login')
-        .send({ username: 'test', password: 'wrong' });
+        .send({ usernameOrEmail: 'test', password: 'wrong' });
 
       expect(res.statusCode).toBe(401);
       expect(res.body.message).toBe('Invalid username or password');
@@ -170,4 +174,26 @@ describe('Auth Controller', () => {
 
   });
 
+  // ================= VERIFY =================
+
+  describe('GET /verify', () => {
+    test('should return valid true if token is valid', async () => {
+      authService.verify.mockResolvedValue(true);
+
+      const res = await request(app).get('/verify');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.valid).toBe(true);
+    });
+
+    test('should return error if token is invalid', async () => {
+      const res = await request(app)
+        .get('/verify')
+        .set('Authorization', 'Bearer invalidtoken');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.error).toBe('Invalid token');
+    });
+  });
 });
+

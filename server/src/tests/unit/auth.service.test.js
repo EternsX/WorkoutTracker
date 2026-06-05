@@ -18,53 +18,72 @@ describe('Auth Service', () => {
     bcrypt.hash.mockResolvedValue('hashed_pw');
 
     query.mockResolvedValue({
-      rows: [{ id: 1, username: 'test' }]
+      rows: [{ id: 1 }]
     });
 
     const result = await authService.register({
       username: 'test',
+      email: 'test@example.com',
       password: '1234'
     });
 
-    expect(result).toEqual({ id: 1, username: 'test' });
+    expect(result).toEqual({ id: 1 });
     expect(query).toHaveBeenCalled();
   });
 
   test('register should throw if username exists', async () => {
     bcrypt.hash.mockResolvedValue('hashed_pw');
 
-    query.mockResolvedValue({ rows: [] });
+    query.mockRejectedValue({
+      code: "23505",
+      detail: "username already exists"
+    });
 
     await expect(
-      authService.register({ username: 'test', password: '1234' })
+      authService.register({ username: 'test', email: 'test@example.com', password: '1234' })
     ).rejects.toThrow('Username already exists');
   });
 
   test('login should return user if credentials valid', async () => {
     query.mockResolvedValue({
-      rows: [{ id: 1, username: 'test', password: 'hashed_pw' }]
+      rows: [{ id: 1 }]
     });
 
     bcrypt.compare.mockResolvedValue(true);
 
     const result = await authService.login({
-      username: 'test',
+      usernameOrEmail: 'test',
       password: '1234'
     });
 
-    expect(result).toEqual({ id: 1, username: 'test' });
+    expect(result).toEqual({ id: 1 });
   });
 
   test('login should fail with wrong password', async () => {
     query.mockResolvedValue({
-      rows: [{ id: 1, username: 'test', password: 'hashed_pw' }]
+      rows: [{ id: 1 }]
     });
 
     bcrypt.compare.mockResolvedValue(false);
 
     await expect(
-      authService.login({ username: 'test', password: 'wrong' })
+      authService.login({ usernameOrEmail: 'test', password: 'wrong' })
     ).rejects.toThrow('Invalid username or password');
   });
 
+  test('verify should throw if user invalid', async () => {
+    query.mockResolvedValue({ rows: [] });
+
+    await expect(
+      authService.verify({ id: 999 })
+    ).rejects.toThrow('User not found');
+  });
+
+  test('verify should succeed if user exists', async () => {
+    query.mockResolvedValue({ rows: [{ id: 999 }] });
+
+    await expect(
+      authService.verify({ id: 999 })
+    ).resolves.toEqual({ id: 999 });
+  });
 });

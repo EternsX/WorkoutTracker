@@ -41,3 +41,8 @@ export const logout = asyncHandler(async (req, res) => {
 export const user = asyncHandler(async (req, res) => {
     res.json({ user: req.user || null });
 });
+
+export const verify = asyncHandler(async (req, res) => {
+    await authService.verify(req.params.token);
+    res.json({ valid: true });
+});

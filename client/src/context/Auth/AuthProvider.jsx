@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import AuthContext from "./AuthContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
 import { requireFields } from "../../utils/validation";
-import { fetchUserApi, loginApi, registerApi } from "./authApi";
+import { fetchUserApi, loginApi, registerApi, verifyApi } from "./authApi";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -61,6 +61,13 @@ export default function AuthProvider({ children }) {
     })();
   }, []);
 
+  const verify = useCallback((token) => {
+    return withLoadingAndError(setLoading, setError, async () => {
+      await verifyApi(token);
+      return { success: true };
+    })();
+  }, []); 
+
   useEffect(() => {
      fetchUser();
   }, [fetchUser]);
@@ -72,8 +79,9 @@ export default function AuthProvider({ children }) {
     fetchUser,
     login,
     register,
-    logout
-  }), [user, loading, error, fetchUser, login, register, logout]);
+    logout,
+    verify
+  }), [user, loading, error, fetchUser, login, register, logout, verify]);
 
   return (
     <AuthContext.Provider value={value}>

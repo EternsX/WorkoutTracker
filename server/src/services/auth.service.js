@@ -8,7 +8,7 @@ export const register = async ({ username, email, password }) => {
         const result = await query(
             `INSERT INTO users (username, email, password)
          VALUES ($1, $2, $3)
-         RETURNING id, username`,
+         RETURNING id`,
             [username, email, hashedPassword]
         );
 
@@ -53,8 +53,7 @@ export const login = async ({ usernameOrEmail, password }) => {
     }
 
     return {
-        id: user.id,
-        username: user.username
+        id: user.id
     };
 };
 
@@ -65,4 +64,21 @@ export const getById = async (id) => {
     );
 
     return result.rows[0] || null;
+};
+
+export const verify = async (token) => {
+    const result = await query(
+        `UPDATE users SET verified = now() WHERE verification_token = $1 RETURNING id`,
+        [token]
+    );
+    console.log("Verification result:", result.rows[0]);
+
+    if (!result.rows[0]) {
+        const err = new Error("User not found");
+        err.statusCode = 404;
+        throw err;
+    }
+    console.log("User verified:", result.rows[0]);
+    
+    return result.rows[0];
 };
