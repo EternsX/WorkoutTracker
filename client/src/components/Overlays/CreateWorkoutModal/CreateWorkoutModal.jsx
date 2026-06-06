@@ -17,6 +17,7 @@ export default function CreateWorkoutModal() {
   const overlayData = overlays.find(
     (o) => o.type === MODAL_TYPES.CREATE_WORKOUT
   );
+  const errors = error?.errors || {}; 
 
   const handleClose = () => closeOverlay(MODAL_TYPES.CREATE_WORKOUT);
 
@@ -33,7 +34,7 @@ export default function CreateWorkoutModal() {
 
     const result = await createWorkout(workout.trim());
 
-    if (result?.error) return; // ❌ stay open on error
+    if (!result?.success) return; // ❌ stay open on error
 
     handleClose(); // ✅ close only on success
     navigate(`/workouts/${result.workout.id}`);
@@ -56,7 +57,7 @@ export default function CreateWorkoutModal() {
             placeholder=" "
           />
           <label htmlFor="workout">Workout</label>
-          {error?.name && <div className="error-text"><span className="error-symbol">*</span>{error.name}</div>}
+          {errors.name && <div className="error-text"><span className="error-symbol">*</span>{errors.name}</div>}
         </div>
 
         {/* ✅ error display */}

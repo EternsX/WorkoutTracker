@@ -70,6 +70,8 @@ export default function AuthProvider({ children }) {
 
   const updateUsername = useCallback((username) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ username });
+      if (Object.keys(errors).length) throw { errors };
       await updateUsernameApi(username);
       return { success: true };
     })();
@@ -77,7 +79,11 @@ export default function AuthProvider({ children }) {
 
   const updateEmail = useCallback((email) => {
     return withLoadingAndError(setLoading, setError, async () => {
+      const errors = requireFields({ email });
+      if (Object.keys(errors).length) throw { errors };
+      console.log("Going to update email to:", email)
       await updateEmailApi(email);
+      console.log("Email update successful")
       return { success: true };
     })();
   }, []);

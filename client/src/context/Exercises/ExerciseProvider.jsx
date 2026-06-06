@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import ExerciseContext from "./ExerciseContext";
 import { withLoadingAndError } from "../../utils/apiHelpers";
-import { requireFields } from "../../utils/validation";
+import { requireFields, validationError } from "../../utils/validation";
 import {
   getExercisesApi,
   createExerciseApi,
@@ -32,7 +32,7 @@ export default function ExerciseProvider({ children }) {
   const createExercise = useCallback((name, workoutId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const errors = requireFields({ name });
-      if (Object.keys(errors).length) throw { errors };
+      if (Object.keys(errors).length) throw validationError(errors);
 
       const result = await createExerciseApi(name, workoutId);
 
@@ -46,7 +46,7 @@ export default function ExerciseProvider({ children }) {
   const updateExercise = useCallback((name, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const errors = requireFields({ name });
-      if (Object.keys(errors).length) throw { errors };
+      if (Object.keys(errors).length) throw validationError(errors);
 
       const result = await updateExerciseApi(name, workoutId, workout_exercise_id);
 
@@ -101,7 +101,7 @@ export default function ExerciseProvider({ children }) {
   const updateExerciseType = useCallback((type, workoutId, workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const errors = requireFields({ type });
-      if (Object.keys(errors).length) throw { errors };
+      if (Object.keys(errors).length) throw validationError(errors);
 
       await updateExerciseTypeApi(type, workoutId, workout_exercise_id);
 
@@ -120,7 +120,7 @@ export default function ExerciseProvider({ children }) {
   const swapExercises = useCallback((workoutId, targetId, sourceId) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const errors = requireFields({ targetId, sourceId });
-      if (Object.keys(errors).length) throw { errors };
+      if (Object.keys(errors).length) throw validationError(errors);
       await swapExercisesApi(workoutId, targetId, sourceId);
 
       getExercises(workoutId);

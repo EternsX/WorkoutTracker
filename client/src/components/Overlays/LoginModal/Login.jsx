@@ -13,6 +13,7 @@ export default function Login() {
     const { login, loading, error } = useAuth(); // use context for loading & error
     const navigate = useNavigate();
     const isMobile = useIsMobile();
+    const errors = error?.errors || {};
 
     const loginIsOpen = overlays.some((o) => o.type === MODAL_TYPES.LOGIN);
 
@@ -65,10 +66,10 @@ export default function Login() {
                         placeholder=" "
                         value={usernameOrEmail}
                         onChange={(e) => setUsernameOrEmail(e.target.value)}
-                        className={error?.usernameOrEmail ? "input-invalid" : ""}
+                        className={errors.usernameOrEmail ? "input-invalid" : ""}
                     />
                     <label htmlFor="username-or-email">Username or Email</label>
-                    {error?.usernameOrEmail && <div className="error-text"><span className="error-symbol">*</span>{error.usernameOrEmail}</div>}
+                    {errors.usernameOrEmail && <div className="error-text"><span className="error-symbol">*</span>{errors.usernameOrEmail}</div>}
                 </div>
 
                 <div className="input-group">
@@ -79,13 +80,13 @@ export default function Login() {
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={error?.password ? "input-invalid" : ""}
+                        className={errors.password ? "input-invalid" : ""}
                     />
                     <label htmlFor="password">Password</label>
                     <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
-                    {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
+                    {errors.password && <div className="error-text"><span className="error-symbol">*</span>{errors.password}</div>}
                 </div>
-                {error?.general && <div className="error">{error.general}</div>}
+                {error?.message && <div className="error">{error.message}</div>}
 
                 <button className="button" disabled={loading} type="submit">
                     {loading ? <span className="spinner"></span> : "Login"}

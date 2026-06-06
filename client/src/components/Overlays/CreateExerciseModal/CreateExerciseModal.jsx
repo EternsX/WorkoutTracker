@@ -10,6 +10,7 @@ export default function CreateExerciseModal() {
   const { overlays, closeOverlay } = useOverlay();
   const { createExercise, loading, error } = useExercise();
   const isMobile = useIsMobile();
+  const errors = error?.errors || {};
 
   const [name, setName] = useState("");
   const nameRef = useRef(null);
@@ -37,7 +38,7 @@ export default function CreateExerciseModal() {
 
     const res = await createExercise(name.trim(), workoutId);
 
-    if (res?.error) return;
+    if (!res?.success) return;
 
     handleClose();
   };
@@ -59,7 +60,7 @@ export default function CreateExerciseModal() {
             placeholder=" "
           />
           <label htmlFor="name">Exercise Name</label>
-          {error?.name && <div className="error-text"><span className="error-symbol">*</span>{error.name}</div>}
+          {errors.name && <div className="error-text"><span className="error-symbol">*</span>{errors.name}</div>}
 
         </div>
 

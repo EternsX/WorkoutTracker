@@ -73,7 +73,7 @@ export default function Exercise({ exercise, workoutId }) {
       exercise.workout_exercise_id
     );
   };
-  // 🔥 NEW: handle type change
+  
   const handleTypeChange = (exerciseType) => {
     setType(exerciseType);
 

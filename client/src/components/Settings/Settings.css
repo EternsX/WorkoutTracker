@@ -82,3 +82,9 @@
     color: #ffb347;
     font-size: 13px;
 }
+
+.error-message {
+    margin-left: 10px;
+    color: #ff5c5c;
+    font-size: 13px;
+}

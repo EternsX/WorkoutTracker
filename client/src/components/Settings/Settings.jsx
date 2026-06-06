@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 function Settings() {
-    const { user, updateUsername, updateEmail, loading } = useAuth();
+    const { user, updateUsername, updateEmail, loading, error } = useAuth();
     const [email, setEmail] = useState(user?.email || '');
     const [username, setUsername] = useState(user?.username || '');
 
@@ -38,7 +38,6 @@ function Settings() {
     }
 
     if (!user) {
-        console.log(loading, user)
         return <Navigate to="/login" />;
     }
 
@@ -52,6 +51,7 @@ function Settings() {
                     <button onClick={() => editingUsername ? handleUsernameSave() : setEditingUsername((prev) => !prev)}>
                         {editingUsername ? 'Save' : 'Edit'}
                     </button>
+                    {error?.key == 'username' ? <span className="error-message">{error.message}</span> : null}
                 </div>
             </div>
             <div className="settings-info">
@@ -62,6 +62,7 @@ function Settings() {
                         {editingEmail ? 'Save' : 'Edit'}
                     </button>
                 </div>
+                {error?.key == 'email' ? <span className="error-message">{error.message}</span> : null}
                 {!user?.verified && user?.email ? <span className="unverified-email">Email not verified</span> : null}
                 {user?.email || '' ? null : <span className="missing-email">Add your email</span>}
             </div>

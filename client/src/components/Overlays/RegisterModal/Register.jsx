@@ -11,6 +11,7 @@ import { ToggleEye } from "../../../utils/ToggleEye.jsx";
 export default function Register() {
     const { overlays, closeOverlay, openOverlay } = useOverlay();
     const { register, loading, error } = useAuth(); // ✅ use context state
+    const errors = error?.errors || {}; 
     const navigate = useNavigate();
     const isMobile = useIsMobile();
 
@@ -72,7 +73,7 @@ export default function Register() {
                         placeholder=" "
                     />
                     <label htmlFor="username">Username</label>
-                    {error?.username && <div className="error-text"><span className="error-symbol">*</span>{error.username}</div>}
+                    {errors.username && <div className="error-text"><span className="error-symbol">*</span>{errors.username}</div>}
                 </div>
 
                 <div className="input-group">
@@ -85,7 +86,7 @@ export default function Register() {
                         placeholder=" "
                     />
                     <label htmlFor="email">Email</label>
-                    {error?.email && <div className="error-text"><span className="error-symbol">*</span>{error.email}</div>}
+                    {errors.email && <div className="error-text"><span className="error-symbol">*</span>{errors.email}</div>}
                 </div>
 
                 <div className="input-group">
@@ -100,10 +101,9 @@ export default function Register() {
                     />
                     <label htmlFor="new-password">Password</label>
                     <ToggleEye passwordVisible={passwordVisible} setPasswordVisible={setPasswordVisible} />
-                    {error?.password && <div className="error-text"><span className="error-symbol">*</span>{error.password}</div>}
+                    {errors.password && <div className="error-text"><span className="error-symbol">*</span>{errors.password}</div>}
                 </div>
-
-                {error?.general && <div className="error">{error.general}</div>}
+                {error?.message && <div className="error">{error?.message}</div>}
 
                 <button type="submit" disabled={loading} className="button">
                     {loading ? <span className="spinner"></span> : "Register"}
