@@ -4,12 +4,21 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 function Settings() {
-    const { user, updateUsername, updateEmail, loading, error } = useAuth();
+    const { user, deleteAccount, updateUsername, updateEmail, loading, error } = useAuth();
     const [email, setEmail] = useState(user?.email || '');
     const [username, setUsername] = useState(user?.username || '');
 
     const [editingUsername, setEditingUsername] = useState(false);
     const [editingEmail, setEditingEmail] = useState(false);
+
+    const handleDeleteAccount = async () => {
+        if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+            await deleteAccount();
+        }
+
+        <Navigate to="/"/>;
+
+    };
 
     useEffect(() => {
         if (user) {
@@ -38,7 +47,7 @@ function Settings() {
     }
 
     if (!user) {
-        return <Navigate to="/login" />;
+        return <Navigate to="/" />;
     }
 
     return (
@@ -66,6 +75,8 @@ function Settings() {
                 {!user?.verified && user?.email ? <span className="unverified-email">Email not verified</span> : null}
                 {user?.email || '' ? null : <span className="missing-email">Add your email</span>}
             </div>
+
+            <button className="delete-button" onClick={handleDeleteAccount}>Delete Account</button>
 
         </div>
     );

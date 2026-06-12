@@ -56,3 +56,8 @@ export const updateEmail = asyncHandler(async (req, res) => {
     const user = await authService.updateEmail(req.user.id, req.body.email);
     res.json({ user });
 }); 
+
+export const deleteAccount = asyncHandler(async (req, res) => {
+    await authService.deleteAccount(req.user.id);
+    res.json({ message: "Account deleted" });
+});

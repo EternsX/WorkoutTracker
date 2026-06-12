@@ -1,5 +1,5 @@
 // authApi.js
-import { userUrl, loginUrl, registerUrl, logoutUrl, verifyUrl, updateUsernameUrl, updateEmailUrl } from "../../api/auth.api";
+import { userUrl, loginUrl, registerUrl, logoutUrl, verifyUrl, updateUsernameUrl, updateEmailUrl, deleteAccountUrl } from "../../api/auth.api";
 import { request } from "../../utils/apiHelpers";
 
 export const fetchUserApi = () => request(userUrl);
@@ -42,4 +42,8 @@ export const updateUsernameApi = (username) => request(updateUsernameUrl, {
 export const updateEmailApi = (email) => request(updateEmailUrl, {
   method: "PUT",
   body: JSON.stringify({ email })
+});
+
+export const deleteAccountApi = () => request(deleteAccountUrl, {
+  method: "DELETE"
 });
