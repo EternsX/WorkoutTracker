@@ -8,3 +8,4 @@ export const logoutUrl = `${API_URL}/logout`;
 export const verifyUrl = (token) => `${API_URL}/verify/${token}`;
 export const updateUsernameUrl = `${API_URL}/update-username`;
 export const updateEmailUrl = `${API_URL}/update-email`;
+export const deleteAccountUrl = `${API_URL}/delete-account`;

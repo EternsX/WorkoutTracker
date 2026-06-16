@@ -6,7 +6,8 @@ import {
     user,   
     verify,
     updateUsername,
-    updateEmail
+    updateEmail,
+    deleteAccount
 } from "../controllers/auth.controller.js";
 import { authLimiter } from '../middleware/rateLimiter.js';
 
@@ -28,5 +29,6 @@ router.get("/logout", logout);
 router.get("/verify/:token", verify);
 router.put("/update-username", validate(updateUsernameSchema), updateUsername);
 router.put("/update-email", validate(updateEmailSchema), updateEmail);
+router.delete("/delete-account", deleteAccount);
 
 export default router;

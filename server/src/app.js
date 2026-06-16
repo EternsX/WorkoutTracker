@@ -38,7 +38,6 @@ app.use(cors({
 app.use(globalLimiter);
 app.use(express.json());
 
-app.use(cors());
 app.options(/.*/, cors());app.use("/auth", authRoutes);
 app.use("/workouts", workoutRoutes);
 app.use("/session", sessionRoutes);

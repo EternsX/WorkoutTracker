@@ -18,7 +18,9 @@ export const register = async ({ username, email, password }) => {
          RETURNING id, username, email, verified`,
             [username, email, hashedPassword, token, expire]
         );
-        await jobFlow.sendWelcomeEmail(process.env.EMAIL, email, username);
+        console.log(1)
+        const res = await jobFlow.sendWelcomeEmail(process.env.EMAIL, email, username);
+        console.log('WorkoutTracker', res);
         return result.rows[0];
     } catch (err) {
         if (err.code === "23505") {
@@ -124,6 +126,17 @@ export const updateEmail = async (id, email) => {
         }
         throw err;
     }
+};
 
+export const deleteAccount = async (id) => {
+    const result = await query(
+        `DELETE FROM users WHERE id = $1 RETURNING id`,
+        [id]
+    );
 
+    if (!result.rows[0]) {
+        throw new AppError("User not found", "deleteAccount", "USER_NOT_FOUND", 404);
+    }
+
+    return result.rows[0];
 };
