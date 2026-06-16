@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { query } from "../config/db.js";
 import crypto from "crypto";
-import JobFlow from "../../../../JobFlow/JobFlow.js"
+import JobFlow from "../../../../JobFlow/JobFlow/JobFlow.js"
 import AppError from "../AppError/AppError.js";
 
 const jobFlow = new JobFlow();
