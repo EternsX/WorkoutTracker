@@ -241,11 +241,10 @@ export const swapExercises = async (workoutId, sourceId, targetId, userId) => {
 
   const client = await query; // assuming pg pool wrapper supports this
 
-  console.log('BEGUN!!!!!!!!!!!!!!')
   await query("BEGIN");
 
   try {
-    // 📦 Get both exercise orders
+    //  Get both exercise orders
     const { rows } = await query(
       `
       SELECT id, exercise_order
@@ -295,8 +294,6 @@ export const swapExercises = async (workoutId, sourceId, targetId, userId) => {
       [min, max, workoutId]
     );
 
-    console.log(res.rows);
-
     const operator = sourceOrder < targetOrder ? '-' : '+';
 
     for (const row of res.rows) {
@@ -319,8 +316,6 @@ export const swapExercises = async (workoutId, sourceId, targetId, userId) => {
       `,
       [targetOrder, sourceId, workoutId]
     );
-
-    console.log('STEP 3 DONE')
 
     await query("COMMIT");
 

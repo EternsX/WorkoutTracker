@@ -32,7 +32,7 @@ export default function SetProvider({ children }) {
             [workout_exercise_id]: result.sets || []
           }
         }));
-
+      
         return { sets: result.sets || [] };
       } finally {
         setLoadingCount(prev => prev - 1);

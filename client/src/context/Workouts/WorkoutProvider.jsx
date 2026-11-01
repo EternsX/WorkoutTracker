@@ -52,8 +52,8 @@ export default function WorkoutProvider({ children }) {
       const result = await updateWorkoutApi(workoutId, name);
 
       setWorkouts(prev =>
-        prev.map(w => (w.id === workoutId ? result.workout : w))
-      );
+[        prev.map(w => (w.id === workoutId ? result.workout : w))
+]      );
 
       return { workout: result.workout };
     })();

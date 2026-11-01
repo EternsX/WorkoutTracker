@@ -9,7 +9,7 @@ export default function ProgressProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ GET BEST SET
+  //  GET BEST SET
   const getBestSet = useCallback((workout_exercise_id) => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await getBestSetApi(workout_exercise_id);
@@ -19,7 +19,7 @@ export default function ProgressProvider({ children }) {
     })();
   }, []);
 
-  // ✅ GET VOLUME
+  // GET VOLUME
   const getVolume = useCallback(() => {
     return withLoadingAndError(setLoading, setError, async () => {
       const result = await getVolumeApi();
