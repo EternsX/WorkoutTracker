@@ -6,15 +6,13 @@ import AppError from "../AppError/AppError.js";
 
 export const register = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const token = crypto.randomBytes(32).toString("hex");
-    const expire = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
     try {
         const result = await query(
-            `INSERT INTO users (username, email, password, verification_token, verification_token_expires)
+            `INSERT INTO users (username, email, password)
          VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, username, email, verified`,
-            [username, email, hashedPassword, token, expire]
+         RETURNING id, username, email`,
+            [username, email, hashedPassword]
         );
         return result.rows[0];
     } catch (err) {
@@ -36,7 +34,9 @@ export const login = async ({ usernameOrEmail, password }) => {
     const username = email ? null : usernameOrEmail;
 
     const result = await query(
-        `SELECT id, username, password FROM users WHERE username = $1 OR email = $2`,
+        `SELECT id, username, email, password
+        FROM users
+        WHERE username = $1 OR email = $2`,
         [username, email]
     );
 
@@ -56,45 +56,32 @@ export const login = async ({ usernameOrEmail, password }) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        verified: user.verified
     };
 };
 
 export const getById = async (id) => {
     const result = await query(
-        `SELECT id, username, email, verified FROM users WHERE id = $1`,
+        `SELECT id, username, email FROM users WHERE id = $1`,
         [id]
     );
 
     return result.rows[0] || null;
 };
 
-export const verify = async (token) => {
-    const result = await query(
-        `UPDATE users SET verified = now() WHERE verification_token = $1 RETURNING id`,
-        [token]
-    );
-
-    if (!result.rows[0]) {
-        throw new AppError("User not found", "verify", "USER_NOT_FOUND", 404);
-    }
-
-    return result.rows[0];
-};
 
 export const updateUsername = async (id, username) => {
     try {
 
-    const result = await query(
-        `UPDATE users SET username = $1 WHERE id = $2 RETURNING id, username, email, verified`,
-        [username, id]
-    );
+        const result = await query(
+            `UPDATE users SET username = $1 WHERE id = $2 RETURNING id, username, email`,
+            [username, id]
+        );
 
-    if (!result.rows[0]) {
-        throw new AppError("User not found", "username", "USER_NOT_FOUND", 404);
-    }
+        if (!result.rows[0]) {
+            throw new AppError("User not found", "username", "USER_NOT_FOUND", 404);
+        }
 
-    return result.rows[0];
+        return result.rows[0];
     } catch (err) {
         if (err.code === "23505" && err.constraint === "users_username_key") {
             throw new AppError("Username already exists", "username", "USERNAME_EXISTS", 409);
@@ -106,7 +93,7 @@ export const updateUsername = async (id, username) => {
 export const updateEmail = async (id, email) => {
     try {
         const result = await query(
-            `UPDATE users SET email = $1, verified = NULL WHERE id = $2 RETURNING id, username, email, verified`,
+            `UPDATE users SET email = $1 WHERE id = $2 RETURNING id, username, email`,
             [email, id]
         );
 

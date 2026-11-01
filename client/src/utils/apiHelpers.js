@@ -18,6 +18,9 @@ export function withLoadingAndError(setLoading, setError, asyncFn) {
 export const request = async (url, options = {}) => {
   const token = localStorage.getItem("token");
 
+  console.log("REQUEST:", url);
+  console.log("TOKEN:", token ? "EXISTS" : "MISSING");
+
   const res = await fetch(url, {
     ...options,
     headers: {
@@ -26,6 +29,8 @@ export const request = async (url, options = {}) => {
       ...(options.headers || {})
     },
   });
+
+  console.log("STATUS:", res.status);
 
   const data = await res.json();
 

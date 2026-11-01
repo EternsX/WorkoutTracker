@@ -42,10 +42,6 @@ export const user = asyncHandler(async (req, res) => {
     res.json({ user: req.user || null });
 });
 
-export const verify = asyncHandler(async (req, res) => {
-    await authService.verify(req.params.token);
-    res.json({ valid: true });
-});
 
 export const updateUsername = asyncHandler(async (req, res) => {
     const user = await authService.updateUsername(req.user.id, req.body.username);

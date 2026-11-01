@@ -4,7 +4,6 @@ import {
     login,
     logout,
     user,   
-    verify,
     updateUsername,
     updateEmail,
     deleteAccount
@@ -26,7 +25,6 @@ router.use(authMiddleware);
 
 router.get("/user", user);
 router.get("/logout", logout);
-router.get("/verify/:token", verify);
 router.put("/update-username", validate(updateUsernameSchema), updateUsername);
 router.put("/update-email", validate(updateEmailSchema), updateEmail);
 router.delete("/delete-account", deleteAccount);
