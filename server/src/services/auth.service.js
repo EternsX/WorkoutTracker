@@ -3,7 +3,6 @@ import { query } from "../config/db.js";
 import crypto from "crypto";
 import AppError from "../AppError/AppError.js";
 
-const jobFlow = new JobFlow();
 
 export const register = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,7 +16,6 @@ export const register = async ({ username, email, password }) => {
          RETURNING id, username, email, verified`,
             [username, email, hashedPassword, token, expire]
         );
-        const res = await jobFlow.sendWelcomeEmail(process.env.EMAIL, email, username);
         return result.rows[0];
     } catch (err) {
         if (err.code === "23505") {
